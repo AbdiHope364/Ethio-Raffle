@@ -14,13 +14,22 @@ import {
   AlertCircle,
   Hash,
   Search,
+  Lock,
+  Clock,
 } from "lucide-react";
+
+interface BookedItem {
+  number: number;
+  expiresAt: string;
+}
 
 interface TicketSelectorProps {
   raffleId: string;
   ticketPrice: number;
   totalTickets: number;
-  takenNumbers: number[];
+  soldNumbers?: number[];
+  bookedNumbers?: BookedItem[];
+  takenNumbers?: number[];
   onProceed: (data: {
     ticketCount: number;
     specificNumbers?: number[];
@@ -33,10 +42,12 @@ export default function TicketSelector({
   raffleId,
   ticketPrice,
   totalTickets,
-  takenNumbers,
+  soldNumbers = [],
+  bookedNumbers = [],
+  takenNumbers = [],
   onProceed,
 }: TicketSelectorProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   const [mode, setMode] = useState<"QUICK" | "CUSTOM">("QUICK");
   const [quickCount, setQuickCount] = useState<number>(1);
@@ -45,7 +56,9 @@ export default function TicketSelector({
   const [paymentMethod, setPaymentMethod] = useState<"TELEBIRR" | "CBE_BIRR" | "CHAPA" | "SANTIMPAY" | "AGENT_CASH">("TELEBIRR");
   const [searchNumber, setSearchNumber] = useState<string>("");
 
-  const takenSet = new Set(takenNumbers);
+  const soldSet = new Set(soldNumbers);
+  const bookedSet = new Set(bookedNumbers.map((b) => (typeof b === "number" ? b : b.number)));
+  const combinedTakenSet = new Set([...soldNumbers, ...bookedNumbers.map((b) => (typeof b === "number" ? b : b.number)), ...takenNumbers]);
 
   const activeCount = mode === "QUICK" ? quickCount : selectedNumbers.length;
   const rawSubtotal = activeCount * ticketPrice;
@@ -56,7 +69,7 @@ export default function TicketSelector({
   const finalTotal = rawSubtotal - discountAmount;
 
   const handleToggleNumber = (num: number) => {
-    if (takenSet.has(num)) return;
+    if (soldSet.has(num) || bookedSet.has(num)) return;
     if (selectedNumbers.includes(num)) {
       setSelectedNumbers(selectedNumbers.filter((n) => n !== num));
     } else {
@@ -167,9 +180,38 @@ export default function TicketSelector({
       {/* CUSTOM PICK MODE */}
       {mode === "CUSTOM" && (
         <div className="space-y-4">
+          {/* Status Color Legend */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs space-y-2">
+            <div className="font-bold text-slate-700 text-[11px] uppercase tracking-wider">
+              {language === "AM" ? "የቲኬት ሁኔታ መለያ ምልክቶች" : "Ticket Status Color Legend"}:
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-md bg-white border border-slate-300 inline-block shadow-2xs" />
+                <span className="font-semibold text-slate-700">Available</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-md bg-emerald-600 inline-block shadow-2xs" />
+                <span className="font-bold text-emerald-700">Selected</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-md bg-amber-400 border border-amber-500 inline-block shadow-2xs flex items-center justify-center text-[8px] font-black text-slate-950">
+                  ⏳
+                </span>
+                <span className="font-bold text-amber-700">Booked (1hr)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-md bg-slate-300 border border-slate-400 inline-block shadow-2xs flex items-center justify-center text-[8px] font-black text-slate-600">
+                  🔒
+                </span>
+                <span className="font-bold text-slate-500 line-through">Sold</span>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="text-xs text-slate-500">
-              Pick your lucky numbers below (Green = Selected, Gray = Taken)
+              Click available numbers to choose your lucky tickets
             </div>
             <div className="relative w-full sm:w-40">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
@@ -183,25 +225,44 @@ export default function TicketSelector({
             </div>
           </div>
 
-          <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1.5 max-h-56 overflow-y-auto p-2 border border-slate-200 rounded-2xl bg-slate-50/50">
+          {/* Color-Coded Number Matrix */}
+          <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1.5 max-h-60 overflow-y-auto p-2 border border-slate-200 rounded-2xl bg-slate-50/50">
             {filteredNumbers.map((num) => {
-              const isTaken = takenSet.has(num);
+              const isSold = soldSet.has(num);
+              const isBooked = bookedSet.has(num);
               const isSelected = selectedNumbers.includes(num);
+
+              let buttonClass = "";
+              let title = `Ticket #${num}`;
+              let icon = null;
+
+              if (isSold) {
+                buttonClass = "bg-slate-200/90 text-slate-400 border border-slate-300 cursor-not-allowed line-through opacity-75";
+                title = `Ticket #${num} is SOLD`;
+                icon = <Lock className="w-2.5 h-2.5 absolute top-0.5 right-0.5 text-slate-400" />;
+              } else if (isBooked) {
+                buttonClass = "bg-amber-100 text-amber-900 border border-amber-300 cursor-not-allowed font-extrabold animate-pulse";
+                title = `Ticket #${num} is currently BOOKED (1-hr temporary hold)`;
+                icon = <Clock className="w-2.5 h-2.5 absolute top-0.5 right-0.5 text-amber-600" />;
+              } else if (isSelected) {
+                buttonClass = "bg-emerald-600 text-white font-black shadow-md ring-2 ring-emerald-500 scale-105";
+                title = `Ticket #${num} Selected`;
+                icon = <Check className="w-2.5 h-2.5 absolute top-0.5 right-0.5 text-emerald-200" />;
+              } else {
+                buttonClass = "bg-white text-slate-800 border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/60 font-semibold";
+                title = `Ticket #${num} Available`;
+              }
 
               return (
                 <button
                   key={num}
-                  disabled={isTaken}
+                  disabled={isSold || isBooked}
                   onClick={() => handleToggleNumber(num)}
-                  className={`h-9 rounded-xl text-xs font-bold transition flex items-center justify-center ${
-                    isTaken
-                      ? "bg-slate-200 text-slate-400 cursor-not-allowed line-through"
-                      : isSelected
-                      ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-600 scale-105"
-                      : "bg-white text-slate-800 border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50"
-                  }`}
+                  title={title}
+                  className={`h-9 rounded-xl text-xs transition relative flex items-center justify-center ${buttonClass}`}
                 >
-                  {num}
+                  <span>{num}</span>
+                  {icon}
                 </button>
               );
             })}
@@ -339,6 +400,17 @@ export default function TicketSelector({
         </div>
       </div>
 
+      {/* 1-Hour Hold Guarantee Notice */}
+      <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-2.5 text-xs text-amber-900">
+        <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-bold block">1-Hour Ticket Hold Guarantee:</span>
+          <span>
+            Your selected lucky numbers will be reserved exclusively for you for <strong>60 minutes</strong> while you complete payment. If unpaid after 1 hour, they automatically return to the public pool.
+          </span>
+        </div>
+      </div>
+
       {/* Summary & Checkout Button */}
       <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3">
         <div className="space-y-1 text-xs">
@@ -372,7 +444,7 @@ export default function TicketSelector({
           className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
         >
           <Ticket className="w-4 h-4" />
-          <span>Pay {finalTotal.toLocaleString()} ETB & Mint Tickets</span>
+          <span>Book for 1 Hr & Pay {finalTotal.toLocaleString()} ETB</span>
         </button>
       </div>
     </div>

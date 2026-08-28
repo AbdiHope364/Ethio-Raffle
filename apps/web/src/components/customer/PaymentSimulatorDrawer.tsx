@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import {
@@ -13,6 +13,8 @@ import {
   Copy,
   ArrowRight,
   ExternalLink,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -25,6 +27,7 @@ interface PaymentDrawerProps {
   raffleTitle: string;
   customerPhone: string;
   ticketCount: number;
+  expiresAt?: string | Date;
 }
 
 export default function PaymentSimulatorDrawer({
@@ -36,6 +39,7 @@ export default function PaymentSimulatorDrawer({
   raffleTitle,
   customerPhone,
   ticketCount,
+  expiresAt,
 }: PaymentDrawerProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -43,6 +47,38 @@ export default function PaymentSimulatorDrawer({
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // 1-Hour Expiration Countdown State
+  const [timeLeft, setTimeLeft] = useState<{ minutes: number; seconds: number } | null>(null);
+  const [isExpired, setIsExpired] = useState(false);
+
+  useEffect(() => {
+    if (!expiresAt) {
+      // Default to 60 minutes from now if not explicitly passed
+      const target = Date.now() + 60 * 60 * 1000;
+      updateCountdown(target);
+      const interval = setInterval(() => updateCountdown(target), 1000);
+      return () => clearInterval(interval);
+    } else {
+      const target = new Date(expiresAt).getTime();
+      updateCountdown(target);
+      const interval = setInterval(() => updateCountdown(target), 1000);
+      return () => clearInterval(interval);
+    }
+  }, [expiresAt, isOpen]);
+
+  const updateCountdown = (targetTime: number) => {
+    const diff = targetTime - Date.now();
+    if (diff <= 0) {
+      setTimeLeft({ minutes: 0, seconds: 0 });
+      setIsExpired(true);
+    } else {
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      setTimeLeft({ minutes, seconds });
+      setIsExpired(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -102,6 +138,48 @@ export default function PaymentSimulatorDrawer({
         {/* Not Completed State */}
         {!result && (
           <div className="space-y-5">
+            {/* Live 1-Hour Hold Countdown Box */}
+            <div
+              className={`p-3.5 rounded-2xl border flex items-center justify-between transition ${
+                isExpired
+                  ? "bg-red-50 border-red-200 text-red-800"
+                  : "bg-amber-50/90 border-amber-200 text-amber-900"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                {isExpired ? (
+                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                ) : (
+                  <Clock className="w-5 h-5 text-amber-600 animate-pulse shrink-0" />
+                )}
+                <div>
+                  <span className="text-xs font-extrabold block">
+                    {isExpired ? "Reservation Expired" : "1-Hour Hold Active"}
+                  </span>
+                  <span className="text-[11px] opacity-80 block">
+                    {isExpired
+                      ? "Tickets released to remaining pool."
+                      : "Your numbers are locked until time runs out."}
+                  </span>
+                </div>
+              </div>
+
+              {timeLeft && (
+                <div className="text-right font-mono">
+                  <span
+                    className={`text-lg font-black px-2.5 py-1 rounded-xl ${
+                      isExpired
+                        ? "bg-red-200 text-red-900"
+                        : "bg-amber-200 text-amber-950 shadow-xs"
+                    }`}
+                  >
+                    {String(timeLeft.minutes).padStart(2, "0")}:
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                </div>
+              )}
+            </div>
+
             {/* Payment Summary Box */}
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-3">
               <div className="flex justify-between text-xs">
@@ -145,12 +223,12 @@ export default function PaymentSimulatorDrawer({
             {/* Simulator Action Buttons */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
-                disabled={loading}
+                disabled={loading || isExpired}
                 onClick={() => handleSimulatePayment("SUCCESS")}
-                className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 transition disabled:opacity-50"
+                className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{loading ? "Processing..." : "Approve & Mint"}</span>
+                <span>{loading ? "Processing..." : isExpired ? "Hold Expired" : "Approve & Mint"}</span>
               </button>
 
               <button
@@ -231,4 +309,3 @@ export default function PaymentSimulatorDrawer({
     </div>
   );
 }
-

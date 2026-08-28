@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import { prisma } from "@raffle/database";
-import { executeAtomicTicketPurchase } from "./concurrency";
+import { executeAtomicTicketPurchase, reserveTicketsForOneHour } from "./concurrency";
 
 export interface InitPaymentParams {
   raffleId: string;
@@ -18,10 +18,12 @@ export interface InitPaymentResult {
   raffleTitle: string;
   checkoutUrl: string;
   paymentMethod: string;
+  expiresAt: Date;
+  reservedNumbers?: number[];
 }
 
 /**
- * Initiates payment session with transaction reference
+ * Initiates payment session with 1-hour ticket reservation hold
  */
 export async function initiatePayment(params: InitPaymentParams): Promise<InitPaymentResult> {
   const raffle = await prisma.raffle.findUnique({
@@ -31,10 +33,25 @@ export async function initiatePayment(params: InitPaymentParams): Promise<InitPa
   if (!raffle) throw new Error("Raffle not found");
   if (raffle.status !== "ACTIVE") throw new Error("Raffle is not currently active");
 
+  // 1. Place a 1-hour reservation on the requested ticket numbers
+  const reservation = await reserveTicketsForOneHour({
+    raffleId: params.raffleId,
+    userId: params.userId,
+    customerPhone: params.customerPhone,
+    ticketCount: params.ticketCount,
+    specificNumbers: params.specificNumbers,
+    holdMinutes: 60, // 1 hour hold window
+  });
+
+  if (!reservation.success) {
+    throw new Error(reservation.message || "Failed to reserve ticket numbers.");
+  }
+
   const amount = raffle.ticketPrice * params.ticketCount;
   const txRef = "TX-" + crypto.randomBytes(6).toString("hex").toUpperCase();
+  const expiresAt = reservation.expiresAt || new Date(Date.now() + 60 * 60 * 1000);
 
-  // Create PENDING transaction
+  // 2. Create PENDING transaction with expiresAt timestamp
   await prisma.transaction.create({
     data: {
       userId: params.userId || undefined,
@@ -45,8 +62,9 @@ export async function initiatePayment(params: InitPaymentParams): Promise<InitPa
       ticketCount: params.ticketCount,
       paymentMethod: params.paymentMethod,
       status: "PENDING",
+      expiresAt,
       rawPayload: JSON.stringify({
-        specificNumbers: params.specificNumbers,
+        specificNumbers: reservation.reservedNumbers || params.specificNumbers,
         soldByAgentId: params.soldByAgentId,
       }),
     },
@@ -58,6 +76,8 @@ export async function initiatePayment(params: InitPaymentParams): Promise<InitPa
     raffleTitle: raffle.title,
     checkoutUrl: `/checkout?tx_ref=${txRef}`,
     paymentMethod: params.paymentMethod,
+    expiresAt,
+    reservedNumbers: reservation.reservedNumbers,
   };
 }
 
@@ -74,7 +94,7 @@ export function verifyWebhookSignature(payload: string, signature: string, secre
 }
 
 /**
- * Process a successful payment (idempotent) and mint the tickets
+ * Process a successful payment (idempotent), confirm reserved tickets
  */
 export async function processPaymentSuccess(txRef: string) {
   const transaction = await prisma.transaction.findUnique({
@@ -86,7 +106,7 @@ export async function processPaymentSuccess(txRef: string) {
   // Idempotency check: if already processed, return existing tickets
   if (transaction.status === "SUCCESS") {
     const existingTickets = await prisma.ticket.findMany({
-      where: { transactionId: transaction.id },
+      where: { transactionId: transaction.id, status: "CONFIRMED" },
     });
     return {
       success: true,
@@ -94,6 +114,17 @@ export async function processPaymentSuccess(txRef: string) {
       tickets: existingTickets,
       transaction,
     };
+  }
+
+  // 1-Hour Expiry Validation
+  if (transaction.expiresAt && transaction.expiresAt < new Date()) {
+    await prisma.transaction.update({
+      where: { id: transaction.id },
+      data: { status: "EXPIRED" },
+    });
+    throw new Error(
+      "Payment session has expired (1-hour limit exceeded). Ticket reservations were released."
+    );
   }
 
   let specificNumbers: number[] | undefined = undefined;
@@ -129,11 +160,15 @@ export async function processPaymentSuccess(txRef: string) {
     throw new Error(result.message);
   }
 
+  const updatedTx = await prisma.transaction.update({
+    where: { id: transaction.id },
+    data: { status: "SUCCESS" },
+  });
+
   return {
     success: true,
     alreadyProcessed: false,
     tickets: result.tickets,
-    transaction: result.transaction,
+    transaction: updatedTx,
   };
 }
-

@@ -13,6 +13,8 @@ import {
   Ticket,
   ArrowRight,
   Sparkles,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
@@ -27,6 +29,31 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // 1-Hour countdown state
+  const [timeLeft, setTimeLeft] = useState<{ minutes: number; seconds: number }>({
+    minutes: 59,
+    seconds: 59,
+  });
+  const [isExpired, setIsExpired] = useState(false);
+
+  useEffect(() => {
+    const target = Date.now() + 60 * 60 * 1000;
+    const interval = setInterval(() => {
+      const diff = target - Date.now();
+      if (diff <= 0) {
+        setTimeLeft({ minutes: 0, seconds: 0 });
+        setIsExpired(true);
+      } else {
+        setTimeLeft({
+          minutes: Math.floor(diff / 60000),
+          seconds: Math.floor((diff % 60000) / 1000),
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSimulate = async (status: "SUCCESS" | "FAILED") => {
     if (!txRef) return;
@@ -86,6 +113,43 @@ function CheckoutContent() {
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
         {!result ? (
           <div className="space-y-6">
+            {/* Live 1-Hour Hold Countdown */}
+            <div
+              className={`p-3.5 rounded-2xl border flex items-center justify-between transition ${
+                isExpired
+                  ? "bg-red-50 border-red-200 text-red-800"
+                  : "bg-amber-50 border-amber-200 text-amber-900"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                {isExpired ? (
+                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                ) : (
+                  <Clock className="w-5 h-5 text-amber-600 animate-pulse shrink-0" />
+                )}
+                <div>
+                  <span className="text-xs font-extrabold block">
+                    {isExpired ? "Booking Expired" : "1-Hour Hold Active"}
+                  </span>
+                  <span className="text-[11px] opacity-80 block">
+                    {isExpired
+                      ? "Hold has expired. Numbers returned to pool."
+                      : "Your numbers are reserved until countdown ends."}
+                  </span>
+                </div>
+              </div>
+
+              <div className="font-mono">
+                <span
+                  className={`text-base font-black px-2.5 py-1 rounded-xl ${
+                    isExpired ? "bg-red-200 text-red-900" : "bg-amber-200 text-amber-950"
+                  }`}
+                >
+                  {String(timeLeft.minutes).padStart(2, "0")}:{String(timeLeft.seconds).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+
             <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3 text-xs">
               <div className="flex items-center justify-between font-bold text-slate-700">
                 <span>Transaction Ref:</span>
@@ -105,12 +169,12 @@ function CheckoutContent() {
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
-                disabled={loading}
+                disabled={loading || isExpired}
                 onClick={() => handleSimulate("SUCCESS")}
-                className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 transition disabled:opacity-50"
+                className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{loading ? "Confirming..." : "Simulate Payment Success"}</span>
+                <span>{loading ? "Confirming..." : isExpired ? "Expired" : "Simulate Payment Success"}</span>
               </button>
 
               <button

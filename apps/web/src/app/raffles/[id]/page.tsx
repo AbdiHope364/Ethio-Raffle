@@ -24,6 +24,8 @@ export default function RaffleDetailPage() {
   const { t, language } = useI18n();
 
   const [raffle, setRaffle] = useState<any>(null);
+  const [soldNumbers, setSoldNumbers] = useState<number[]>([]);
+  const [bookedNumbers, setBookedNumbers] = useState<any[]>([]);
   const [takenNumbers, setTakenNumbers] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +38,8 @@ export default function RaffleDetailPage() {
     paymentMethod: string;
     customerPhone: string;
     ticketCount: number;
+    expiresAt?: string;
+    reservedNumbers?: number[];
   } | null>(null);
 
   const [copiedHash, setCopiedHash] = useState(false);
@@ -53,6 +57,8 @@ export default function RaffleDetailPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load raffle");
       setRaffle(data.raffle);
+      setSoldNumbers(data.soldNumbers || []);
+      setBookedNumbers(data.bookedNumbers || []);
       setTakenNumbers(data.takenNumbers || []);
     } catch (e: any) {
       setError(e.message);
@@ -92,8 +98,12 @@ export default function RaffleDetailPage() {
         paymentMethod: formData.paymentMethod,
         customerPhone: formData.customerPhone,
         ticketCount: formData.ticketCount,
+        expiresAt: data.payment.expiresAt,
+        reservedNumbers: data.payment.reservedNumbers,
       });
       setIsDrawerOpen(true);
+      // Refresh numbers to show newly booked tickets as amber immediately
+      fetchRaffleDetails(raffle.id);
     } catch (e: any) {
       alert(e.message || "Network error");
     }
@@ -202,7 +212,7 @@ export default function RaffleDetailPage() {
                 <span>
                   {raffle.soldTickets.toLocaleString()} / {raffle.totalTickets.toLocaleString()} {t.raffles.ticketsSold}
                 </span>
-                <span className="text-emerald-700">{percentageSold}% Sold</span>
+                <span className="text-emerald-700">{percentageSold}% Confirmed</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
                 <div
@@ -212,7 +222,8 @@ export default function RaffleDetailPage() {
               </div>
               <div className="text-[11px] text-slate-500 flex justify-between">
                 <span>
-                  {(raffle.totalTickets - raffle.soldTickets).toLocaleString()} {t.common.ticketsRemaining}
+                  {Math.max(0, raffle.totalTickets - (soldNumbers.length + bookedNumbers.length)).toLocaleString()} {t.common.ticketsRemaining}
+                  {bookedNumbers.length > 0 && ` (${bookedNumbers.length} held in-flight)`}
                 </span>
                 <span>Draw Date: {new Date(raffle.drawDate).toLocaleDateString()}</span>
               </div>
@@ -262,6 +273,8 @@ export default function RaffleDetailPage() {
             raffleId={raffle.id}
             ticketPrice={raffle.ticketPrice}
             totalTickets={raffle.totalTickets}
+            soldNumbers={soldNumbers}
+            bookedNumbers={bookedNumbers}
             takenNumbers={takenNumbers}
             onProceed={handleProceedCheckout}
           />
@@ -282,6 +295,7 @@ export default function RaffleDetailPage() {
           raffleTitle={displayTitle}
           customerPhone={paymentData.customerPhone}
           ticketCount={paymentData.ticketCount}
+          expiresAt={paymentData.expiresAt}
         />
       )}
     </div>

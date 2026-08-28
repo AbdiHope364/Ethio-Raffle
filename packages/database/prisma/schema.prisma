@@ -119,7 +119,9 @@ model Ticket {
   soldByAgent      Agent?       @relation("SoldByAgent", fields: [soldByAgentId], references: [id], onDelete: SetNull)
   purchaseMethod   String       @default("ONLINE") // ONLINE, AGENT_CASH, USSD
   verificationCode String       @unique
-  status           String       @default("CONFIRMED") // CONFIRMED, REFUNDED
+  status           String       @default("CONFIRMED") // CONFIRMED, RESERVED, REFUNDED, EXPIRED
+  reservedUntil    DateTime?    // 1-hour booking expiration timestamp
+  reservedByPhone  String?      // Customer phone who has the active hold
   createdAt        DateTime     @default(now())
 
   @@unique([raffleId, ticketNumber])
@@ -136,7 +138,8 @@ model Transaction {
   amount         Float
   ticketCount    Int       @default(1)
   paymentMethod  String    // CHAPA, SANTIMPAY, TELEBIRR, CBE_BIRR, AGENT_CASH
-  status         String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  status         String    @default("PENDING") // PENDING, SUCCESS, FAILED, EXPIRED, REFUNDED
+  expiresAt      DateTime? // 1-hour transaction booking expiration timestamp
   rawPayload     String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -167,4 +170,3 @@ model USSDSession {
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 }
-

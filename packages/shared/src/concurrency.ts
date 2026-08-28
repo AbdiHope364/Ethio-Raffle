@@ -13,6 +13,15 @@ export interface TicketPurchaseInput {
   transactionId?: string | null;
 }
 
+export interface TicketReserveInput {
+  raffleId: string;
+  userId?: string | null;
+  customerPhone: string;
+  ticketCount: number;
+  specificNumbers?: number[];
+  holdMinutes?: number; // Defaults to 60 minutes
+}
+
 export interface PurchaseResult {
   success: boolean;
   message: string;
@@ -24,11 +33,23 @@ export interface PurchaseResult {
   transaction?: any;
 }
 
+export interface ReserveResult {
+  success: boolean;
+  message: string;
+  expiresAt?: Date;
+  reservedNumbers?: number[];
+  tickets?: Array<{
+    id: string;
+    ticketNumber: number;
+    verificationCode: string;
+  }>;
+}
+
 function generateVerificationCode(): string {
   return "TKT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
 }
 
-// In-memory sequential queue per raffle to prevent lock starvation
+// In-memory sequential queue per raffle to prevent race conditions
 class ConcurrencyQueue {
   private queue: Promise<any> = Promise.resolve();
 
@@ -49,8 +70,161 @@ function getRaffleQueue(raffleId: string): ConcurrencyQueue {
 }
 
 /**
+ * Automatically cleans up expired reservations across a raffle or the whole database.
+ * If reservedUntil < now and status === 'RESERVED', tickets are purged and returned to the pool.
+ */
+export async function cleanupExpiredReservations(raffleId?: string): Promise<number> {
+  const now = new Date();
+  const where: any = {
+    status: "RESERVED",
+    reservedUntil: { lt: now },
+  };
+  if (raffleId) {
+    where.raffleId = raffleId;
+  }
+
+  const deleted = await prisma.ticket.deleteMany({
+    where,
+  });
+
+  return deleted.count;
+}
+
+/**
+ * Atomically reserves tickets for 1 hour (60 minutes).
+ * Other users will see these as BOOKED / RESERVED and cannot buy them.
+ */
+export async function reserveTicketsForOneHour(
+  input: TicketReserveInput
+): Promise<ReserveResult> {
+  const { raffleId } = input;
+  const queue = getRaffleQueue(raffleId);
+
+  return queue.run(async () => {
+    // 1. First cleanup expired reservations
+    await cleanupExpiredReservations(raffleId);
+
+    const {
+      userId,
+      customerPhone,
+      ticketCount,
+      specificNumbers,
+      holdMinutes = 60,
+    } = input;
+
+    if (ticketCount <= 0) {
+      return { success: false, message: "Ticket count must be at least 1." };
+    }
+
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        const raffle = await tx.raffle.findUnique({
+          where: { id: raffleId },
+        });
+
+        if (!raffle) throw new Error("Raffle not found.");
+        if (raffle.status !== "ACTIVE") throw new Error("Raffle is not active.");
+
+        // Fetch active tickets (CONFIRMED or non-expired RESERVED)
+        const now = new Date();
+        const activeTickets = await tx.ticket.findMany({
+          where: {
+            raffleId,
+            OR: [
+              { status: "CONFIRMED" },
+              {
+                status: "RESERVED",
+                reservedUntil: { gt: now },
+              },
+            ],
+          },
+          select: { ticketNumber: true, status: true, customerPhone: true },
+        });
+
+        const takenSet = new Set(activeTickets.map((t) => t.ticketNumber));
+        const availableTicketsCount = raffle.totalTickets - activeTickets.length;
+
+        if (ticketCount > availableTicketsCount) {
+          throw new Error(
+            `Not enough tickets available. Only ${availableTicketsCount} remaining.`
+          );
+        }
+
+        let assignedNumbers: number[] = [];
+
+        if (specificNumbers && specificNumbers.length > 0) {
+          if (specificNumbers.length !== ticketCount) {
+            throw new Error("Specified numbers count does not match ticket count.");
+          }
+
+          for (const num of specificNumbers) {
+            if (num < 1 || num > raffle.totalTickets) {
+              throw new Error(`Ticket #${num} is out of bounds (1 to ${raffle.totalTickets}).`);
+            }
+            if (takenSet.has(num)) {
+              throw new Error(`Ticket #${num} is already booked or sold. Please select another number.`);
+            }
+            takenSet.add(num);
+            assignedNumbers.push(num);
+          }
+        } else {
+          // Quick Pick
+          let candidate = 1;
+          while (assignedNumbers.length < ticketCount && candidate <= raffle.totalTickets) {
+            if (!takenSet.has(candidate)) {
+              assignedNumbers.push(candidate);
+              takenSet.add(candidate);
+            }
+            candidate++;
+          }
+
+          if (assignedNumbers.length < ticketCount) {
+            throw new Error("Could not find enough vacant ticket numbers.");
+          }
+        }
+
+        const expiresAt = new Date(Date.now() + holdMinutes * 60 * 1000);
+        const createdReservations = [];
+
+        for (const num of assignedNumbers) {
+          const tkt = await tx.ticket.create({
+            data: {
+              raffleId,
+              userId: userId || undefined,
+              customerPhone,
+              ticketNumber: num,
+              status: "RESERVED",
+              reservedUntil: expiresAt,
+              reservedByPhone: customerPhone,
+              verificationCode: generateVerificationCode(),
+            },
+          });
+          createdReservations.push({
+            id: tkt.id,
+            ticketNumber: tkt.ticketNumber,
+            verificationCode: tkt.verificationCode,
+          });
+        }
+
+        return {
+          success: true,
+          message: `Reserved ${ticketCount} ticket(s) for 1 hour.`,
+          expiresAt,
+          reservedNumbers: assignedNumbers,
+          tickets: createdReservations,
+        };
+      });
+
+      return result;
+    } catch (error: any) {
+      return { success: false, message: error.message || "Reservation failed." };
+    }
+  });
+}
+
+/**
  * Executes an atomic, concurrency-safe ticket purchase and minting inside a database transaction.
- * Guarantees zero duplicate tickets, zero overselling, and updates agent wallet/ledger if applicable.
+ * Confirms reserved tickets or mints new tickets, ensuring zero duplicates and zero overselling.
  */
 export async function executeAtomicTicketPurchase(
   input: TicketPurchaseInput
@@ -59,6 +233,8 @@ export async function executeAtomicTicketPurchase(
   const queue = getRaffleQueue(raffleId);
 
   return queue.run(async () => {
+    // 1. Cleanup expired holds first
+    await cleanupExpiredReservations(raffleId);
     return internalAtomicPurchase(input);
   });
 }
@@ -75,6 +251,7 @@ async function internalAtomicPurchase(
     paymentMethod,
     soldByAgentId,
     purchaseMethod = "ONLINE",
+    transactionId,
   } = input;
 
   if (ticketCount <= 0) {
@@ -84,142 +261,144 @@ async function internalAtomicPurchase(
   try {
     const result = await prisma.$transaction(
       async (tx) => {
-        // 1. Fetch & validate Raffle
         const raffle = await tx.raffle.findUnique({
           where: { id: raffleId },
         });
 
-        if (!raffle) {
-          throw new Error("Raffle not found.");
-        }
-
+        if (!raffle) throw new Error("Raffle not found.");
         if (raffle.status !== "ACTIVE") {
-          throw new Error(`Raffle is not active (Current status: ${raffle.status}).`);
-        }
-
-        const availableTickets = raffle.totalTickets - raffle.soldTickets;
-        if (ticketCount > availableTickets) {
-          throw new Error(
-            `Not enough tickets available. Only ${availableTickets} remaining.`
-          );
+          throw new Error(`Raffle is not active (Status: ${raffle.status}).`);
         }
 
         const totalCost = raffle.ticketPrice * ticketCount;
 
-        // 2. If sold by Agent, validate agent state and float balance
+        // If Agent sale, validate float
         let agent = null;
         if (soldByAgentId) {
-          agent = await tx.agent.findUnique({
-            where: { id: soldByAgentId },
-          });
-
-          if (!agent) {
-            throw new Error("Agent account not found.");
-          }
-
-          if (agent.status !== "ACTIVE") {
-            throw new Error(`Agent is not active. Status: ${agent.status}`);
-          }
-
-          // Float validation for prepaid agents
-          if (agent.walletMode === "PREPAID") {
-            if (agent.floatBalance < totalCost) {
-              throw new Error(
-                `Insufficient agent float balance. Required: ${totalCost} ETB, Current Balance: ${agent.floatBalance} ETB.`
-              );
-            }
+          agent = await tx.agent.findUnique({ where: { id: soldByAgentId } });
+          if (!agent) throw new Error("Agent account not found.");
+          if (agent.status !== "ACTIVE") throw new Error("Agent is not active.");
+          if (agent.walletMode === "PREPAID" && agent.floatBalance < totalCost) {
+            throw new Error(`Insufficient agent float. Required: ${totalCost} ETB, Balance: ${agent.floatBalance} ETB.`);
           }
         }
 
-        // 3. Determine Ticket Numbers to Mint
-        let assignedNumbers: number[] = [];
-
-        const existingTickets = await tx.ticket.findMany({
-          where: { raffleId },
-          select: { ticketNumber: true },
-        });
-        const takenSet = new Set(existingTickets.map((t) => t.ticketNumber));
-
-        if (specificNumbers && specificNumbers.length > 0) {
-          if (specificNumbers.length !== ticketCount) {
-            throw new Error("Specified numbers count does not match ticket count.");
-          }
-
-          for (const num of specificNumbers) {
-            if (num < 1 || num > raffle.totalTickets) {
-              throw new Error(`Ticket number #${num} is out of bounds (1 to ${raffle.totalTickets}).`);
-            }
-            if (takenSet.has(num)) {
-              throw new Error(`Ticket #${num} is already sold. Please select another number.`);
-            }
-            takenSet.add(num);
-            assignedNumbers.push(num);
-          }
-        } else {
-          // Quick Pick: find vacant ticket numbers
-          let candidate = 1;
-          while (assignedNumbers.length < ticketCount && candidate <= raffle.totalTickets) {
-            if (!takenSet.has(candidate)) {
-              assignedNumbers.push(candidate);
-              takenSet.add(candidate);
-            }
-            candidate++;
-          }
-
-          if (assignedNumbers.length < ticketCount) {
-            throw new Error("Could not find enough vacant ticket numbers.");
-          }
-        }
-
-        // 4. Create Transaction Record
-        const txRef = "TX-" + crypto.randomBytes(6).toString("hex").toUpperCase();
-        const transaction = await tx.transaction.create({
-          data: {
-            userId: userId || undefined,
+        // Check if there are already RESERVED tickets by this customer/transaction
+        const now = new Date();
+        const existingReserved = await tx.ticket.findMany({
+          where: {
             raffleId,
+            status: "RESERVED",
             customerPhone: customerPhone || undefined,
-            txRef,
-            amount: totalCost,
-            ticketCount,
-            paymentMethod,
-            status: "SUCCESS",
+            reservedUntil: { gt: now },
+            ...(specificNumbers && specificNumbers.length > 0
+              ? { ticketNumber: { in: specificNumbers } }
+              : {}),
           },
         });
 
-        // 5. Mint Tickets
-        const createdTickets = [];
-        for (const num of assignedNumbers) {
-          const ticket = await tx.ticket.create({
-            data: {
+        let assignedNumbers: number[] = [];
+        let createdTickets: Array<{ id: string; ticketNumber: number; verificationCode: string }> = [];
+
+        if (existingReserved.length === ticketCount) {
+          // Upgrade existing reservations to CONFIRMED!
+          for (const tkt of existingReserved) {
+            const updated = await tx.ticket.update({
+              where: { id: tkt.id },
+              data: {
+                status: "CONFIRMED",
+                reservedUntil: null,
+                reservedByPhone: null,
+                transactionId: transactionId || undefined,
+                soldByAgentId: soldByAgentId || undefined,
+                purchaseMethod,
+                userId: userId || tkt.userId || undefined,
+              },
+            });
+            createdTickets.push({
+              id: updated.id,
+              ticketNumber: updated.ticketNumber,
+              verificationCode: updated.verificationCode,
+            });
+            assignedNumbers.push(updated.ticketNumber);
+          }
+        } else {
+          // Direct purchase without prior reservation
+          const allActive = await tx.ticket.findMany({
+            where: {
               raffleId,
-              userId: userId || undefined,
-              customerPhone: customerPhone || undefined,
-              ticketNumber: num,
-              transactionId: transaction.id,
-              soldByAgentId: soldByAgentId || undefined,
-              purchaseMethod,
-              verificationCode: generateVerificationCode(),
-              status: "CONFIRMED",
+              OR: [
+                { status: "CONFIRMED" },
+                { status: "RESERVED", reservedUntil: { gt: now } },
+              ],
             },
+            select: { ticketNumber: true },
           });
-          createdTickets.push({
-            id: ticket.id,
-            ticketNumber: ticket.ticketNumber,
-            verificationCode: ticket.verificationCode,
-          });
+
+          const takenSet = new Set(allActive.map((t) => t.ticketNumber));
+
+          if (specificNumbers && specificNumbers.length > 0) {
+            for (const num of specificNumbers) {
+              if (num < 1 || num > raffle.totalTickets) {
+                throw new Error(`Ticket #${num} is out of bounds.`);
+              }
+              if (takenSet.has(num)) {
+                throw new Error(`Ticket #${num} is already sold or booked.`);
+              }
+              takenSet.add(num);
+              assignedNumbers.push(num);
+            }
+          } else {
+            let candidate = 1;
+            while (assignedNumbers.length < ticketCount && candidate <= raffle.totalTickets) {
+              if (!takenSet.has(candidate)) {
+                assignedNumbers.push(candidate);
+                takenSet.add(candidate);
+              }
+              candidate++;
+            }
+            if (assignedNumbers.length < ticketCount) {
+              throw new Error("Not enough tickets available.");
+            }
+          }
+
+          // Mint confirmed tickets
+          for (const num of assignedNumbers) {
+            const ticket = await tx.ticket.create({
+              data: {
+                raffleId,
+                userId: userId || undefined,
+                customerPhone: customerPhone || undefined,
+                ticketNumber: num,
+                transactionId: transactionId || undefined,
+                soldByAgentId: soldByAgentId || undefined,
+                purchaseMethod,
+                verificationCode: generateVerificationCode(),
+                status: "CONFIRMED",
+              },
+            });
+            createdTickets.push({
+              id: ticket.id,
+              ticketNumber: ticket.ticketNumber,
+              verificationCode: ticket.verificationCode,
+            });
+          }
         }
 
-        // 6. Update Raffle sold count
-        const updatedSoldTickets = raffle.soldTickets + ticketCount;
+        // Update Raffle sold count
+        const confirmedTicketsCount = await tx.ticket.count({
+          where: { raffleId, status: "CONFIRMED" },
+        });
+
         await tx.raffle.update({
           where: { id: raffleId },
           data: {
-            soldTickets: updatedSoldTickets,
-            status: updatedSoldTickets >= raffle.totalTickets ? "CLOSED" : raffle.status,
+            soldTickets: confirmedTicketsCount,
+            status: confirmedTicketsCount >= raffle.totalTickets ? "CLOSED" : raffle.status,
           },
         });
 
-        // 7. If Agent sale, deduct float & record commission
+        // If Agent sale, deduct float & record commission
         if (agent && soldByAgentId) {
           const commissionAmount = (totalCost * agent.commissionRate) / 100;
           const newFloatBalance = agent.floatBalance - totalCost;
@@ -235,7 +414,7 @@ async function internalAtomicPurchase(
               entryType: "SALE_DEDUCTION",
               amount: -totalCost,
               balanceAfter: newFloatBalance,
-              referenceId: transaction.txRef,
+              referenceId: transactionId || undefined,
               note: `Sold ${ticketCount} ticket(s) for ${raffle.title}`,
             },
           });
@@ -246,7 +425,7 @@ async function internalAtomicPurchase(
               entryType: "COMMISSION_ACCRUED",
               amount: commissionAmount,
               balanceAfter: newFloatBalance,
-              referenceId: transaction.txRef,
+              referenceId: transactionId || undefined,
               note: `Accrued ${agent.commissionRate}% commission on sale (${commissionAmount} ETB)`,
             },
           });
@@ -254,15 +433,11 @@ async function internalAtomicPurchase(
 
         return {
           success: true,
-          message: `Successfully minted ${ticketCount} ticket(s)!`,
+          message: `Successfully confirmed ${ticketCount} ticket(s)!`,
           tickets: createdTickets,
-          transaction,
         };
       },
-      {
-        timeout: 15000,
-        maxWait: 10000,
-      }
+      { timeout: 15000, maxWait: 10000 }
     );
 
     return result;
@@ -273,4 +448,3 @@ async function internalAtomicPurchase(
     };
   }
 }
-
