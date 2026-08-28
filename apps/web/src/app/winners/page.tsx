@@ -72,7 +72,7 @@ export default function WinnersPage() {
             No completed draws recorded yet.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
             {drawnRaffles.map((raffle) => {
               const displayTitle =
                 language === "AM" && raffle.titleAm ? raffle.titleAm : raffle.title;

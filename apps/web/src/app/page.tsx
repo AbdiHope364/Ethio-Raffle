@@ -230,8 +230,8 @@ export default function HomePage() {
 
         {/* Loading / Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 h-96 animate-pulse p-4 space-y-4"
@@ -250,7 +250,7 @@ export default function HomePage() {
             <p className="text-xs text-slate-400 dark:text-slate-500">Please check back soon for new prize launches.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {filteredRaffles.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
             ))}

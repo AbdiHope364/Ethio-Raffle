@@ -157,7 +157,7 @@ export default function AdminShell({ children }: AdminShellProps) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Responsive Header */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
+        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between sticky top-0 z-30 transition-colors">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger Button */}
             <button
@@ -208,7 +208,7 @@ export default function AdminShell({ children }: AdminShellProps) {
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                አማርኛ
+                አማ
               </button>
             </div>
 
@@ -216,17 +216,20 @@ export default function AdminShell({ children }: AdminShellProps) {
             <div className="relative">
               <button
                 onClick={() => setPersonaOpen(!personaOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white transition max-w-[140px] sm:max-w-none"
+                className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 text-xs font-bold text-purple-900 dark:text-purple-200 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition"
               >
-                <Shield className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-                <span className="font-bold truncate text-[11px] sm:text-xs">
-                  {currentUser?.fullName ? currentUser.fullName.split(" ")[0] : "Admin"}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <div className="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center font-black text-[10px]">
+                  {currentUser.name[0]}
+                </div>
+                <div className="hidden md:block text-left leading-tight">
+                  <div className="text-slate-900 dark:text-white font-extrabold line-clamp-1">{currentUser.name}</div>
+                  <div className="text-[10px] text-purple-600 dark:text-purple-400 font-mono">{currentUser.role}</div>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               </button>
 
               {personaOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in">
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95">
                   <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                     Switch Admin Operator
                   </div>
@@ -249,7 +252,7 @@ export default function AdminShell({ children }: AdminShellProps) {
         </header>
 
         {/* Content Viewport */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto overflow-x-hidden">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 max-w-[1680px] w-full mx-auto overflow-x-hidden">
           {children}
         </main>
       </div>
