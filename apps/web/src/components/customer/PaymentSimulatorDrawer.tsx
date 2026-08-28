@@ -97,6 +97,9 @@ export default function PaymentSimulatorDrawer({
         setErrorMsg(data.error || data.message || "Payment simulation failed");
       } else {
         setResult(data.result);
+        if (typeof window !== "undefined" && customerPhone) {
+          localStorage.setItem("raffle_buyer_phone", customerPhone);
+        }
         confetti({
           particleCount: 80,
           spread: 70,
@@ -205,10 +208,10 @@ export default function PaymentSimulatorDrawer({
             <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3.5 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
               <div className="font-bold flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                <span>Simulated Ethiopian Payment Flow</span>
+                <span>No Registration Required for Buyers</span>
               </div>
               <p className="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
-                In production, customer receives a Telebirr USSD push or Chapa checkout prompt. Click below to simulate the instant payment callback & ticket minting.
+                Tickets are instantly booked directly to your mobile phone number with cryptographically verifiable codes.
               </p>
             </div>
 
@@ -286,12 +289,12 @@ export default function PaymentSimulatorDrawer({
               <button
                 onClick={() => {
                   onClose();
-                  router.push("/my-tickets");
+                  router.push(`/my-tickets?phone=${encodeURIComponent(customerPhone)}&txRef=${encodeURIComponent(txRef)}`);
                 }}
-                className="w-full py-3.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md"
+                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/30"
               >
-                <Ticket className="w-4 h-4 text-emerald-400" />
-                <span>View in My Tickets Dashboard</span>
+                <Ticket className="w-4 h-4 text-white" />
+                <span>View My Booked Tickets & Codes</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 

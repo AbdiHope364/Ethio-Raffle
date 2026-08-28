@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import {
   Ticket as TicketIcon,
@@ -13,33 +14,82 @@ import {
   Download,
   Search,
   Sparkles,
+  ExternalLink,
+  Copy,
+  Check,
+  Phone,
+  Building2,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 
-export default function MyTicketsPage() {
+function MyTicketsContent() {
   const { t, language } = useI18n();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"ACTIVE" | "DRAWN">("ACTIVE");
   const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  // Phone / Code Lookup state
+  const [lookupInput, setLookupInput] = useState("");
+  const [queriedIdentifier, setQueriedIdentifier] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMyTickets();
-  }, []);
+    const queryPhone = searchParams.get("phone");
+    const queryCode = searchParams.get("code");
+    const savedPhone = typeof window !== "undefined" ? localStorage.getItem("raffle_buyer_phone") : null;
 
-  const fetchMyTickets = async () => {
+    const initialQuery = queryPhone || queryCode || savedPhone || "";
+    if (initialQuery) {
+      setLookupInput(initialQuery);
+      fetchTickets(initialQuery);
+    } else {
+      fetchTickets();
+    }
+  }, [searchParams]);
+
+  const fetchTickets = async (queryParam?: string) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/tickets/my");
-      const data = await res.json();
-      if (data.tickets) {
-        setTickets(data.tickets);
+      let url = "/api/tickets/my";
+      if (queryParam) {
+        if (queryParam.startsWith("TKT-") || queryParam.length > 15) {
+          url += `?code=${encodeURIComponent(queryParam)}`;
+        } else {
+          url += `?phone=${encodeURIComponent(queryParam)}`;
+        }
       }
+      const res = await fetch(url);
+      const data = await res.json();
+      setTickets(data.tickets || []);
+      setQueriedIdentifier(data.queriedPhone || data.queriedCode || queryParam || null);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (lookupInput.trim()) {
+      if (typeof window !== "undefined" && !lookupInput.startsWith("TKT-")) {
+        localStorage.setItem("raffle_buyer_phone", lookupInput.trim());
+      }
+      fetchTickets(lookupInput.trim());
+    } else {
+      fetchTickets();
+    }
+  };
+
+  const copyVerificationCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
   };
 
   const filteredTickets = tickets.filter((tkt) => {
@@ -61,13 +111,13 @@ export default function MyTicketsPage() {
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {language === "AM"
-              ? "የቆረጧቸውን ቲኬቶች፣ የማረጋገጫ ኮዶች እና የዕጣ ውጤቶችን እዚህ ይመልከቱ።"
-              : "Track all your purchased tickets, verification codes, and check live winning status."}
+              ? "የቆረጧቸውን ቲኬቶች፣ የማረጋገጫ ኮዶች እና የዕጣ ውጤቶችን እዚህ ይመልከቱ (ምንም አይነት ምዝገባ አያስፈልግም)።"
+              : "No account registration required for buyers. Look up all your booked tickets and cryptographic verification codes instantly by phone number."}
           </p>
         </div>
 
         {/* Tab Toggle */}
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold self-start sm:self-auto">
           <button
             onClick={() => setActiveTab("ACTIVE")}
             className={`px-4 py-2 rounded-lg transition ${
@@ -91,6 +141,38 @@ export default function MyTicketsPage() {
         </div>
       </div>
 
+      {/* Frictionless Buyer Phone / Code Lookup Bar */}
+      <div className="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-800/40 rounded-2xl p-4 sm:p-5">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <Phone className="w-4 h-4 text-emerald-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Enter your phone number (e.g. 0911223344) or ticket verification code..."
+              value={lookupInput}
+              onChange={(e) => setLookupInput(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder:text-slate-500 text-xs font-mono focus:ring-2 focus:ring-emerald-500 outline-none"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl transition shadow-md flex items-center justify-center gap-2 shrink-0"
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span>Search My Tickets</span>
+          </button>
+        </form>
+
+        {queriedIdentifier && (
+          <div className="mt-2.5 text-[11px] text-slate-400 flex items-center gap-2 font-mono">
+            <span>Showing tickets registered under:</span>
+            <span className="text-emerald-400 font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+              {queriedIdentifier}
+            </span>
+          </div>
+        )}
+      </div>
+
       {/* Loading state */}
       {loading ? (
         <div className="py-20 text-center space-y-3">
@@ -107,8 +189,8 @@ export default function MyTicketsPage() {
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {language === "AM"
-              ? "እስካሁን ምንም ቲኬት አልቆረጡም። ንቁ ዕጣዎችን ይመልከቱና እድልዎን ይሞክሩ!"
-              : "You have not purchased any tickets in this category yet. Pick a raffle to enter the next draw!"}
+              ? "ለዚህ ስልክ ቁጥር ምንም ቲኬት አልተገኘም። እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ ወይም ንቁ ዕጣዎችን ይቁረጡ!"
+              : "No tickets found for this query. Enter the mobile phone number used during checkout or browse active raffles to pick your numbers."}
           </p>
           <Link
             href="/"
@@ -119,7 +201,7 @@ export default function MyTicketsPage() {
         </div>
       ) : (
         /* Ticket Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredTickets.map((ticket) => {
             const isWinner =
               ticket.raffle.status === "DRAWN" &&
@@ -151,49 +233,54 @@ export default function MyTicketsPage() {
                   <img
                     src={ticket.raffle.prizeImage}
                     alt={displayTitle}
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-slate-200 dark:border-slate-800 shrink-0"
                   />
-                  <div className="space-y-1 flex-1">
-                    <h3 className="font-extrabold text-sm text-slate-900 dark:text-white line-clamp-1">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-sm line-clamp-1">
                       {displayTitle}
                     </h3>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-slate-400" />
-                      <span>
-                        Draw: {new Date(ticket.raffle.drawDate).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-indigo-600 dark:text-indigo-400 font-mono mt-0.5">
+                      <Building2 className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{ticket.raffle.seller?.businessName || "Verified Platform Merchant"}</span>
                     </div>
-                    <div className="flex items-center gap-2 pt-0.5">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                        {ticket.purchaseMethod}
-                      </span>
-                      {ticket.soldByAgent && (
-                        <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-400 truncate max-w-[120px]">
-                          via {ticket.soldByAgent.fullName}
-                        </span>
-                      )}
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>Draw: {new Date(ticket.raffle.drawDate).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Ticket Number & Code Box */}
-                <div className="bg-slate-50 dark:bg-slate-950/60 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                {/* Middle Ticket Badge */}
+                <div className="bg-slate-50 dark:bg-slate-950/80 rounded-xl p-3 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block font-mono">
                       Ticket Number
                     </span>
-                    <span className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
                       #{ticket.ticketNumber}
                     </span>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block font-mono">
                       Verification Code
                     </span>
-                    <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-2 py-1 rounded border border-emerald-200 dark:border-emerald-800">
-                      {ticket.verificationCode}
-                    </span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                        {ticket.verificationCode}
+                      </span>
+                      <button
+                        onClick={() => copyVerificationCode(ticket.verificationCode)}
+                        className="p-1 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 transition"
+                        title="Copy code"
+                      >
+                        {copiedCode === ticket.verificationCode ? (
+                          <Check className="w-3 h-3 text-emerald-500" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -208,7 +295,7 @@ export default function MyTicketsPage() {
                   </button>
 
                   <span className="text-[11px] text-slate-400 font-mono">
-                    {new Date(ticket.createdAt).toLocaleDateString()}
+                    {ticket.purchaseMethod}
                   </span>
                 </div>
               </div>
@@ -233,18 +320,25 @@ export default function MyTicketsPage() {
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-                Official Digital Ticket
+                Official Digital Ticket Receipt
               </h3>
               <p className="text-[11px] text-slate-400">
-                National Lottery Administration Verified Ticket
+                National Lottery Administration Verified Platform Ticket
               </p>
             </div>
 
-            <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 text-left">
+            <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-3 text-left">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Raffle</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Raffle Prize</span>
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
                   {selectedReceipt.raffle.title}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Merchant Provider</span>
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  {selectedReceipt.raffle.seller?.businessName || "Platform Verified Merchant"}
                 </span>
               </div>
 
@@ -264,28 +358,44 @@ export default function MyTicketsPage() {
               </div>
 
               <div className="flex justify-between border-t border-slate-200 dark:border-slate-800 pt-2 text-[11px]">
-                <span className="text-slate-500 dark:text-slate-400">Method: {selectedReceipt.purchaseMethod}</span>
+                <span className="text-slate-500 dark:text-slate-400">Customer Phone: {selectedReceipt.customerPhone}</span>
                 <span className="text-slate-500 dark:text-slate-400">Status: CONFIRMED</span>
               </div>
             </div>
 
-            {/* Mock QR Representation */}
-            <div className="p-4 bg-slate-900 text-white rounded-2xl flex flex-col items-center justify-center space-y-1.5 border border-slate-800">
-              <QrCode className="w-20 h-20 text-emerald-400" />
-              <span className="text-[9px] font-mono text-slate-400">
-                SCAN TO VERIFY AUTHENTICITY
+            {/* Verifier Link */}
+            <div className="p-4 bg-slate-900 text-white rounded-2xl flex flex-col items-center justify-center space-y-2 border border-slate-800">
+              <QrCode className="w-16 h-16 text-emerald-400" />
+              <span className="text-[10px] font-mono text-slate-300">
+                Code: {selectedReceipt.verificationCode}
               </span>
+              <Link
+                href={`/verifier?code=${encodeURIComponent(selectedReceipt.verificationCode)}&raffleId=${selectedReceipt.raffle.id}&commit=${selectedReceipt.raffle.commitHash}`}
+                target="_blank"
+                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 pt-1"
+              >
+                <span>Open in Public SHA-256 Verifier</span>
+                <ExternalLink className="w-3 h-3" />
+              </Link>
             </div>
 
             <button
               onClick={() => setSelectedReceipt(null)}
               className="w-full py-2.5 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-700 transition"
             >
-              Close
+              Close Receipt
             </button>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+export default function MyTicketsPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center text-xs font-mono text-slate-500">Loading Tickets...</div>}>
+      <MyTicketsContent />
+    </Suspense>
   );
 }

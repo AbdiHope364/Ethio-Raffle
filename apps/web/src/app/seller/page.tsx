@@ -112,9 +112,58 @@ export default function SellerDashboardPage() {
               href="/seller/register"
               className="px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition flex items-center gap-2"
             >
-              <span>Apply for Seller Account</span>
+              <span>Apply for Merchant Account</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
+          </div>
+        </div>
+
+        {/* Quick Merchant Sign In Box */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Already Registered? Access Seller Dashboard</span>
+            </h2>
+            <span className="text-[10px] font-mono text-slate-400">KYC Verified Merchants</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <button
+              onClick={() => {
+                document.cookie = `raffle_session_phone=+251911223344; path=/; max-age=86400`;
+                window.location.reload();
+              }}
+              className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-left transition flex items-center justify-between group"
+            >
+              <div>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm block">
+                  Kidus Luxury Motors PLC
+                </span>
+                <span className="text-xs text-indigo-600 dark:text-indigo-400 font-mono mt-0.5 block">
+                  Phone: +251 911 223 344 • Status: APPROVED
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <button
+              onClick={() => {
+                document.cookie = `raffle_session_phone=+251911998877; path=/; max-age=86400`;
+                window.location.reload();
+              }}
+              className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-left transition flex items-center justify-between group"
+            >
+              <div>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm block">
+                  Ethio Tech Importers
+                </span>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-mono mt-0.5 block">
+                  Phone: +251 911 998 877 • Status: PENDING KYC
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-amber-500 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
         </div>
       </div>
