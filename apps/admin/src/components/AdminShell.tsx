@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useI18n, DEMO_ACCOUNTS } from "@raffle/shared";
+import { useI18n, DEMO_ACCOUNTS, useTheme } from "@raffle/shared";
 import {
   LayoutDashboard,
   Ticket,
@@ -22,11 +22,14 @@ import {
   Globe,
   ChevronDown,
   Award,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t, language, setLanguage } = useI18n();
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -187,6 +190,19 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+              title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {resolvedTheme === "dark" ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </button>
+
             {/* Language Switcher */}
             <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
               <Globe className="w-3.5 h-3.5 text-slate-400 ml-1 mr-1 hidden sm:inline-block" />

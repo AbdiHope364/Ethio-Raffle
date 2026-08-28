@@ -68,18 +68,18 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
   const isDrawn = raffle.status === "DRAWN";
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group">
       {/* Image & Badges */}
-      <div className="relative h-52 w-full overflow-hidden bg-slate-100">
+      <div className="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         <img
           src={raffle.prizeImage}
           alt={displayTitle}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
 
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+        <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur text-slate-800 dark:text-slate-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
           {raffle.category.replace("_", " ")}
         </div>
 
@@ -120,36 +120,36 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
       {/* Content */}
       <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 className="font-extrabold text-slate-900 text-lg line-clamp-1 group-hover:text-emerald-600 transition-colors">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-lg line-clamp-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
             {displayTitle}
           </h3>
-          <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
             {language === "AM" && raffle.descriptionAm ? raffle.descriptionAm : raffle.description}
           </p>
         </div>
 
         {/* Progress Bar */}
-        <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
-          <div className="flex justify-between text-xs font-semibold text-slate-700">
+        <div className="space-y-1.5 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+          <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
             <span className="flex items-center gap-1">
-              <Ticket className="w-3.5 h-3.5 text-emerald-600" />
+              <Ticket className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               {raffle.soldTickets.toLocaleString()} / {raffle.totalTickets.toLocaleString()} {t.raffles.ticketsSold}
             </span>
-            <span className="text-emerald-700 font-bold">{percentageSold}%</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold">{percentageSold}%</span>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
             <div
               className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-700"
               style={{ width: `${percentageSold}%` }}
             />
           </div>
-          <div className="text-[11px] text-slate-500 flex justify-between pt-0.5">
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 flex justify-between pt-0.5">
             <span>
               {raffle.totalTickets - raffle.soldTickets > 0
                 ? `${(raffle.totalTickets - raffle.soldTickets).toLocaleString()} ${t.common.ticketsRemaining}`
                 : "Sold Out"}
             </span>
-            <span className="text-slate-400 font-mono text-[10px]">
+            <span className="text-slate-400 dark:text-slate-500 font-mono text-[10px]">
               Max: {raffle.maxTicketsPerUser || 100} / user
             </span>
           </div>
@@ -157,8 +157,8 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
 
         {/* Provably Fair Commit Hash Snippet */}
         {raffle.commitHash && (
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-200">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/60 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span className="truncate font-mono">
               SHA-256: {raffle.commitHash.substring(0, 16)}...
             </span>
@@ -167,12 +167,12 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
 
         {/* Winner Announcement if Drawn */}
         {isDrawn && raffle.winningTicketNumber && (
-          <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-xs">
-            <div className="font-bold text-purple-900 flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-purple-600" />
+          <div className="bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-xl p-3 text-xs">
+            <div className="font-bold text-purple-900 dark:text-purple-200 flex items-center gap-1.5">
+              <Trophy className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               Winner: Ticket #{raffle.winningTicketNumber}
             </div>
-            <div className="text-purple-700 text-[11px] mt-0.5">
+            <div className="text-purple-700 dark:text-purple-300 text-[11px] mt-0.5">
               {raffle.winnerUser?.fullName ? `${raffle.winnerUser.fullName}` : "Provably Fair Draw Completed"}
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
           {isDrawn ? (
             <Link
               href={`/verifier?raffleId=${raffle.id}`}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow-sm"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition shadow-xs"
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               {t.common.verifier}

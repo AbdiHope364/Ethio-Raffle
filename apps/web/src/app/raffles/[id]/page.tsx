@@ -273,6 +273,7 @@ export default function RaffleDetailPage() {
             raffleId={raffle.id}
             ticketPrice={raffle.ticketPrice}
             totalTickets={raffle.totalTickets}
+            soldTickets={raffle.soldTickets}
             soldNumbers={soldNumbers}
             bookedNumbers={bookedNumbers}
             takenNumbers={takenNumbers}

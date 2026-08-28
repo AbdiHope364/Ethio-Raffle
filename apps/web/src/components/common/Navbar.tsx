@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n, useTheme } from "@raffle/shared";
 import {
   Ticket,
   Trophy,
@@ -17,10 +17,13 @@ import {
   Sparkles,
   Bell,
   Check,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export default function Navbar() {
   const { t, language, setLanguage } = useI18n();
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,7 +91,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
@@ -103,10 +106,10 @@ export default function Navbar() {
               </div>
             </div>
             <div>
-              <span className="font-extrabold text-lg text-slate-900 tracking-tight flex items-center gap-1">
-                Lucky<span className="text-emerald-600">Ethio</span>
+              <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight flex items-center gap-1">
+                Lucky<span className="text-emerald-600 dark:text-emerald-400">Ethio</span>
               </span>
-              <span className="text-[10px] text-slate-500 font-medium block leading-none">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block leading-none">
                 {language === "AM" ? "የኢትዮጵያ ፍትሃዊ ሎተሪ" : "Licensed Ethiopian Raffle"}
               </span>
             </div>
@@ -123,11 +126,11 @@ export default function Navbar() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-purple-700 bg-purple-50 hover:bg-purple-100"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/60 dark:border-purple-800/60"
                 >
-                  <Icon className="w-4 h-4 text-purple-600" />
+                  <Icon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   <span>{item.label}</span>
-                  <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-purple-200 text-purple-900">
+                  <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
                     {item.badge}
                   </span>
                 </a>
@@ -137,14 +140,14 @@ export default function Navbar() {
                   href={item.href}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-emerald-50 text-emerald-700 font-semibold shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold shadow-xs border border-emerald-200/60 dark:border-emerald-800/60"
+                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600" : "text-slate-400"}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`} />
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
                       {item.badge}
                     </span>
                   )}
@@ -153,16 +156,29 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right Header Actions: Notification Bell + Language Toggle */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Right Header Actions: Theme Toggle + Notification Bell + Language Toggle */}
+          <div className="hidden md:flex items-center gap-2.5">
+            {/* Theme Toggle Button (Light / Dark) */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
+              title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {resolvedTheme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )}
+            </button>
+
             {/* Notification Bell */}
             <div className="relative">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
+                className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
                 title="Buyer Notifications"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse">
                     {unreadCount}
@@ -172,23 +188,23 @@ export default function Navbar() {
 
               {/* Notification Dropdown Menu */}
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 text-xs font-bold text-slate-800">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
                     <span className="flex items-center gap-1.5">
-                      <Bell className="w-4 h-4 text-emerald-600" />
+                      <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       <span>{language === "AM" ? "ማሳወቂያዎች" : "Buyer Alerts & Draws"}</span>
                     </span>
                     {unreadCount > 0 && (
                       <button
                         onClick={markAllRead}
-                        className="text-[11px] text-emerald-700 hover:underline font-bold"
+                        className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
                       >
                         Mark all as read
                       </button>
                     )}
                   </div>
 
-                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 mt-1">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 mt-1">
                     {notifications.length === 0 ? (
                       <div className="py-6 text-center text-xs text-slate-400">
                         No recent notifications
@@ -198,18 +214,20 @@ export default function Navbar() {
                         <div
                           key={n.id}
                           className={`p-2.5 rounded-xl text-xs transition ${
-                            !n.isRead ? "bg-emerald-50/60 font-semibold" : "hover:bg-slate-50"
+                            !n.isRead
+                              ? "bg-emerald-50/60 dark:bg-emerald-950/40 font-semibold"
+                              : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-1">
-                            <span className="font-bold text-slate-900">
+                            <span className="font-bold text-slate-900 dark:text-slate-100">
                               {language === "AM" && n.titleAm ? n.titleAm : n.title}
                             </span>
                             <span className="text-[10px] text-slate-400 whitespace-nowrap">
                               {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                             </span>
                           </div>
-                          <p className="text-slate-600 text-[11px] mt-0.5 leading-snug">
+                          <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5 leading-snug">
                             {language === "AM" && n.messageAm ? n.messageAm : n.message}
                           </p>
                         </div>
@@ -221,14 +239,14 @@ export default function Navbar() {
             </div>
 
             {/* Language Switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
-              <Globe className="w-3.5 h-3.5 text-slate-500 ml-1 mr-1.5" />
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+              <Globe className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 ml-1 mr-1.5" />
               <button
                 onClick={() => setLanguage("EN")}
                 className={`px-2 py-1 rounded transition-colors ${
                   language === "EN"
-                    ? "bg-white text-emerald-700 shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 EN
@@ -237,8 +255,8 @@ export default function Navbar() {
                 onClick={() => setLanguage("AM")}
                 className={`px-2 py-1 rounded transition-colors ${
                   language === "AM"
-                    ? "bg-white text-emerald-700 shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 አማርኛ
@@ -246,17 +264,24 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Actions Button */}
+          {/* Mobile Actions: Theme + Lang + Menu Button */}
           <div className="flex md:hidden items-center gap-2">
             <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+              title="Toggle theme"
+            >
+              {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            </button>
+            <button
               onClick={() => setLanguage(language === "EN" ? "AM" : "EN")}
-              className="p-1.5 rounded-lg bg-slate-100 text-xs font-bold text-emerald-700 border border-slate-200"
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-700"
             >
               {language === "EN" ? "አማ" : "EN"}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -266,7 +291,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 space-y-1">
           {navLinks.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -276,13 +301,13 @@ export default function Navbar() {
                 href={item.href}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-base font-medium text-purple-700 bg-purple-50"
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-base font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60"
               >
                 <div className="flex items-center gap-3">
-                  <Icon className="w-5 h-5 text-purple-600" />
+                  <Icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   <span>{item.label}</span>
                 </div>
-                <span className="px-2 py-0.5 text-xs font-bold rounded bg-purple-200 text-purple-900">
+                <span className="px-2 py-0.5 text-xs font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
                   {item.badge}
                 </span>
               </a>
@@ -293,16 +318,16 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-base font-medium ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-700 font-semibold"
-                    : "text-slate-600 hover:bg-slate-50"
+                    ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className="w-5 h-5 text-slate-500" />
+                  <Icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 text-emerald-800">
+                  <span className="px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200">
                     {item.badge}
                   </span>
                 )}
