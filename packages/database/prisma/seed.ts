@@ -286,7 +286,8 @@ async function main() {
       soldTickets: 1000,
       maxTicketsPerUser: 20,
       status: "DRAWN",
-      drawDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      drawDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      drawnAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // Drawn 2 hours ago (within 24h spotlight)
       commitHash: pastCommit,
       secretSeed: pastSecret,
       revealedSeed: pastSecret,
@@ -300,11 +301,40 @@ async function main() {
       raffleId: pastRaffle.id,
       commitHash: pastCommit,
       secretSeed: pastSecret,
-      revealedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      revealedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
       totalSoldTickets: 1000,
       winningTicketNumber: 427,
       formulaDescription: "SHA256(secretSeed) % totalSoldTickets + 1",
       verifiedBy: "National Lottery Administration Auditor (NLA-ETH-2026)",
+    },
+  });
+
+  // Seed sample notifications
+  await prisma.notification.create({
+    data: {
+      userId: customer1.id,
+      customerPhone: customer1.phone,
+      raffleId: pastRaffle.id,
+      title: "🎉 CONGRATULATIONS! You Won Suzuki Dzire 2024!",
+      titleAm: "🎉 እንኳን ደስ አሎት! ሱዙኪ ዲዛየር 2024 አሸንፈዋል!",
+      message: "Your Ticket #427 matched the official Provably Fair draw! Contact LuckyEthio support to claim your prize.",
+      messageAm: "የእርስዎ ቲኬት ቁጥር #427 በይፋዊው ዕጣ አሸናፊ ሆኗል! ሽልማትዎን ይረከቡ።",
+      type: "WINNER_ANNOUNCEMENT",
+      isRead: false,
+    },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: customer2.id,
+      customerPhone: customer2.phone,
+      raffleId: pastRaffle.id,
+      title: "Draw Completed: Suzuki Dzire 2024",
+      titleAm: "የዕጣ ውጤት ይፋ ሆነ: ሱዙኪ ዲዛየር 2024",
+      message: "Winning Ticket #427 was drawn. Check your ticket numbers or verify the cryptographic proof on the public verifier.",
+      messageAm: "አሸናፊ ቲኬት ቁጥር #427 ወጥቷል። ቲኬቶችዎን ያረጋግጡ።",
+      type: "WINNER_ANNOUNCEMENT",
+      isRead: false,
     },
   });
 

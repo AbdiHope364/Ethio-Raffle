@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import RaffleCard, { RaffleData } from "@/components/customer/RaffleCard";
+import HeroWinnerSpotlight from "@/components/customer/HeroWinnerSpotlight";
 import {
   Sparkles,
   ShieldCheck,
@@ -54,7 +55,10 @@ export default function HomePage() {
   );
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10 sm:space-y-12">
+      {/* 24-Hour Live Winner Spotlight (Shown when draw was executed within 24h) */}
+      <HeroWinnerSpotlight />
+
       {/* Hero Banner with Ethiopian Accent */}
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white p-8 sm:p-12 shadow-2xl border border-slate-800">
         <div className="relative z-10 max-w-3xl space-y-6">

@@ -24,6 +24,7 @@ model User {
   transactions  Transaction[]
   adminLogs     AgentAccessLog[] @relation("AdminChanger")
   wonRaffles    Raffle[]         @relation("RaffleWinner")
+  notifications Notification[]
 }
 
 model Agent {
@@ -90,6 +91,7 @@ model Raffle {
   maxTicketsPerUser  Int           @default(100)
   status             String        @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, CLOSED, DRAWN
   drawDate           DateTime
+  drawnAt            DateTime?     // Exact timestamp when the provably fair draw occurred
   commitHash         String?
   secretSeed         String?
   revealedSeed       String?
@@ -103,6 +105,7 @@ model Raffle {
   tickets            Ticket[]
   transactions       Transaction[]
   drawAudit          DrawAudit?
+  notifications      Notification[]
 }
 
 model Ticket {
@@ -159,6 +162,22 @@ model DrawAudit {
   formulaDescription  String
   verifiedBy          String?
   createdAt           DateTime @default(now())
+}
+
+model Notification {
+  id            String    @id @default(uuid())
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerPhone String
+  raffleId      String?
+  raffle        Raffle?   @relation(fields: [raffleId], references: [id], onDelete: SetNull)
+  title         String
+  titleAm       String?
+  message       String
+  messageAm     String?
+  type          String    @default("PRE_DRAW_ALERT") // PRE_DRAW_ALERT, WINNER_ANNOUNCEMENT, TICKET_MINTED, SYSTEM
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
 }
 
 model USSDSession {
