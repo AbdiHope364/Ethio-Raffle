@@ -278,3 +278,4 @@ npm run build
 | **Kiosk Agent** | Dawit Tadesse | `AGENT` | `+251912345678` | Web POS / USSD (:3000) |
 | **Customer** | Helen Tesfaye | `CUSTOMER` | `+251933445566` | Web Client (:3000) |
 | **Customer** | Yohannes Girma | `CUSTOMER` | `+251944556677` | Web Client (:3000) |
+
