@@ -193,8 +193,8 @@ export default function USSDSimulatorPage() {
         </div>
 
         {/* Right Column: Virtual Feature Phone */}
-        <div className="md:col-span-6 flex justify-center">
-          <div className="w-80 bg-slate-900 text-white rounded-[40px] p-6 shadow-2xl border-4 border-slate-700 space-y-5">
+        <div className="md:col-span-6 flex justify-center w-full">
+          <div className="w-full max-w-[320px] bg-slate-900 text-white rounded-[40px] p-5 sm:p-6 shadow-2xl border-4 border-slate-700 space-y-5">
             {/* Speaker Grille */}
             <div className="w-16 h-1.5 bg-slate-700 rounded-full mx-auto" />
 

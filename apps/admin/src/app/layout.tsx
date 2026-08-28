@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { I18nProvider } from "@raffle/shared";
-import AdminSidebar from "@/components/AdminSidebar";
-import AdminHeader from "@/components/AdminHeader";
+import AdminShell from "@/components/AdminShell";
 
 export const metadata: Metadata = {
   title: "LuckyEthio Raffle — Admin Operations Portal",
   description: "Administrative console for raffle lifecycle, agent approvals, financial ledger, and provably fair live draws.",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function AdminLayout({
@@ -16,15 +16,9 @@ export default function AdminLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-slate-950 text-slate-100 flex min-h-screen">
+      <body className="antialiased bg-slate-950 text-slate-100 min-h-screen">
         <I18nProvider>
-          <AdminSidebar />
-          <div className="flex-1 flex flex-col min-w-0">
-            <AdminHeader />
-            <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto">
-              {children}
-            </main>
-          </div>
+          <AdminShell>{children}</AdminShell>
         </I18nProvider>
       </body>
     </html>

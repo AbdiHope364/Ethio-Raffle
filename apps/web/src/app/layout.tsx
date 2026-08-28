@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
 import Navbar from "@/components/common/Navbar";
@@ -8,6 +8,12 @@ import DemoSwitcher from "@/components/common/DemoSwitcher";
 export const metadata: Metadata = {
   title: "LuckyEthio Raffle — Provably Fair Ticket Platform",
   description: "Ethiopia's licensed online and agent raffle ticketing platform. Provably fair SHA-256 draws, Telebirr & CBE payments.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -30,4 +36,3 @@ export default function RootLayout({
     </html>
   );
 }
-

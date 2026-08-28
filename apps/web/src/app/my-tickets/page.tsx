@@ -220,7 +220,7 @@ export default function MyTicketsPage() {
       {/* Digital Receipt Modal */}
       {selectedReceipt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-6 relative text-center">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-6 relative text-center max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedReceipt(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-xl font-bold"
