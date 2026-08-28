@@ -25,6 +25,8 @@ async function main() {
   await prisma.agentAccessLog.deleteMany({});
   await prisma.agent.deleteMany({});
   await prisma.raffle.deleteMany({});
+  await prisma.seller.deleteMany({});
+  await prisma.notification.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.uSSDSession.deleteMany({});
 
@@ -47,6 +49,28 @@ async function main() {
       role: "ADMIN",
       isVerified: true,
       nationalId: "ETH-NAT-890124",
+      preferredLang: "AM",
+    },
+  });
+
+  const sellerUser1 = await prisma.user.create({
+    data: {
+      phone: "+251911223344",
+      fullName: "Kidus Assefa (Kidus Motors)",
+      role: "SELLER",
+      isVerified: true,
+      nationalId: "ETH-NAT-556677",
+      preferredLang: "EN",
+    },
+  });
+
+  const sellerUser2 = await prisma.user.create({
+    data: {
+      phone: "+251911998877",
+      fullName: "Selamawit Desta (Ethio Tech)",
+      role: "SELLER",
+      isVerified: false,
+      nationalId: "ETH-NAT-889900",
       preferredLang: "AM",
     },
   });
@@ -97,7 +121,40 @@ async function main() {
 
   console.log("✅ Created Users");
 
-  // 2. Create Agent Profiles & Float
+  // 2. Create Sellers (Gate 1 Moderation)
+  const approvedSeller = await prisma.seller.create({
+    data: {
+      userId: sellerUser1.id,
+      businessName: "Kidus Luxury Motors PLC",
+      contactPerson: "Kidus Assefa",
+      phone: sellerUser1.phone,
+      tinNumber: "0098765432",
+      licenseRef: "LIC-AA-2025-4421",
+      region: "Addis Ababa (Bole)",
+      status: "APPROVED",
+      payoutAccount: "CBE 1000234567890",
+      commissionRate: 8.0,
+    },
+  });
+
+  const pendingSeller = await prisma.seller.create({
+    data: {
+      userId: sellerUser2.id,
+      businessName: "Ethio Tech Electronics Importers",
+      contactPerson: "Selamawit Desta",
+      phone: sellerUser2.phone,
+      tinNumber: "0011223344",
+      licenseRef: "LIC-AA-2026-9901",
+      region: "Addis Ababa (Merkato)",
+      status: "PENDING",
+      payoutAccount: "Telebirr 0911998877",
+      commissionRate: 8.0,
+    },
+  });
+
+  console.log("✅ Created Multi-Vendor Sellers (Approved & Pending)");
+
+  // 3. Create Agent Profiles & Float
   const activeAgent = await prisma.agent.create({
     data: {
       userId: agentUser1.id,
@@ -136,26 +193,9 @@ async function main() {
     },
   });
 
-  const pendingAgent = await prisma.agent.create({
-    data: {
-      userId: agentUser2.id,
-      fullName: "Mulugeta Bekele",
-      businessName: "Piazza Stationery & Mobile",
-      nationalIdRef: "ETH-NAT-445566",
-      region: "Addis Ababa (Arada Subcity)",
-      tier: "AGENT",
-      status: "PENDING",
-      commissionRate: 4.5,
-      dailySalesLimit: 25000,
-      walletMode: "PREPAID",
-      floatBalance: 0.0,
-      creditLimit: 0,
-    },
-  });
-
   console.log("✅ Created Agents & Wallets");
 
-  // 3. Create Raffles
+  // 4. Create Live Raffles (Gate 2 Moderation & Incomplete Sales Dual-Consent)
   const secret1 = crypto.randomBytes(16).toString("hex");
   const raffle1Id = crypto.randomUUID();
   const commit1 = generateCommitHash(secret1, raffle1Id, 10000);
@@ -163,6 +203,7 @@ async function main() {
   const raffle1 = await prisma.raffle.create({
     data: {
       id: raffle1Id,
+      sellerId: approvedSeller.id,
       title: "2024 Toyota Hilux Double Cab 4x4",
       titleAm: "2024 ቶዮታ ሃይለክስ ባለ ሁለት ካብ 4x4",
       description: "Win a brand new 2024 Toyota Hilux 2.8L Diesel Double Cab with zero km! Fully customs-cleared with all duties paid.",
@@ -177,6 +218,7 @@ async function main() {
       soldTickets: 4320,
       maxTicketsPerUser: 100,
       status: "ACTIVE",
+      moderationStatus: "APPROVED",
       drawDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       commitHash: commit1,
       secretSeed: secret1,
@@ -190,6 +232,7 @@ async function main() {
   const raffle2 = await prisma.raffle.create({
     data: {
       id: raffle2Id,
+      sellerId: approvedSeller.id,
       title: "Luxury 3-Bedroom Apartment in Bole",
       titleAm: "የቅንጦት ባለ 3 መኝታ አፓርትመንት በቦሌ",
       description: "Fully furnished 165 sqm modern condo near Bole Medhanialem with underground parking, backup generator, and 24/7 security.",
@@ -198,158 +241,87 @@ async function main() {
       prizeName: "3-Bedroom Bole Luxury Condo",
       prizeNameAm: "ባለ 3 መኝታ የቦሌ አፓርትመንት",
       prizeImage: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-      prizeValue: 28000000,
+      prizeValue: 18500000,
       ticketPrice: 500,
       totalTickets: 25000,
-      soldTickets: 18940,
-      maxTicketsPerUser: 200,
+      soldTickets: 12400,
+      maxTicketsPerUser: 250,
       status: "ACTIVE",
+      moderationStatus: "APPROVED",
       drawDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000),
       commitHash: commit2,
       secretSeed: secret2,
     },
   });
 
-  const secret3 = crypto.randomBytes(16).toString("hex");
-  const raffle3Id = crypto.randomUUID();
-  const commit3 = generateCommitHash(secret3, raffle3Id, 2000);
+  // UNDER-SUBSCRIBED / EXPIRED RAFFLE (For testing Dual-Consent Incomplete Sales Rule!)
+  const secretPartial = crypto.randomBytes(16).toString("hex");
+  const partialRaffleId = crypto.randomUUID();
+  const commitPartial = generateCommitHash(secretPartial, partialRaffleId, 1000);
 
-  const raffle3 = await prisma.raffle.create({
+  const partialRaffle = await prisma.raffle.create({
     data: {
-      id: raffle3Id,
-      title: "Apple iPhone 16 Pro Max (1TB Titanium)",
-      titleAm: "አፕል አይፎን 16 ፕሮ ማክስ (1TB ታይታኒየም)",
-      description: "Brand new unopened iPhone 16 Pro Max 1TB with AppleCare+, USB-C Fast Charger, and AirPods Pro 2 included!",
-      descriptionAm: "አዲስ የታሸገ አይፎን 16 ፕሮ ማክስ 1TB ከአፕል ኬር እና ኤርፖድስ ፕሮ 2 ጋር!",
+      id: partialRaffleId,
+      sellerId: approvedSeller.id,
+      title: "Apple MacBook Pro 16\" M3 Max (1TB SSD)",
+      titleAm: "አፕል ማክቡክ ፕሮ 16 ኢንች M3 ማክስ",
+      description: "Space Black M3 Max MacBook Pro. Incomplete capacity test scenario for dual-consent consensus.",
       category: "ELECTRONICS",
-      prizeName: "iPhone 16 Pro Max 1TB",
-      prizeNameAm: "አይፎን 16 ፕሮ ማክስ 1TB",
-      prizeImage: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1200&q=80",
-      prizeValue: 185000,
-      ticketPrice: 50,
-      totalTickets: 2000,
-      soldTickets: 1450,
-      maxTicketsPerUser: 50,
-      status: "ACTIVE",
-      drawDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      commitHash: commit3,
-      secretSeed: secret3,
-    },
-  });
-
-  const secret4 = crypto.randomBytes(16).toString("hex");
-  const raffle4Id = crypto.randomUUID();
-  const commit4 = generateCommitHash(secret4, raffle4Id, 15000);
-
-  const raffle4 = await prisma.raffle.create({
-    data: {
-      id: raffle4Id,
-      title: "1,000,000 ETB Cash Prize (Direct Bank Transfer)",
-      titleAm: "1,000,000 ብር የጥሬ ገንዘብ ሽልማት (በቀጥታ በባንክ)",
-      description: "One Million Ethiopian Birr transferred instantly to your Telebirr, CBE, or Awash Bank account on live television broadcast.",
-      descriptionAm: "አንድ ሚሊዮን የኢትዮጵያ ብር በቀጥታ ወደ ቴሌብር ወይም ንግድ ባንክ ሂሳብዎ ገቢ ይደረጋል!",
-      category: "CASH",
-      prizeName: "1,000,000 ETB Cash",
-      prizeNameAm: "1,000,000 ብር ጥሬ ገንዘብ",
-      prizeImage: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=1200&q=80",
-      prizeValue: 1000000,
-      ticketPrice: 100,
-      totalTickets: 15000,
-      soldTickets: 8720,
-      maxTicketsPerUser: 100,
-      status: "ACTIVE",
-      drawDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      commitHash: commit4,
-      secretSeed: secret4,
-    },
-  });
-
-  // Past Drawn Raffle for Provably Fair Verification Testing
-  const pastSecret = "7f8b9c2a1d4e6f30a9b8c7d6e5f4a3b2";
-  const pastRaffleId = crypto.randomUUID();
-  const pastCommit = generateCommitHash(pastSecret, pastRaffleId, 1000);
-
-  const pastRaffle = await prisma.raffle.create({
-    data: {
-      id: pastRaffleId,
-      title: "Suzuki Dzire 2024 (Season 1 Grand Draw)",
-      titleAm: "ሱዙኪ ዲዛየር 2024 (የዙር 1 ታላቅ እጣ)",
-      description: "Season 1 completed raffle. Provably fair draw executed and verified on live television.",
-      descriptionAm: "የተጠናቀቀ እጣ። በፍትሃዊ እና በቴክኖሎጂ በተረጋገጠ ስርአት የተከናወነ።",
-      category: "VEHICLE",
-      prizeName: "Suzuki Dzire 2024",
-      prizeNameAm: "ሱዙኪ ዲዛየር 2024",
-      prizeImage: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
-      prizeValue: 2400000,
-      ticketPrice: 100,
+      prizeName: "MacBook Pro 16\" M3 Max",
+      prizeImage: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+      prizeValue: 380000,
+      ticketPrice: 150,
       totalTickets: 1000,
-      soldTickets: 1000,
-      maxTicketsPerUser: 20,
-      status: "DRAWN",
-      drawDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      drawnAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // Drawn 2 hours ago (within 24h spotlight)
-      commitHash: pastCommit,
-      secretSeed: pastSecret,
-      revealedSeed: pastSecret,
-      winningTicketNumber: 427,
-      winnerUserId: customer1.id,
+      soldTickets: 680, // 68% sold
+      status: "ACTIVE",
+      moderationStatus: "APPROVED",
+      drawDate: new Date(Date.now() - 2 * 60 * 60 * 1000), // EXPIRED 2 hours ago!
+      sellerDrawConsent: false,
+      adminDrawConsent: false,
+      commitHash: commitPartial,
+      secretSeed: secretPartial,
     },
   });
 
-  await prisma.drawAudit.create({
+  // PENDING MODERATION RAFFLE (Gate 2 Queue test)
+  const secretPending = crypto.randomBytes(16).toString("hex");
+  const pendingRaffleId = crypto.randomUUID();
+  const commitPending = generateCommitHash(secretPending, pendingRaffleId, 5000);
+
+  const pendingRaffle = await prisma.raffle.create({
     data: {
-      raffleId: pastRaffle.id,
-      commitHash: pastCommit,
-      secretSeed: pastSecret,
-      revealedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      totalSoldTickets: 1000,
-      winningTicketNumber: 427,
-      formulaDescription: "SHA256(secretSeed) % totalSoldTickets + 1",
-      verifiedBy: "National Lottery Administration Auditor (NLA-ETH-2026)",
+      id: pendingRaffleId,
+      sellerId: approvedSeller.id,
+      title: "2026 Suzuki Dzire GLX Automatic",
+      titleAm: "2026 ሱዙኪ ዲዛይር አውቶማቲክ",
+      description: "Brand new zero mileage vehicle submitted by Kidus Motors awaiting admin moderation review.",
+      category: "VEHICLE",
+      prizeName: "Suzuki Dzire 2026",
+      prizeImage: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
+      prizeValue: 2400000,
+      ticketPrice: 150,
+      totalTickets: 5000,
+      soldTickets: 0,
+      status: "ACTIVE",
+      moderationStatus: "PENDING_APPROVAL", // Under review in Gate 2
+      drawDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      commitHash: commitPending,
+      secretSeed: secretPending,
     },
   });
 
-  // Seed sample notifications
-  await prisma.notification.create({
-    data: {
-      userId: customer1.id,
-      customerPhone: customer1.phone,
-      raffleId: pastRaffle.id,
-      title: "🎉 CONGRATULATIONS! You Won Suzuki Dzire 2024!",
-      titleAm: "🎉 እንኳን ደስ አሎት! ሱዙኪ ዲዛየር 2024 አሸንፈዋል!",
-      message: "Your Ticket #427 matched the official Provably Fair draw! Contact LuckyEthio support to claim your prize.",
-      messageAm: "የእርስዎ ቲኬት ቁጥር #427 በይፋዊው ዕጣ አሸናፊ ሆኗል! ሽልማትዎን ይረከቡ።",
-      type: "WINNER_ANNOUNCEMENT",
-      isRead: false,
-    },
-  });
+  console.log("✅ Created Raffles with Moderation & Dual-Consent states");
 
-  await prisma.notification.create({
-    data: {
-      userId: customer2.id,
-      customerPhone: customer2.phone,
-      raffleId: pastRaffle.id,
-      title: "Draw Completed: Suzuki Dzire 2024",
-      titleAm: "የዕጣ ውጤት ይፋ ሆነ: ሱዙኪ ዲዛየር 2024",
-      message: "Winning Ticket #427 was drawn. Check your ticket numbers or verify the cryptographic proof on the public verifier.",
-      messageAm: "አሸናፊ ቲኬት ቁጥር #427 ወጥቷል። ቲኬቶችዎን ያረጋግጡ።",
-      type: "WINNER_ANNOUNCEMENT",
-      isRead: false,
-    },
-  });
-
-  console.log("✅ Created Raffles & Provably Fair Draw Audit");
-
-  // 4. Seed initial tickets for Customer 1 & 2
+  // 5. Seed Real Tickets & Transactions
   const tx1 = await prisma.transaction.create({
     data: {
       userId: customer1.id,
       raffleId: raffle1.id,
       customerPhone: customer1.phone,
-      txRef: "TX-CHAPA-1001",
+      txRef: "TX-TELEBIRR-1001",
       amount: 400,
       ticketCount: 2,
-      paymentMethod: "CHAPA",
+      paymentMethod: "TELEBIRR",
       status: "SUCCESS",
     },
   });
@@ -380,49 +352,6 @@ async function main() {
     },
   });
 
-  // Seed Agent cash sale
-  const txAgent = await prisma.transaction.create({
-    data: {
-      userId: customer2.id,
-      raffleId: raffle3.id,
-      customerPhone: customer2.phone,
-      txRef: "TX-AGENT-CASH-2001",
-      amount: 150,
-      ticketCount: 3,
-      paymentMethod: "AGENT_CASH",
-      status: "SUCCESS",
-    },
-  });
-
-  for (const num of [101, 102, 103]) {
-    await prisma.ticket.create({
-      data: {
-        raffleId: raffle3.id,
-        userId: customer2.id,
-        customerPhone: customer2.phone,
-        ticketNumber: num,
-        transactionId: txAgent.id,
-        soldByAgentId: activeAgent.id,
-        purchaseMethod: "AGENT_CASH",
-        verificationCode: generateVerificationCode(),
-        status: "CONFIRMED",
-      },
-    });
-  }
-
-  // Winning ticket for past drawn raffle
-  await prisma.ticket.create({
-    data: {
-      raffleId: pastRaffle.id,
-      userId: customer1.id,
-      customerPhone: customer1.phone,
-      ticketNumber: 427,
-      purchaseMethod: "ONLINE",
-      verificationCode: "TKT-WINNER-427-LUCKY",
-      status: "CONFIRMED",
-    },
-  });
-
   console.log("🎉 Database seeding completed successfully!");
 }
 
@@ -434,4 +363,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-

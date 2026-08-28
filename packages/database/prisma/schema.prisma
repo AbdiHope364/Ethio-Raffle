@@ -12,7 +12,7 @@ model User {
   phone         String    @unique
   fullName      String
   nationalId    String?
-  role          String    @default("CUSTOMER") // CUSTOMER, AGENT, ADMIN, SUPER_ADMIN
+  role          String    @default("CUSTOMER") // CUSTOMER, AGENT, SELLER, ADMIN, SUPER_ADMIN
   isVerified    Boolean   @default(false)
   status        String    @default("ACTIVE") // ACTIVE, SUSPENDED
   preferredLang String    @default("EN") // EN, AM
@@ -20,11 +20,32 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   agentProfile  Agent?
+  sellerProfile Seller?
   tickets       Ticket[]
   transactions  Transaction[]
   adminLogs     AgentAccessLog[] @relation("AdminChanger")
   wonRaffles    Raffle[]         @relation("RaffleWinner")
   notifications Notification[]
+}
+
+model Seller {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String
+  contactPerson   String
+  phone           String
+  tinNumber       String?
+  licenseRef      String?  // Trade registration or business license doc ref
+  region          String   @default("Addis Ababa")
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, SUSPENDED
+  rejectionReason String?
+  payoutAccount   String?  // Telebirr / CBE Account for ticket proceeds
+  commissionRate  Float    @default(8.0) // Platform fee percentage (e.g. 8%)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  raffles         Raffle[]
 }
 
 model Agent {
@@ -76,6 +97,8 @@ model AgentAccessLog {
 
 model Raffle {
   id                 String        @id @default(uuid())
+  sellerId           String?
+  seller             Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)
   title              String
   titleAm            String?
   description        String
@@ -89,7 +112,13 @@ model Raffle {
   totalTickets       Int
   soldTickets        Int           @default(0)
   maxTicketsPerUser  Int           @default(100)
-  status             String        @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, CLOSED, DRAWN
+  status             String        @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, CLOSED, DRAWN, CANCELLED
+  moderationStatus   String        @default("APPROVED") // PENDING_APPROVAL, APPROVED, REJECTED
+  moderationNotes    String?
+  sellerDrawConsent  Boolean       @default(false) // Required for under-subscribed draws
+  adminDrawConsent   Boolean       @default(false) // Required for under-subscribed draws
+  fallbackPolicy     String        @default("NONE") // NONE, EXTENDED, REFUNDED
+  extendedUntil      DateTime?
   drawDate           DateTime
   drawnAt            DateTime?     // Exact timestamp when the provably fair draw occurred
   commitHash         String?

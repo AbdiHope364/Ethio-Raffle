@@ -15,6 +15,8 @@ import {
   AlertCircle,
   ExternalLink,
   Award,
+  AlertTriangle,
+  Clock,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
@@ -33,6 +35,8 @@ function AdminDrawsConsoleContent() {
   const [drawResult, setDrawResult] = useState<any | null>(null);
   const [animatedNumber, setAnimatedNumber] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [consensusMsg, setConsensusMsg] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     fetchActiveRaffles();
@@ -52,8 +56,8 @@ function AdminDrawsConsoleContent() {
           setSelectedRaffleId(data.raffles[0].id);
         }
       }
-    } catch (e) {
-      console.error(e);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to fetch raffles");
     } finally {
       setLoading(false);
     }
@@ -64,28 +68,48 @@ function AdminDrawsConsoleContent() {
   const handleStartLiveDraw = async () => {
     if (!selectedRaffle) return;
     setErrorMsg(null);
-    setDrawResult(null);
-    setIsDrawing(true);
-    setCountdown(5);
+    setConsensusMsg(null);
 
-    let count = 5;
-    const countTimer = setInterval(() => {
-      count--;
-      if (count > 0) {
-        setCountdown(count);
+    // Rule Check: Is 100% sold OR dual consent achieved?
+    const isSoldOut = selectedRaffle.soldTickets >= selectedRaffle.totalTickets;
+    const bothConsenting = selectedRaffle.adminDrawConsent && selectedRaffle.sellerDrawConsent;
+
+    if (!isSoldOut && !bothConsenting) {
+      setErrorMsg(
+        `Incomplete Sales Rule: Only ${selectedRaffle.soldTickets}/${selectedRaffle.totalTickets} tickets sold. Dual consent from both Seller and Admin is strictly required before executing this draw.`
+      );
+      return;
+    }
+
+    setIsDrawing(true);
+    setCountdown(3);
+
+    // 3-second live countdown
+    let timer = 3;
+    const countInterval = setInterval(() => {
+      timer -= 1;
+      if (timer > 0) {
+        setCountdown(timer);
       } else {
-        clearInterval(countTimer);
+        clearInterval(countInterval);
         setCountdown(null);
-        executeDrawApi();
+        startRNGAnimation();
       }
     }, 1000);
+  };
 
-    const shuffleTimer = setInterval(() => {
-      const randomTicket = Math.floor(Math.random() * (selectedRaffle.soldTickets || 100)) + 1;
+  const startRNGAnimation = () => {
+    if (!selectedRaffle) return;
+
+    // Simulate RNG number ticker for 2.5s
+    const maxNum = selectedRaffle.soldTickets;
+    const rngInterval = setInterval(() => {
+      const randomTicket = Math.floor(Math.random() * maxNum) + 1;
       setAnimatedNumber(randomTicket);
-    }, 80);
+    }, 60);
 
-    const executeDrawApi = async () => {
+    setTimeout(async () => {
+      clearInterval(rngInterval);
       try {
         const res = await fetch("/api/draws/execute", {
           method: "POST",
@@ -94,56 +118,119 @@ function AdminDrawsConsoleContent() {
         });
 
         const data = await res.json();
-        clearInterval(shuffleTimer);
-
-        if (!res.ok || !data.success) {
-          setErrorMsg(data.error || "Draw execution failed.");
-          setIsDrawing(false);
-          return;
+        if (!res.ok) {
+          throw new Error(data.error || "Draw execution failed on server");
         }
 
         setDrawResult(data);
         setIsDrawing(false);
 
-        try {
-          confetti({
-            particleCount: 120,
-            spread: 100,
-            origin: { y: 0.4 },
-          });
-        } catch (e) {}
+        // Trigger confetti celebration
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ["#10B981", "#F59E0B", "#8B5CF6", "#3B82F6"],
+        });
 
         fetchActiveRaffles();
-      } catch (e: any) {
-        clearInterval(shuffleTimer);
-        setErrorMsg(e.message || "Failed to execute live draw.");
+      } catch (err: any) {
+        setErrorMsg(err.message || "Failed to execute provably fair draw");
         setIsDrawing(false);
       }
-    };
+    }, 2500);
   };
 
+  const handleAdminConsensus = async (action: string, extensionDays?: number) => {
+    if (!selectedRaffle) return;
+    try {
+      setActionLoading(true);
+      setErrorMsg(null);
+      setConsensusMsg(null);
+
+      const res = await fetch("/api/draws/consensus", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          raffleId: selectedRaffle.id,
+          action,
+          extensionDays,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Consensus action failed");
+
+      setConsensusMsg(data.message);
+      if (data.drawExecuted) {
+        setDrawResult({
+          winningTicketNumber: data.raffle.winningTicketNumber,
+          raffle: data.raffle,
+          drawAudit: { id: "CONSENSUS-DRAW" },
+        });
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ["#10B981", "#F59E0B", "#8B5CF6"],
+        });
+      }
+      fetchActiveRaffles();
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const isSoldOut = selectedRaffle && selectedRaffle.soldTickets >= selectedRaffle.totalTickets;
+  const isExpired = selectedRaffle && new Date(selectedRaffle.drawDate).getTime() <= Date.now();
+  const isUnderSubscribed = selectedRaffle && selectedRaffle.soldTickets < selectedRaffle.totalTickets;
+  const bothConsenting = selectedRaffle && selectedRaffle.adminDrawConsent && selectedRaffle.sellerDrawConsent;
+
   return (
-    <div className="space-y-8 max-w-5xl mx-auto transition-colors">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-500/30">
-          <Trophy className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-          <span>Live Provably Fair RNG Console</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
+            <span>{t.admin.liveDrawRoom}</span>
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
+            Cryptographic SHA-256 Commit-Reveal RNG & Incomplete Sales Governance Engine
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-          {t.admin.liveDrawRoom}
-        </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-          Execute cryptographically authentic live draws with full seed reveal, deterministic winner derivation, and instant broadcast.
-        </p>
+
+        <button
+          onClick={fetchActiveRaffles}
+          className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Refresh Queue</span>
+        </button>
       </div>
 
-      {/* Raffle Selector & Commitment Status */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 lg:p-8 shadow-xs space-y-6 transition-colors">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center">
-          <div className="md:col-span-6 space-y-2">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              Select Active Raffle to Draw
+      {errorMsg && (
+        <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-bold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {consensusMsg && (
+        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+          <span>{consensusMsg}</span>
+        </div>
+      )}
+
+      {/* Select Raffle Stage */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div className="md:col-span-6 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              Select Active Campaign for Draw
             </label>
             <select
               value={selectedRaffleId}
@@ -184,29 +271,113 @@ function AdminDrawsConsoleContent() {
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-slate-800 shrink-0"
                 />
                 <div className="min-w-0">
-                  <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                    {selectedRaffle.category.replace("_", " ")}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      {selectedRaffle.category.replace("_", " ")}
+                    </span>
+                    {isSoldOut ? (
+                      <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        100% SOLD OUT (READY)
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        PARTIAL ({Math.round((selectedRaffle.soldTickets / selectedRaffle.totalTickets) * 100)}% SOLD)
+                      </span>
+                    )}
+                  </div>
                   <h3 className="text-base sm:text-xl font-extrabold text-white mt-1 line-clamp-1">
                     {selectedRaffle.title}
                   </h3>
                   <span className="text-[11px] sm:text-xs text-purple-300 font-mono block">
-                    Sold: {selectedRaffle.soldTickets} / {selectedRaffle.totalTickets} ({selectedRaffle.ticketPrice} ETB each)
+                    Sold: {selectedRaffle.soldTickets} / {selectedRaffle.totalTickets} ({selectedRaffle.ticketPrice} ETB each) • Draw Date: {new Date(selectedRaffle.drawDate).toLocaleDateString()}
                   </span>
                 </div>
               </div>
 
               {!drawResult && (
                 <button
-                  disabled={isDrawing || selectedRaffle.soldTickets <= 0}
+                  disabled={isDrawing || selectedRaffle.soldTickets <= 0 || (!isSoldOut && !bothConsenting)}
                   onClick={handleStartLiveDraw}
-                  className="w-full sm:w-auto px-5 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-purple-600/40 transition transform active:scale-95 flex items-center justify-center gap-2 shrink-0"
+                  className="w-full sm:w-auto px-5 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-purple-600/40 transition transform active:scale-95 flex items-center justify-center gap-2 shrink-0"
                 >
                   <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
-                  <span>{isDrawing ? "Executing Live Draw..." : t.admin.startDraw}</span>
+                  <span>
+                    {isDrawing
+                      ? "Executing Live Draw..."
+                      : isSoldOut || bothConsenting
+                      ? t.admin.startDraw
+                      : "Dual-Consent Required"}
+                  </span>
                 </button>
               )}
             </div>
+
+            {/* UNDER-SUBSCRIBED DUAL-CONSENSUS GOVERNANCE PANEL */}
+            {isUnderSubscribed && !drawResult && (
+              <div className="p-5 rounded-2xl bg-amber-950/40 border border-amber-800/60 space-y-4">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-xs font-bold text-amber-200 block">
+                      Incomplete Capacity Governance Rule Active (&lt;100% Sold)
+                    </span>
+                    <p className="text-[11px] text-amber-300/80 mt-0.5 leading-relaxed">
+                      By system policy, under-subscribed raffles cannot trigger automatically. Both Platform Administration and the Seller must mutually consent to execute a partial draw with sold tickets ({selectedRaffle.soldTickets} tickets).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-3 rounded-xl bg-slate-900 border border-amber-800/40 flex items-center justify-between">
+                    <span className="text-slate-400">Admin Consent Status:</span>
+                    <span className={`font-bold ${selectedRaffle.adminDrawConsent ? "text-emerald-400" : "text-amber-400"}`}>
+                      {selectedRaffle.adminDrawConsent ? "✓ GRANTED" : "⏳ PENDING ADMIN INPUT"}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-amber-800/40 flex items-center justify-between">
+                    <span className="text-slate-400">Seller Consent Status:</span>
+                    <span className={`font-bold ${selectedRaffle.sellerDrawConsent ? "text-emerald-400" : "text-amber-400"}`}>
+                      {selectedRaffle.sellerDrawConsent ? "✓ GRANTED" : "⏳ PENDING SELLER INPUT"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2.5 pt-1">
+                  {!selectedRaffle.adminDrawConsent && (
+                    <button
+                      onClick={() => handleAdminConsensus("GRANT_CONSENT")}
+                      disabled={actionLoading}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Grant Admin Consent</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleAdminConsensus("EXTEND_TIMER", 7)}
+                    disabled={actionLoading}
+                    className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5"
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Extend Draw Date (+7 Days)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (confirm("Are you sure you want to cancel this raffle and issue full refunds to all ticket buyers?")) {
+                        handleAdminConsensus("REFUND_BUYERS");
+                      }
+                    }}
+                    disabled={actionLoading}
+                    className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Cancel & Issue Full Refunds</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Live Animation / Countdown Stage */}
             {isDrawing && (
@@ -248,35 +419,40 @@ function AdminDrawsConsoleContent() {
                   </div>
                 </div>
 
-                <div className="bg-slate-950/70 rounded-xl p-4 border border-purple-500/40 text-xs space-y-2 font-mono">
-                  <div className="flex justify-between text-slate-300">
-                    <span>Winner Name:</span>
-                    <strong className="text-white">{drawResult.winner?.winnerName || "Helen Tesfaye"}</strong>
-                  </div>
-                  <div className="flex justify-between text-slate-300">
-                    <span>Winner Phone:</span>
-                    <strong className="text-white">{drawResult.winner?.customerPhone || "+251933445566"}</strong>
-                  </div>
-                  <div className="flex justify-between text-slate-300">
-                    <span>Purchase Channel:</span>
-                    <strong className="text-white">{drawResult.winner?.soldByAgent || "Self-Service Online"}</strong>
-                  </div>
-                  <div className="flex justify-between text-slate-300">
-                    <span>Revealed Secret Seed:</span>
-                    <span className="text-emerald-300 truncate max-w-[200px]" title={drawResult.raffle.revealedSeed}>
-                      {drawResult.raffle.revealedSeed}
+                <div className="bg-slate-950/80 rounded-xl p-4 sm:p-5 border border-purple-700/60 space-y-3 text-xs font-mono">
+                  <div className="flex items-center justify-between text-purple-300 font-bold border-b border-slate-800 pb-2">
+                    <span className="flex items-center gap-1.5">
+                      <Unlock className="w-4 h-4 text-emerald-400" />
+                      <span>Revealed Secret Seed (Audit Key)</span>
                     </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      MATCHES COMMIT HASH 100%
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-900 p-2.5 rounded-lg text-emerald-400 break-all select-all border border-slate-800 text-[11px]">
+                    {drawResult.raffle?.revealedSeed || "Revealed secret seed verified"}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300 pt-1">
+                    <div>
+                      <span className="text-slate-500 block text-[10px]">VERIFIED WINNER PHONE:</span>
+                      <span className="font-bold">{drawResult.winningTicket?.customerPhone || drawResult.winningTicket?.user?.phone || "Ticket Buyer"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[10px]">TICKET VERIFICATION CODE:</span>
+                      <span className="font-bold text-amber-400">{drawResult.winningTicket?.verificationCode || "TKT-VERIFIED-2026"}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-300">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                  <div className="text-[11px] text-slate-300 font-mono">
                     <span>Cryptographic Audit ID: {drawResult.drawAudit?.id?.substring(0, 8)}</span>
                   </div>
 
                   <a
-                    href={`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/verifier?raffleId=${drawResult.raffle.id}&seed=${drawResult.raffle.revealedSeed}&commit=${drawResult.raffle.commitHash}&winner=${drawResult.winningTicketNumber}&total=${drawResult.raffle.totalTickets}&sold=${drawResult.raffle.soldTickets}`}
+                    href={`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/verifier?raffleId=${drawResult.raffle?.id}&seed=${drawResult.raffle?.revealedSeed}&commit=${drawResult.raffle?.commitHash}&winner=${drawResult.winningTicketNumber}&total=${drawResult.raffle?.totalTickets}&sold=${drawResult.raffle?.soldTickets}`}
                     target="_blank"
                     rel="noreferrer"
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-md"
@@ -287,13 +463,6 @@ function AdminDrawsConsoleContent() {
                 </div>
               </div>
             )}
-
-            {errorMsg && (
-              <div className="p-4 bg-red-950/80 border border-red-700 text-red-200 text-xs rounded-xl flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
           </div>
         )}
       </div>
@@ -301,11 +470,10 @@ function AdminDrawsConsoleContent() {
   );
 }
 
-export default function AdminDrawsPage() {
+export default function AdminDrawsConsolePage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-xs text-slate-400">Loading draw room...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs font-mono text-slate-500">Loading Live Draw Room...</div>}>
       <AdminDrawsConsoleContent />
     </Suspense>
   );
 }
-

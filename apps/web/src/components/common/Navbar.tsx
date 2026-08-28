@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n, useTheme, LuckyTicketIcon } from "@raffle/shared";
+import AdminStealthAuthModal from "@/components/auth/AdminStealthAuthModal";
 import {
   Ticket,
   Trophy,
@@ -19,6 +20,7 @@ import {
   Check,
   Sun,
   Moon,
+  Building2,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -27,6 +29,19 @@ export default function Navbar() {
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stealthModalOpen, setStealthModalOpen] = useState(false);
+
+  // Stealth Hotkey Listener: Ctrl + Shift + A (or Cmd + Shift + A)
+  useEffect(() => {
+    const handleHotkey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
+        e.preventDefault();
+        setStealthModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleHotkey);
+    return () => window.removeEventListener("keydown", handleHotkey);
+  }, []);
 
   // Notifications state
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -34,27 +49,29 @@ export default function Navbar() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.user) {
-          setCurrentUser(d.user);
-          fetchNotifications(d.user.phone);
-        } else {
-          fetchNotifications();
-        }
-      })
-      .catch(console.error);
+    fetchUserSession();
+    fetchNotifications();
   }, []);
 
-  const fetchNotifications = async (phone?: string) => {
+  const fetchUserSession = async () => {
     try {
-      const url = phone ? `/api/notifications?phone=${encodeURIComponent(phone)}` : "/api/notifications";
-      const res = await fetch(url);
+      const res = await fetch("/api/auth/me");
+      const data = await res.json();
+      if (data.user) {
+        setCurrentUser(data.user);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch("/api/notifications");
       const data = await res.json();
       if (data.notifications) {
         setNotifications(data.notifications);
-        setUnreadCount(data.unreadCount || 0);
+        setUnreadCount(data.notifications.filter((n: any) => !n.read).length);
       }
     } catch (e) {
       console.error(e);
@@ -63,35 +80,33 @@ export default function Navbar() {
 
   const markAllRead = async () => {
     try {
-      if (currentUser?.phone) {
-        await fetch("/api/notifications", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ markAllRead: true, phone: currentUser.phone }),
-        });
-        setUnreadCount(0);
-        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      }
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      setNotifications(notifications.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const isAdmin = currentUser?.role === "ADMIN" || currentUser?.role === "SUPER_ADMIN";
-  const isAgent = currentUser?.role === "AGENT" || isAdmin;
+  const isAgent = currentUser?.role === "AGENT" || currentUser?.role === "ADMIN" || currentUser?.role === "SUPER_ADMIN";
 
-  const navLinks = [
+  const navLinks: { href: string; label: string; icon: any; badge?: string; external?: boolean }[] = [
     { href: "/", label: t.common.raffles, icon: Ticket },
     { href: "/my-tickets", label: t.common.myTickets, icon: Sparkles },
     { href: "/winners", label: t.common.winners, icon: Trophy },
     { href: "/verifier", label: t.common.verifier, icon: ShieldCheck },
+    { href: "/seller", label: language === "AM" ? "የሻጮች ማዕከል" : "Seller Hub", icon: Building2, badge: "Vendor" },
     ...(isAgent ? [{ href: "/agent", label: t.common.agentPortal, icon: Store, badge: "POS" }] : []),
-    ...(isAdmin ? [{ href: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001", label: t.common.adminDashboard, icon: LayoutDashboard, badge: "Admin", external: true }] : []),
     { href: "/agent/ussd-simulator", label: t.common.ussdSimulator, icon: Smartphone },
   ];
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+      <AdminStealthAuthModal isOpen={stealthModalOpen} onClose={() => setStealthModalOpen(false)} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}

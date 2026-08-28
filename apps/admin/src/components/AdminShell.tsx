@@ -53,6 +53,7 @@ export default function AdminShell({ children }: AdminShellProps) {
 
   const links = [
     { href: "/", label: t.admin.overview, icon: LayoutDashboard },
+    { href: "/moderation", label: "Moderation Hub", icon: Shield },
     { href: "/raffles", label: t.admin.manageRaffles, icon: Ticket },
     { href: "/agents", label: t.admin.manageAgents, icon: Users },
     { href: "/draws", label: t.admin.liveDrawRoom, icon: Trophy },

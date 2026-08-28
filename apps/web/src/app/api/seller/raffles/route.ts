@@ -1,27 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
 import { generateSecretSeed, generateCommitHash } from "@/lib/provably-fair";
 import * as crypto from "crypto";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status");
-    const category = searchParams.get("category");
+    const sellerId = req.nextUrl.searchParams.get("sellerId");
 
-    const where: any = {
-      moderationStatus: "APPROVED",
-    };
-    if (status) where.status = status;
-    if (category) where.category = category;
+    const where: any = {};
+    if (sellerId) {
+      where.sellerId = sellerId;
+    }
 
     const raffles = await prisma.raffle.findMany({
       where,
       include: {
-        winnerUser: {
-          select: { fullName: true, phone: true },
-        },
+        seller: true,
+        winnerUser: { select: { fullName: true, phone: true } },
         drawAudit: true,
       },
       orderBy: { createdAt: "desc" },
@@ -35,13 +30,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
-    }
-
     const body = await req.json();
     const {
+      sellerId,
       title,
       titleAm,
       description,
@@ -58,21 +49,37 @@ export async function POST(req: NextRequest) {
     } = body;
 
     if (!title || !prizeName || !ticketPrice || !totalTickets) {
-      return NextResponse.json({ error: "Missing required raffle fields." }, { status: 400 });
+      return NextResponse.json({ error: "Missing required raffle listing fields." }, { status: 400 });
+    }
+
+    // Verify seller is approved
+    let seller = null;
+    if (sellerId) {
+      seller = await prisma.seller.findUnique({ where: { id: sellerId } });
+    } else {
+      seller = await prisma.seller.findFirst({ where: { status: "APPROVED" } });
+    }
+
+    if (!seller || seller.status !== "APPROVED") {
+      return NextResponse.json(
+        { error: "Only approved sellers can submit items for raffle. Your account is under moderation." },
+        { status: 403 }
+      );
     }
 
     const raffleId = crypto.randomUUID();
     const secretSeed = generateSecretSeed();
-    const commitHash = generateCommitHash(secretSeed, raffleId, parseInt(totalTickets, 10));
-
+    const totalTixInt = parseInt(totalTickets, 10);
+    const commitHash = generateCommitHash(secretSeed, raffleId, totalTixInt);
     const drawDate = new Date(Date.now() + parseInt(drawDays, 10) * 24 * 60 * 60 * 1000);
 
     const raffle = await prisma.raffle.create({
       data: {
         id: raffleId,
+        sellerId: seller.id,
         title,
         titleAm: titleAm || undefined,
-        description: description || "Exciting raffle by LuckyEthio",
+        description: description || "Merchant raffle listing on Lucky Ticket infrastructure",
         descriptionAm: descriptionAm || undefined,
         category,
         prizeName,
@@ -80,23 +87,24 @@ export async function POST(req: NextRequest) {
         prizeImage: prizeImage || "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=1200&q=80",
         prizeValue: parseFloat(prizeValue || "100000"),
         ticketPrice: parseFloat(ticketPrice),
-        totalTickets: parseInt(totalTickets, 10),
+        totalTickets: totalTixInt,
         soldTickets: 0,
         maxTicketsPerUser: parseInt(maxTicketsPerUser, 10),
         status: "ACTIVE",
+        moderationStatus: "PENDING_APPROVAL", // Gate 2: Moderation Queue
         drawDate,
         commitHash,
-        secretSeed, // stored securely, revealed upon draw completion
+        secretSeed,
       },
     });
 
     return NextResponse.json({
       success: true,
       raffle,
-      message: "Raffle created successfully with SHA-256 pre-commitment hash.",
+      message: "Raffle item submitted successfully. It is now in the Administrative Moderation Queue for review.",
     });
   } catch (error: any) {
-    console.error("Create raffle error:", error);
+    console.error("Seller create raffle error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
