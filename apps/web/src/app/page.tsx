@@ -332,6 +332,47 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* System Provider Multi-Vendor Merchant Banner */}
+      <section className="bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 rounded-3xl p-8 sm:p-12 text-white border border-indigo-800/50 shadow-2xl relative overflow-hidden">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold font-mono">
+              <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+              <span>PLATFORM PROVIDER INFRASTRUCTURE</span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+              {language === "AM"
+                ? "መኪና፣ ቤት ወይም የኤሌክትሮኒክስ እቃዎችን መሸጥ ይፈልጋሉ?"
+                : "Are You a Car Dealership, Real Estate Developer, or Tech Importer?"}
+            </h3>
+
+            <p className="text-sm text-slate-300 leading-relaxed">
+              {language === "AM"
+                ? "እቃዎችዎን በ Lucky Ticket ፍትሃዊ የዕጣ መድረክ ላይ በማቅረብ ለሺዎች ደንበኞች ይሽጡ። የቴክኖሎጂ አሰራሩን፣ የቴሌብር ክፍያዎችን እና የብሔራዊ ሎተሪ ፍቃድ ህጋዊነት እኛ እንመራለን።"
+                : "Lucky Ticket operates as the third-party infrastructure connecting certified independent merchants with ticket buyers. We manage the provably fair RNG, escrow settlement, and payment gateway."}
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+            <Link
+              href="/seller/register"
+              className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2"
+            >
+              <span>{language === "AM" ? "የነጋዴ ፈቃድ ያመልክቱ" : "Apply as Merchant"}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/seller"
+              className="w-full sm:w-auto px-6 py-3.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs sm:text-sm rounded-xl border border-slate-700 transition flex items-center justify-center gap-2"
+            >
+              <span>{language === "AM" ? "የሻጮች ማዕከል ግባ" : "Merchant Dashboard"}</span>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
