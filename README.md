@@ -78,3 +78,4 @@ npx tsx scripts/test-platform.ts
 
 ## 📜 License
 Licensed by National Lottery Administration (NLA/ETH/2026/89). All rights reserved.
+
