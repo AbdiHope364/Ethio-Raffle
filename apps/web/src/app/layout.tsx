@@ -6,7 +6,7 @@ import Footer from "@/components/common/Footer";
 import DemoSwitcher from "@/components/common/DemoSwitcher";
 
 export const metadata: Metadata = {
-  title: "LuckyEthio Raffle — Provably Fair Ticket Platform",
+  title: "zendegi Raffle — Provably Fair Ticket Platform",
   description: "Ethiopia's licensed online and agent raffle ticketing platform. Provably fair SHA-256 draws, Telebirr & CBE payments.",
 };
 

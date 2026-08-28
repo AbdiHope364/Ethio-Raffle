@@ -27,7 +27,6 @@ export default function HeroWinnerSpotlight() {
       .then((d) => {
         if (d.spotlight) {
           setSpotlight(d.spotlight);
-          // Trigger a celebratory confetti shower
           try {
             confetti({
               particleCount: 50,
@@ -49,46 +48,46 @@ export default function HeroWinnerSpotlight() {
     language === "AM" && spotlight.prizeNameAm ? spotlight.prizeNameAm : spotlight.prizeName;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-950 via-slate-900 to-amber-950 border-2 border-amber-400/40 p-6 sm:p-8 text-white shadow-2xl animate-in fade-in slide-in-from-top-3">
-      {/* Background Glows & Confetti Accent */}
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-950 via-slate-900 to-amber-950 border-2 border-amber-400/40 p-4 sm:p-6 lg:p-8 text-white shadow-2xl animate-in fade-in slide-in-from-top-3">
+      {/* Background Glows */}
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Banner Tag */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-6">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md shadow-amber-500/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3.5 mb-4 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-md shadow-amber-500/30">
             <Flame className="w-3.5 h-3.5" />
-            <span>24-Hour Live Winner Spotlight</span>
+            <span>24-Hour Winner Spotlight</span>
           </span>
           <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-amber-200/80 font-semibold bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
             <Sparkles className="w-3 h-3 text-amber-300" />
-            <span>Official Provably Fair Draw</span>
+            <span>Provably Fair Draw</span>
           </span>
         </div>
 
         {/* Spotlight Active Timer */}
-        <div className="flex items-center gap-1.5 text-xs text-amber-300 font-mono bg-amber-950/80 px-3 py-1 rounded-xl border border-amber-500/40">
-          <Clock className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+        <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-amber-300 font-mono bg-amber-950/80 px-2.5 sm:px-3 py-1 rounded-xl border border-amber-500/40 w-fit">
+          <Clock className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" />
           <span>
-            Spotlight active: {spotlight.remainingHours}h {spotlight.remainingMinutes}m remaining
+            Spotlight: {spotlight.remainingHours}h {spotlight.remainingMinutes}m remaining
           </span>
         </div>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-center">
         {/* Left Column: Winner Credentials & Prize Info */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-extrabold text-amber-400 uppercase tracking-widest">
-              <Award className="w-4 h-4" />
+        <div className="lg:col-span-8 space-y-3.5 sm:space-y-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold text-amber-400 uppercase tracking-wider">
+              <Award className="w-3.5 h-3.5" />
               <span>Grand Prize Winner Declared!</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white line-clamp-2">
               {displayTitle}
             </h2>
-            <p className="text-sm text-slate-300">
+            <p className="text-xs sm:text-sm text-slate-300">
               Prize: <strong className="text-amber-300 font-bold">{displayPrize}</strong> valued at{" "}
               <strong className="text-emerald-400 font-mono">
                 {spotlight.prizeValue.toLocaleString()} ETB
@@ -97,38 +96,38 @@ export default function HeroWinnerSpotlight() {
           </div>
 
           {/* Winner Hero Callout Box */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1">
             {/* Winner Profile */}
-            <div className="bg-slate-900/90 border border-amber-500/30 rounded-2xl p-4 flex items-center gap-3.5 backdrop-blur-sm">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/30">
-                <Trophy className="w-6 h-6" />
+            <div className="bg-slate-900/90 border border-amber-500/30 rounded-2xl p-3.5 flex items-center gap-3 backdrop-blur-sm">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-500/30">
+                <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] text-amber-300/80 font-bold uppercase tracking-wider block">
+                <span className="text-[9px] sm:text-[10px] text-amber-300/80 font-bold uppercase tracking-wider block">
                   Verified Winner
                 </span>
-                <span className="text-base font-black text-white truncate block">
+                <span className="text-sm sm:text-base font-black text-white truncate block">
                   {spotlight.winnerName}
                 </span>
-                <span className="text-xs text-slate-400 font-mono">
+                <span className="text-[11px] sm:text-xs text-slate-400 font-mono">
                   {spotlight.maskedPhone}
                 </span>
               </div>
             </div>
 
             {/* Winning Ticket Box */}
-            <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 flex items-center justify-between backdrop-blur-sm">
+            <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3.5 flex items-center justify-between backdrop-blur-sm">
               <div>
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">
+                <span className="text-[9px] sm:text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">
                   Winning Ticket #
                 </span>
-                <span className="text-3xl font-black text-emerald-400 font-mono tracking-tight">
+                <span className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">
                   #{spotlight.winningTicketNumber}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-slate-400 block font-mono">Code</span>
-                <span className="text-xs font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded">
+                <span className="text-[9px] text-slate-400 block font-mono">Code</span>
+                <span className="text-[11px] font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded">
                   {spotlight.verificationCode}
                 </span>
               </div>
@@ -136,10 +135,10 @@ export default function HeroWinnerSpotlight() {
           </div>
 
           {/* Provably Fair Cryptographic Hash Badge */}
-          <div className="bg-black/40 border border-white/10 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-            <div className="flex items-center gap-2 truncate">
+          <div className="bg-black/40 border border-white/10 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs font-mono">
+            <div className="flex items-center gap-1.5 truncate">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="text-slate-400 shrink-0">SHA-256 Seed:</span>
+              <span className="text-slate-400 shrink-0">SHA-256:</span>
               <span className="text-amber-200 truncate select-all">
                 {spotlight.revealedSeed || spotlight.commitHash}
               </span>
@@ -147,7 +146,7 @@ export default function HeroWinnerSpotlight() {
 
             <Link
               href={`/verifier?raffleId=${spotlight.id}&seed=${spotlight.revealedSeed}&winner=${spotlight.winningTicketNumber}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold shrink-0 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold shrink-0 transition"
             >
               <span>Verify Mathematical Proof</span>
               <ExternalLink className="w-3 h-3" />
@@ -156,8 +155,8 @@ export default function HeroWinnerSpotlight() {
         </div>
 
         {/* Right Column: Prize Image & Action */}
-        <div className="lg:col-span-4 flex flex-col items-center justify-center space-y-4">
-          <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-slate-900 group">
+        <div className="lg:col-span-4 flex flex-col items-center justify-center space-y-3">
+          <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-slate-900 group">
             <img
               src={spotlight.prizeImage}
               alt={displayTitle}
@@ -187,4 +186,3 @@ export default function HeroWinnerSpotlight() {
     </div>
   );
 }
-

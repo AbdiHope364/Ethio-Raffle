@@ -171,23 +171,23 @@ function AdminDrawsConsoleContent() {
 
         {/* Selected Raffle Preview Card */}
         {selectedRaffle && (
-          <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
+          <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex items-start sm:items-center gap-3.5 sm:gap-4">
                 <img
                   src={selectedRaffle.prizeImage}
                   alt={selectedRaffle.title}
-                  className="w-20 h-20 rounded-2xl object-cover border border-slate-800 shrink-0"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-slate-800 shrink-0"
                 />
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <div className="min-w-0">
+                  <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
                     {selectedRaffle.category.replace("_", " ")}
                   </span>
-                  <h3 className="text-xl font-extrabold text-white mt-1">
+                  <h3 className="text-base sm:text-xl font-extrabold text-white mt-1 line-clamp-1">
                     {selectedRaffle.title}
                   </h3>
-                  <span className="text-xs text-purple-300 font-mono">
-                    Sold: {selectedRaffle.soldTickets} / {selectedRaffle.totalTickets} tickets ({selectedRaffle.ticketPrice} ETB each)
+                  <span className="text-[11px] sm:text-xs text-purple-300 font-mono block">
+                    Sold: {selectedRaffle.soldTickets} / {selectedRaffle.totalTickets} ({selectedRaffle.ticketPrice} ETB each)
                   </span>
                 </div>
               </div>
@@ -196,9 +196,9 @@ function AdminDrawsConsoleContent() {
                 <button
                   disabled={isDrawing || selectedRaffle.soldTickets <= 0}
                   onClick={handleStartLiveDraw}
-                  className="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-sm rounded-2xl shadow-xl shadow-purple-600/40 transition transform active:scale-95 flex items-center gap-2"
+                  className="w-full sm:w-auto px-5 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-purple-600/40 transition transform active:scale-95 flex items-center justify-center gap-2 shrink-0"
                 >
-                  <Play className="w-5 h-5 fill-current" />
+                  <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                   <span>{isDrawing ? "Executing Live Draw..." : t.admin.startDraw}</span>
                 </button>
               )}

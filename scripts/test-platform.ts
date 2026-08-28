@@ -117,9 +117,10 @@ async function runPlatformTests() {
 
   // 3. TEST AGENT FLOAT & COMMISSION LEDGER
   console.log("▶ TEST 3: Agent POS Float Deductions & Auto-Commission");
+  const uniqueSuffix = Date.now().toString().slice(-6);
   const testAgentUser = await prisma.user.create({
     data: {
-      phone: "+251999887766",
+      phone: `+251999${uniqueSuffix}`,
       fullName: "Test Kiosk Agent",
       role: "AGENT",
       agentProfile: {
