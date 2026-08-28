@@ -247,16 +247,6 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Merchant Portal Quick Entry */}
-            <Link
-              href="/seller"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200/80 dark:border-indigo-800/80 text-xs font-bold text-indigo-900 dark:text-indigo-200 transition"
-              title="Merchant / Vendor Portal"
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span>{language === "AM" ? "የነጋዴዎች ማዕከል" : "Merchant Hub"}</span>
-            </Link>
-
             {/* Language Switcher */}
             <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
               <Globe className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 ml-1 mr-1.5" />
