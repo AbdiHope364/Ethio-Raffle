@@ -135,14 +135,14 @@ export default function AdminShell({ children }: AdminShellProps) {
         {/* Switch to Web Client Footer link */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900 transition-colors">
           <a
-            href="http://localhost:3000"
+            href={process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition group"
           >
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Web Portal (3000)</span>
+              <span>Customer Web Portal</span>
             </div>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white" />
           </a>

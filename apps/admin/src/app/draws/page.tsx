@@ -276,7 +276,7 @@ function AdminDrawsConsoleContent() {
                   </div>
 
                   <a
-                    href={`http://localhost:3000/verifier?raffleId=${drawResult.raffle.id}&seed=${drawResult.raffle.revealedSeed}&commit=${drawResult.raffle.commitHash}&winner=${drawResult.winningTicketNumber}&total=${drawResult.raffle.totalTickets}&sold=${drawResult.raffle.soldTickets}`}
+                    href={`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/verifier?raffleId=${drawResult.raffle.id}&seed=${drawResult.raffle.revealedSeed}&commit=${drawResult.raffle.commitHash}&winner=${drawResult.winningTicketNumber}&total=${drawResult.raffle.totalTickets}&sold=${drawResult.raffle.soldTickets}`}
                     target="_blank"
                     rel="noreferrer"
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-md"

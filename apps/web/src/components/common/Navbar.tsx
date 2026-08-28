@@ -86,7 +86,7 @@ export default function Navbar() {
     { href: "/winners", label: t.common.winners, icon: Trophy },
     { href: "/verifier", label: t.common.verifier, icon: ShieldCheck },
     ...(isAgent ? [{ href: "/agent", label: t.common.agentPortal, icon: Store, badge: "POS" }] : []),
-    ...(isAdmin ? [{ href: "http://localhost:3001", label: t.common.adminDashboard, icon: LayoutDashboard, badge: "Admin", external: true }] : []),
+    ...(isAdmin ? [{ href: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001", label: t.common.adminDashboard, icon: LayoutDashboard, badge: "Admin", external: true }] : []),
     { href: "/agent/ussd-simulator", label: t.common.ussdSimulator, icon: Smartphone },
   ];
 
