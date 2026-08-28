@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n, LuckyTicketIcon } from "@raffle/shared";
 import { ShieldCheck, Smartphone, Award } from "lucide-react";
 
 export default function Footer() {
@@ -14,13 +14,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-100 dark:border-slate-800">
           {/* Col 1: Platform & License */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold">
-                LE
+            <div className="flex items-center gap-3">
+              <LuckyTicketIcon size={38} />
+              <div>
+                <div className="font-black text-lg text-amber-500 dark:text-amber-400 tracking-tight flex items-center leading-none">
+                  <span>LUCKY</span>
+                  <span className="text-amber-400 dark:text-amber-300 ml-1">TICKET</span>
+                </div>
+                <span className="text-[9px] text-blue-600 dark:text-blue-400 font-extrabold uppercase font-mono tracking-wider block mt-0.5 leading-none">
+                  {language === "AM" ? "ዲጂታል የዕጣ መድረክ" : "DIGITAL RAFFLE PLATFORM"}
+                </span>
               </div>
-              <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight">
-                Lucky<span className="text-emerald-600 dark:text-emerald-400">Ethio</span>
-              </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
               {t.common.tagline}. Every single raffle draw is backed by cryptographically verifiable SHA-256 pre-commitments.

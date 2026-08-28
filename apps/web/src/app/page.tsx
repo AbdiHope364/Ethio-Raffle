@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n, LuckyTicketIcon } from "@raffle/shared";
 import RaffleCard, { RaffleData } from "@/components/customer/RaffleCard";
 import HeroWinnerSpotlight from "@/components/customer/HeroWinnerSpotlight";
 import {
@@ -61,72 +61,87 @@ export default function HomePage() {
 
       {/* Hero Banner with Ethiopian Accent */}
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white p-8 sm:p-12 shadow-2xl border border-slate-800">
-        <div className="relative z-10 max-w-3xl space-y-6">
-          {/* Header Badges */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              {t.raffles.provablyFairBadge}
-            </span>
-            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur">
-              <Trophy className="w-4 h-4 text-amber-400" />
-              Over 38,000,000 ETB in Prizes
-            </span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
+          <div className="max-w-2xl space-y-6">
+            {/* Header Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                {t.raffles.provablyFairBadge}
+              </span>
+              <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur">
+                <Trophy className="w-4 h-4 text-amber-400" />
+                Over 38,000,000 ETB in Prizes
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+              {language === "AM" ? (
+                <>
+                  በታማኝነት ይቁረጡ፤ <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-200">
+                    ትልቅ ሽልማት አሸንፈው ይውጡ!
+                  </span>
+                </>
+              ) : (
+                <>
+                  Play with Confidence. <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-200">
+                    Win Life-Changing Prizes!
+                  </span>
+                </>
+              )}
+            </h1>
+
+            <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed">
+              {language === "AM"
+                ? "በብሔራዊ ሎተሪ አስተዳደር ፈቃድ የተሰጠው የመጀመሪያው የኢትዮጵያ ፍትሃዊ የሎተሪ መድረክ። ክፍያ በቴሌብር፣ በሲቢኢ ብር ወይም በአቅራቢያዎ በሚገኙ ወኪሎች መቁረጥ ይችላሉ።"
+                : "Ethiopia's licensed, tamper-proof raffle platform. Buy tickets instantly with Telebirr, CBE Birr, Chapa, or visit authorized Kiosk Agents across Addis Ababa and regional cities."}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href="#raffles-catalog"
+                className="px-6 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm rounded-xl transition shadow-lg shadow-amber-500/30 flex items-center gap-2"
+              >
+                <span>{t.common.buyTickets}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                href="/verifier"
+                className="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4 text-emerald-400" />
+                <span>{t.common.verifier}</span>
+              </Link>
+
+              <Link
+                href="/agent/ussd-simulator"
+                className="px-4 py-3.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5"
+              >
+                <Smartphone className="w-4 h-4 text-amber-400" />
+                <span>USSD Dial *804#</span>
+              </Link>
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-            {language === "AM" ? (
-              <>
-                በታማኝነት ይቁረጡ፤ <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300">
-                  ትልቅ ሽልማት አሸንፈው ይውጡ!
-                </span>
-              </>
-            ) : (
-              <>
-                Play with Confidence. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-yellow-300">
-                  Win Life-Changing Prizes!
-                </span>
-              </>
-            )}
-          </h1>
-
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-            {language === "AM"
-              ? "በብሔራዊ ሎተሪ አስተዳደር ፈቃድ የተሰጠው የመጀመሪያው የኢትዮጵያ ፍትሃዊ የሎተሪ መድረክ። ክፍያ በቴሌብር፣ በሲቢኢ ብር ወይም በአቅራቢያዎ በሚገኙ ወኪሎች መቁረጥ ይችላሉ።"
-              : "Ethiopia's licensed, tamper-proof raffle platform. Buy tickets instantly with Telebirr, CBE Birr, Chapa, or visit authorized Kiosk Agents across Addis Ababa and regional cities."}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              href="#raffles-catalog"
-              className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center gap-2"
-            >
-              <span>{t.common.buyTickets}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link
-              href="/verifier"
-              className="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition flex items-center gap-2"
-            >
-              <Lock className="w-4 h-4 text-emerald-400" />
-              <span>{t.common.verifier}</span>
-            </Link>
-
-            <Link
-              href="/agent/ussd-simulator"
-              className="px-4 py-3.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5"
-            >
-              <Smartphone className="w-4 h-4 text-amber-400" />
-              <span>USSD Dial *804#</span>
-            </Link>
+          {/* Floating 3D Glowing Ticket Star Emblem */}
+          <div className="hidden lg:flex flex-col items-center justify-center relative p-8">
+            <div className="absolute inset-0 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="relative animate-pulse duration-1000">
+              <LuckyTicketIcon size={180} />
+            </div>
+            <div className="text-center mt-3">
+              <span className="text-[11px] font-mono font-bold tracking-widest text-amber-300 uppercase block">
+                NATIONAL VERIFIED RAFFLE
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Decorative Grid Background Glow */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-emerald-600/20 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-amber-600/15 to-transparent pointer-events-none" />
       </div>
 
       {/* Value Proposition Cards */}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useI18n, useTheme } from "@raffle/shared";
+import { useI18n, useTheme, LuckyTicketIcon } from "@raffle/shared";
 import {
   Ticket,
   Trophy,
@@ -95,22 +95,17 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-              <Ticket className="w-5 h-5 -rotate-12" />
-              {/* Ethiopian Mini Tricolor indicator */}
-              <div className="absolute -bottom-1 -right-1 flex h-2 w-4 rounded overflow-hidden shadow-xs border border-white">
-                <div className="w-1/3 bg-[#009A44]" />
-                <div className="w-1/3 bg-[#FEDD00]" />
-                <div className="w-1/3 bg-[#EF3340]" />
-              </div>
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+            <div className="relative group-hover:scale-105 transition-transform duration-200">
+              <LuckyTicketIcon size={42} />
             </div>
             <div>
-              <span className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight flex items-center gap-1">
-                Lucky<span className="text-emerald-600 dark:text-emerald-400">Ethio</span>
-              </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block leading-none">
-                {language === "AM" ? "የኢትዮጵያ ፍትሃዊ ሎተሪ" : "Licensed Ethiopian Raffle"}
+              <div className="font-black text-base sm:text-lg text-amber-500 dark:text-amber-400 tracking-tight flex items-center leading-none">
+                <span>LUCKY</span>
+                <span className="text-amber-400 dark:text-amber-300 ml-1">TICKET</span>
+              </div>
+              <span className="text-[8px] sm:text-[9px] text-blue-600 dark:text-blue-400 font-extrabold uppercase font-mono tracking-wider block mt-0.5 leading-none">
+                {language === "AM" ? "ዲጂታል የዕጣ መድረክ" : "DIGITAL RAFFLE PLATFORM"}
               </span>
             </div>
           </Link>

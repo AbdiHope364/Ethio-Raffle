@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useI18n, useTheme, DEMO_ACCOUNTS } from "@raffle/shared";
+import { useI18n, useTheme, DEMO_ACCOUNTS, LuckyTicketIcon } from "@raffle/shared";
 import {
   LayoutDashboard,
   Ticket,
@@ -83,20 +83,19 @@ export default function AdminShell({ children }: AdminShellProps) {
       >
         <div>
           {/* Brand Header */}
-          <div className="h-16 px-5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-lg shadow-purple-600/30">
-                <Ticket className="w-5 h-5 -rotate-12" />
-              </div>
+          <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <LuckyTicketIcon size={36} />
               <div>
-                <span className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
-                  Lucky<span className="text-purple-600 dark:text-purple-400">Ethio</span>
-                  <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                <div className="font-black text-sm text-amber-500 dark:text-amber-400 tracking-tight flex items-center leading-none">
+                  <span>LUCKY</span>
+                  <span className="text-amber-400 dark:text-amber-300 ml-1">TICKET</span>
+                  <span className="text-[8px] uppercase font-black px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 ml-1.5">
                     Admin
                   </span>
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-mono">
-                  Operations Console
+                </div>
+                <span className="text-[9px] text-purple-600 dark:text-purple-400 font-extrabold uppercase font-mono tracking-wider block mt-0.5 leading-none">
+                  OPERATIONS CONSOLE
                 </span>
               </div>
             </div>
