@@ -20,6 +20,8 @@
     }
   },
   "include": [
+    "types/**/*.d.ts",
+    "apps/**/*.d.ts",
     "apps/**/*.ts",
     "apps/**/*.tsx",
     "packages/**/*.ts",
