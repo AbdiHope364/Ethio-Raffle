@@ -16,9 +16,11 @@ export async function POST(req: NextRequest) {
       soldByAgentId,
     } = body;
 
-    if (!raffleId || !ticketCount) {
+    const count = ticketCount ? parseInt(ticketCount, 10) : (specificNumbers?.length || 1);
+
+    if (!raffleId || count <= 0) {
       return NextResponse.json(
-        { error: "Raffle ID and ticket count are required." },
+        { error: "Raffle ID and valid ticket count are required." },
         { status: 400 }
       );
     }
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
       raffleId,
       userId: session?.userId,
       customerPhone: phone,
-      ticketCount: parseInt(ticketCount, 10),
+      ticketCount: count,
       specificNumbers,
       paymentMethod,
       soldByAgentId,
@@ -37,6 +39,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      ...payment,
       payment,
     });
   } catch (error: any) {
@@ -44,4 +47,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
