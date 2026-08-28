@@ -187,21 +187,21 @@ export default function TicketSelector({
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
               <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-md bg-white border border-slate-300 inline-block shadow-2xs" />
+                <span className="w-3.5 h-3.5 rounded-md bg-white border border-slate-300 inline-block shadow-xs" />
                 <span className="font-semibold text-slate-700">Available</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-md bg-emerald-600 inline-block shadow-2xs" />
+                <span className="w-3.5 h-3.5 rounded-md bg-emerald-600 inline-block shadow-xs" />
                 <span className="font-bold text-emerald-700">Selected</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-md bg-amber-400 border border-amber-500 inline-block shadow-2xs flex items-center justify-center text-[8px] font-black text-slate-950">
+                <span className="w-3.5 h-3.5 rounded-md bg-amber-400 border border-amber-500 inline-flex items-center justify-center text-[8px] font-black text-slate-950 shadow-xs">
                   ⏳
                 </span>
                 <span className="font-bold text-amber-700">Booked (1hr)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-md bg-slate-300 border border-slate-400 inline-block shadow-2xs flex items-center justify-center text-[8px] font-black text-slate-600">
+                <span className="w-3.5 h-3.5 rounded-md bg-slate-300 border border-slate-400 inline-flex items-center justify-center text-[8px] font-black text-slate-600 shadow-xs">
                   🔒
                 </span>
                 <span className="font-bold text-slate-500 line-through">Sold</span>
