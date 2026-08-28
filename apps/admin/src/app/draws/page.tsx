@@ -99,20 +99,24 @@ function AdminDrawsConsoleContent() {
         if (!res.ok || !data.success) {
           setErrorMsg(data.error || "Draw execution failed.");
           setIsDrawing(false);
-        } else {
-          setAnimatedNumber(data.winningTicketNumber);
-          setDrawResult(data);
-          setIsDrawing(false);
-          confetti({
-            particleCount: 150,
-            spread: 100,
-            origin: { y: 0.5 },
-          });
-          fetchActiveRaffles();
+          return;
         }
+
+        setDrawResult(data);
+        setIsDrawing(false);
+
+        try {
+          confetti({
+            particleCount: 120,
+            spread: 100,
+            origin: { y: 0.4 },
+          });
+        } catch (e) {}
+
+        fetchActiveRaffles();
       } catch (e: any) {
         clearInterval(shuffleTimer);
-        setErrorMsg(e.message || "Network error");
+        setErrorMsg(e.message || "Failed to execute live draw.");
         setIsDrawing(false);
       }
     };
@@ -135,8 +139,8 @@ function AdminDrawsConsoleContent() {
       </div>
 
       {/* Raffle Selector & Commitment Status */}
-      <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+      <div className="bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-6 lg:p-8 shadow-sm space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center">
           <div className="md:col-span-6 space-y-2">
             <label className="block text-xs font-bold text-slate-300">
               Select Active Raffle to Draw
@@ -174,20 +178,29 @@ function AdminDrawsConsoleContent() {
           <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 text-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-start sm:items-center gap-3.5 sm:gap-4">
+                <img
+                  src={selectedRaffle.prizeImage}
+                  alt={selectedRaffle.title}
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-slate-800 shrink-0"
                 />
                 <div className="min-w-0">
                   <span className="text-[9px] sm:text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    {selectedRaffle.category.replace("_", " ")}
                   </span>
                   <h3 className="text-base sm:text-xl font-extrabold text-white mt-1 line-clamp-1">
                     {selectedRaffle.title}
+                  </h3>
+                  <span className="text-[11px] sm:text-xs text-purple-300 font-mono block">
                     Sold: {selectedRaffle.soldTickets} / {selectedRaffle.totalTickets} ({selectedRaffle.ticketPrice} ETB each)
                   </span>
                 </div>
+              </div>
 
               {!drawResult && (
                 <button
                   disabled={isDrawing || selectedRaffle.soldTickets <= 0}
+                  onClick={handleStartLiveDraw}
+                  className="w-full sm:w-auto px-5 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-purple-600/40 transition transform active:scale-95 flex items-center justify-center gap-2 shrink-0"
                 >
                   <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                   <span>{isDrawing ? "Executing Live Draw..." : t.admin.startDraw}</span>
@@ -197,11 +210,13 @@ function AdminDrawsConsoleContent() {
 
             {/* Live Animation / Countdown Stage */}
             {isDrawing && (
+              <div className="bg-slate-900/90 rounded-2xl p-6 sm:p-8 border border-purple-700/50 text-center space-y-4 animate-in fade-in">
                 {countdown !== null ? (
                   <div className="space-y-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-purple-300">
                       Live Draw Starting in:
                     </span>
-                    <div className="text-6xl font-black text-amber-300 font-mono animate-bounce">
+                    <div className="text-5xl sm:text-6xl font-black text-amber-300 font-mono animate-bounce">
                       {countdown}
                     </div>
                   </div>
@@ -210,7 +225,7 @@ function AdminDrawsConsoleContent() {
                     <span className="text-xs font-bold uppercase tracking-widest text-purple-300">
                       RNG Cryptographic Seed Extraction in Progress...
                     </span>
-                    <div className="text-5xl font-black text-emerald-400 font-mono tracking-widest">
+                    <div className="text-4xl sm:text-5xl font-black text-emerald-400 font-mono tracking-widest">
                       #{animatedNumber}
                     </div>
                   </div>
@@ -228,7 +243,7 @@ function AdminDrawsConsoleContent() {
                   <h4 className="text-2xl font-black text-amber-300 tracking-tight">
                     Winner Confirmed & Provably Verified!
                   </h4>
-                  <div className="text-5xl font-black text-white font-mono tracking-tight pt-1">
+                  <div className="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight pt-1">
                     Ticket #{drawResult.winningTicketNumber}
                   </div>
                 </div>
@@ -293,4 +308,3 @@ export default function AdminDrawsPage() {
     </Suspense>
   );
 }
-
