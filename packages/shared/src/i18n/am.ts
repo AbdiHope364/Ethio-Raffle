@@ -81,6 +81,7 @@ export const am = {
     suspendedNotice: "የወኪል አካውንትዎ ታግዷል። እባክዎን አስተዳዳሪውን ያነጋግሩ።",
   },
   admin: {
+    overview: "አጠቃላይ እይታ",
     consoleTitle: "የሲስተም አስተዳዳሪ ፓነል",
     totalRevenue: "አጠቃላይ ገቢ",
     totalTicketsSold: "አጠቃላይ የተሸጡ ቲኬቶች",
@@ -91,6 +92,8 @@ export const am = {
     manageAgents: "የወኪሎች ማረጋገጫ እና ገደብ",
     liveDrawRoom: "የቀጥታ ፍትሃዊ ዕጣ ማውጫ",
     financialLedger: "የሂሳብ መዝገብ",
+    securityAudits: "የደህንነት ኦዲት",
+    systemSettings: "የሲስተም ቅንብሮች",
     agentName: "የወኪል ስም",
     business: "ንግድ / ኪዮስክ",
     region: "አካባቢ / ክልል",

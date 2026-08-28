@@ -81,6 +81,7 @@ export const en = {
     suspendedNotice: "Your agent account is suspended. Please contact Admin.",
   },
   admin: {
+    overview: "Overview",
     consoleTitle: "Raffle Platform Administration",
     totalRevenue: "Total Revenue",
     totalTicketsSold: "Total Tickets Sold",
@@ -91,6 +92,8 @@ export const en = {
     manageAgents: "Agent Approval & Limits",
     liveDrawRoom: "Provably Fair Draw Console",
     financialLedger: "System Financials",
+    securityAudits: "Security Audits",
+    systemSettings: "System Settings",
     agentName: "Agent Name",
     business: "Business / Kiosk",
     region: "Region",
