@@ -1,0 +1,170 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  phone         String    @unique
+  fullName      String
+  nationalId    String?
+  role          String    @default("CUSTOMER") // CUSTOMER, AGENT, ADMIN, SUPER_ADMIN
+  isVerified    Boolean   @default(false)
+  status        String    @default("ACTIVE") // ACTIVE, SUSPENDED
+  preferredLang String    @default("EN") // EN, AM
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  agentProfile  Agent?
+  tickets       Ticket[]
+  transactions  Transaction[]
+  adminLogs     AgentAccessLog[] @relation("AdminChanger")
+  wonRaffles    Raffle[]         @relation("RaffleWinner")
+}
+
+model Agent {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String
+  businessName    String?
+  nationalIdRef   String?
+  region          String           @default("Addis Ababa")
+  tier            String           @default("AGENT") // AGENT, SUPER_AGENT
+  status          String           @default("PENDING") // PENDING, ACTIVE, SUSPENDED, REVOKED
+  commissionRate  Float            @default(5.0) // 5% by default
+  dailySalesLimit Float            @default(50000.0) // Daily limit in ETB
+  walletMode      String           @default("PREPAID") // PREPAID, POSTPAID
+  floatBalance    Float            @default(0.0) // Current available float
+  creditLimit     Float            @default(0.0) // Credit limit for postpaid
+  createdByAdminId String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  ledgerEntries   AgentLedger[]
+  accessLogs      AgentAccessLog[]
+  soldTickets     Ticket[]         @relation("SoldByAgent")
+}
+
+model AgentLedger {
+  id           String   @id @default(uuid())
+  agentId      String
+  agent        Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  entryType    String   // TOPUP, SALE_DEDUCTION, COMMISSION_ACCRUED, PAYOUT, ADJUSTMENT
+  amount       Float
+  balanceAfter Float
+  referenceId  String?
+  note         String?
+  createdAt    DateTime @default(now())
+}
+
+model AgentAccessLog {
+  id                 String   @id @default(uuid())
+  agentId            String
+  agent              Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  changedByAdminId   String?
+  adminUser          User?    @relation("AdminChanger", fields: [changedByAdminId], references: [id], onDelete: SetNull)
+  action             String   // GRANTED, SUSPENDED, REVOKED, PERMISSION_UPDATED, LIMIT_CHANGED
+  details            String   // JSON string with change details
+  createdAt          DateTime @default(now())
+}
+
+model Raffle {
+  id                 String        @id @default(uuid())
+  title              String
+  titleAm            String?
+  description        String
+  descriptionAm      String?
+  category           String        @default("VEHICLE") // VEHICLE, ELECTRONICS, REAL_ESTATE, CASH, LUXURY
+  prizeName          String
+  prizeNameAm        String?
+  prizeImage         String
+  prizeValue         Float
+  ticketPrice        Float
+  totalTickets       Int
+  soldTickets        Int           @default(0)
+  maxTicketsPerUser  Int           @default(100)
+  status             String        @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, CLOSED, DRAWN
+  drawDate           DateTime
+  commitHash         String?
+  secretSeed         String?
+  revealedSeed       String?
+  winningTicketNumber Int?
+  winnerUserId       String?
+  winnerUser         User?         @relation("RaffleWinner", fields: [winnerUserId], references: [id], onDelete: SetNull)
+  winnerTicketId     String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  tickets            Ticket[]
+  transactions       Transaction[]
+  drawAudit          DrawAudit?
+}
+
+model Ticket {
+  id               String       @id @default(uuid())
+  raffleId         String
+  raffle           Raffle       @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  userId           String?
+  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerPhone    String?
+  ticketNumber     Int
+  transactionId    String?
+  transaction      Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  soldByAgentId    String?
+  soldByAgent      Agent?       @relation("SoldByAgent", fields: [soldByAgentId], references: [id], onDelete: SetNull)
+  purchaseMethod   String       @default("ONLINE") // ONLINE, AGENT_CASH, USSD
+  verificationCode String       @unique
+  status           String       @default("CONFIRMED") // CONFIRMED, REFUNDED
+  createdAt        DateTime     @default(now())
+
+  @@unique([raffleId, ticketNumber])
+}
+
+model Transaction {
+  id             String    @id @default(uuid())
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  raffleId       String
+  raffle         Raffle    @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  customerPhone  String?
+  txRef          String    @unique
+  amount         Float
+  ticketCount    Int       @default(1)
+  paymentMethod  String    // CHAPA, SANTIMPAY, TELEBIRR, CBE_BIRR, AGENT_CASH
+  status         String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  rawPayload     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  tickets        Ticket[]
+}
+
+model DrawAudit {
+  id                  String   @id @default(uuid())
+  raffleId            String   @unique
+  raffle              Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  commitHash          String
+  secretSeed          String
+  revealedAt          DateTime @default(now())
+  totalSoldTickets    Int
+  winningTicketNumber Int
+  formulaDescription  String
+  verifiedBy          String?
+  createdAt           DateTime @default(now())
+}
+
+model USSDSession {
+  id          String   @id @default(uuid())
+  sessionId   String   @unique
+  phoneNumber String
+  currentMenu String   @default("MAIN")
+  sessionData String   @default("{}") // JSON string for session context
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+
