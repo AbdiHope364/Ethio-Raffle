@@ -6,62 +6,61 @@ import { useI18n } from "@/lib/i18n/context";
 import TicketSelector from "@/components/customer/TicketSelector";
 import PaymentSimulatorDrawer from "@/components/customer/PaymentSimulatorDrawer";
 import {
-  Clock,
   ShieldCheck,
+  Clock,
+  Ticket,
   Trophy,
   ArrowLeft,
+  Share2,
   Copy,
   Check,
+  Lock,
   Sparkles,
-  Award,
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 
-export default function RaffleDetailPage() {
-  const params = useParams();
+export default function RaffleDetailsPage() {
+  const { id } = useParams() as { id: string };
   const router = useRouter();
   const { t, language } = useI18n();
 
   const [raffle, setRaffle] = useState<any>(null);
   const [soldNumbers, setSoldNumbers] = useState<number[]>([]);
-  const [bookedNumbers, setBookedNumbers] = useState<any[]>([]);
+  const [bookedNumbers, setBookedNumbers] = useState<Array<number | { number: number; expiresAt: string }>>([]);
   const [takenNumbers, setTakenNumbers] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Payment Drawer state
+  // Payment Drawer State
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [paymentData, setPaymentData] = useState<{
-    txRef: string;
-    amount: number;
-    paymentMethod: string;
-    customerPhone: string;
-    ticketCount: number;
-    expiresAt?: string;
-    reservedNumbers?: number[];
-  } | null>(null);
+  const [paymentData, setPaymentData] = useState<any>(null);
 
+  // Copy state
   const [copiedHash, setCopiedHash] = useState(false);
 
   useEffect(() => {
-    if (params.id) {
-      fetchRaffleDetails(params.id as string);
+    if (id) {
+      fetchRaffleDetails(id);
     }
-  }, [params.id]);
+  }, [id]);
 
-  const fetchRaffleDetails = async (id: string) => {
+  const fetchRaffleDetails = async (raffleId: string) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/raffles/${id}`);
+      const res = await fetch(`/api/raffles/${raffleId}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load raffle");
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to load raffle");
+      }
+
       setRaffle(data.raffle);
       setSoldNumbers(data.soldNumbers || []);
       setBookedNumbers(data.bookedNumbers || []);
       setTakenNumbers(data.takenNumbers || []);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -70,7 +69,7 @@ export default function RaffleDetailPage() {
   const handleProceedCheckout = async (formData: {
     ticketCount: number;
     specificNumbers?: number[];
-    paymentMethod: "CHAPA" | "SANTIMPAY" | "TELEBIRR" | "CBE_BIRR" | "AGENT_CASH";
+    paymentMethod: "TELEBIRR" | "CBE_BIRR" | "CHAPA" | "SANTIMPAY";
     customerPhone: string;
   }) => {
     try {
@@ -79,33 +78,33 @@ export default function RaffleDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           raffleId: raffle.id,
-          customerPhone: formData.customerPhone,
           ticketCount: formData.ticketCount,
           specificNumbers: formData.specificNumbers,
           paymentMethod: formData.paymentMethod,
+          customerPhone: formData.customerPhone,
         }),
       });
 
       const data = await res.json();
+
       if (!res.ok || !data.success) {
-        alert(data.error || "Failed to initialize checkout.");
+        alert(data.error || "Failed to initialize booking.");
         return;
       }
 
       setPaymentData({
-        txRef: data.payment.txRef,
-        amount: data.payment.amount,
+        txRef: data.txRef,
+        amount: data.amount,
         paymentMethod: formData.paymentMethod,
         customerPhone: formData.customerPhone,
         ticketCount: formData.ticketCount,
-        expiresAt: data.payment.expiresAt,
-        reservedNumbers: data.payment.reservedNumbers,
+        expiresAt: data.expiresAt,
       });
+
       setIsDrawerOpen(true);
-      // Refresh numbers to show newly booked tickets as amber immediately
-      fetchRaffleDetails(raffle.id);
-    } catch (e: any) {
-      alert(e.message || "Network error");
+    } catch (e) {
+      console.error(e);
+      alert("Error initializing payment.");
     }
   };
 
@@ -119,7 +118,7 @@ export default function RaffleDetailPage() {
     return (
       <div className="py-20 text-center space-y-4">
         <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-sm font-semibold text-slate-500">Loading raffle details...</p>
+        <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Loading raffle details...</p>
       </div>
     );
   }
@@ -127,14 +126,14 @@ export default function RaffleDetailPage() {
   if (error || !raffle) {
     return (
       <div className="py-16 text-center space-y-4 max-w-md mx-auto">
-        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-lg font-bold text-slate-900">Raffle Not Found</h2>
-        <p className="text-xs text-slate-500">{error || "Could not retrieve details."}</p>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Raffle Not Found</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{error || "Could not retrieve details."}</p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-700 transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Catalog
         </Link>
@@ -152,11 +151,11 @@ export default function RaffleDetailPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 transition-colors">
       {/* Back Button */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 transition"
+        className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
       >
         <ArrowLeft className="w-4 h-4" /> Back to All Raffles
       </Link>
@@ -165,7 +164,7 @@ export default function RaffleDetailPage() {
         {/* Left Column: Prize Media & Info */}
         <div className="lg:col-span-7 space-y-6">
           {/* Main Image */}
-          <div className="relative h-80 sm:h-96 rounded-3xl overflow-hidden bg-slate-900 shadow-lg border border-slate-200">
+          <div className="relative h-80 sm:h-96 rounded-3xl overflow-hidden bg-slate-900 shadow-lg border border-slate-200 dark:border-slate-800">
             <img
               src={raffle.prizeImage}
               alt={displayTitle}
@@ -173,7 +172,7 @@ export default function RaffleDetailPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-xs">
+            <div className="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur text-slate-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-xs">
               {raffle.category.replace("_", " ")}
             </div>
 
@@ -198,29 +197,29 @@ export default function RaffleDetailPage() {
           </div>
 
           {/* Title & Description */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-xs">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs transition-colors">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
               {displayTitle}
             </h1>
-            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
               {displayDescription}
             </p>
 
             {/* Progress Bar Details */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-              <div className="flex justify-between text-xs font-bold text-slate-700">
+            <div className="bg-slate-50 dark:bg-slate-950/60 p-4 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                 <span>
                   {raffle.soldTickets.toLocaleString()} / {raffle.totalTickets.toLocaleString()} {t.raffles.ticketsSold}
                 </span>
-                <span className="text-emerald-700">{percentageSold}% Confirmed</span>
+                <span className="text-emerald-700 dark:text-emerald-400">{percentageSold}% Confirmed</span>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2.5 rounded-full"
                   style={{ width: `${percentageSold}%` }}
                 />
               </div>
-              <div className="text-[11px] text-slate-500 flex justify-between">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
                 <span>
                   {Math.max(0, raffle.totalTickets - (soldNumbers.length + bookedNumbers.length)).toLocaleString()} {t.common.ticketsRemaining}
                   {bookedNumbers.length > 0 && ` (${bookedNumbers.length} held in-flight)`}

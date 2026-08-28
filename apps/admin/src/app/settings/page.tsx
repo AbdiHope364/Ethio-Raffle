@@ -37,110 +37,110 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-4xl transition-colors">
       {/* Header */}
-      <div className="border-b border-slate-800 pb-5">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
-          <Settings className="w-7 h-7 text-purple-400" />
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-5">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+          <Settings className="w-7 h-7 text-purple-600 dark:text-purple-400" />
           <span>Platform & Regulatory Configuration</span>
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
           National Lottery Administration statutory credentials, payment gateway keys, and channel toggles.
         </p>
       </div>
 
       {saved && (
-        <div className="p-4 bg-emerald-950/80 border border-emerald-700 text-emerald-200 text-xs rounded-2xl flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 text-xs rounded-2xl flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           <span>Configuration saved successfully!</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* NLA Section */}
-        <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 space-y-4">
-          <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Shield className="w-4 h-4 text-amber-400" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs transition-colors">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Shield className="w-4 h-4 text-amber-500" />
             <span>National Lottery Administration (NLA) Compliance</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">Statutory License Number</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Statutory License Number</label>
               <input
                 type="text"
                 value={formData.nlaLicenseNumber}
                 onChange={(e) => setFormData({ ...formData, nlaLicenseNumber: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">Designated NLA Inspector</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Designated NLA Inspector</label>
               <input
                 type="text"
                 value={formData.nlaAuditorOfficer}
                 onChange={(e) => setFormData({ ...formData, nlaAuditorOfficer: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
               />
             </div>
           </div>
         </div>
 
         {/* Gateways Section */}
-        <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 space-y-4">
-          <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Key className="w-4 h-4 text-purple-400" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs transition-colors">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Key className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             <span>Ethiopian Payment Gateway Credentials</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">Telebirr App ID</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Telebirr App ID</label>
               <input
                 type="text"
                 value={formData.telebirrAppId}
                 onChange={(e) => setFormData({ ...formData, telebirrAppId: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">CBE Birr Merchant ID</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">CBE Birr Merchant ID</label>
               <input
                 type="text"
                 value={formData.cbeBirrMerchantId}
                 onChange={(e) => setFormData({ ...formData, cbeBirrMerchantId: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">Chapa Secret Key</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Chapa Secret Key</label>
               <input
                 type="password"
                 value={formData.chapaSecretKey}
                 onChange={(e) => setFormData({ ...formData, chapaSecretKey: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-300">SantimPay Merchant ID</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">SantimPay Merchant ID</label>
               <input
                 type="text"
                 value={formData.santimpayMerchantId}
                 onChange={(e) => setFormData({ ...formData, santimpayMerchantId: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white font-mono"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono"
               />
             </div>
           </div>
         </div>
 
         {/* Channel Toggles */}
-        <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 space-y-4">
-          <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Radio className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs transition-colors">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Radio className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Distribution Channel Controls</span>
           </h3>
 
@@ -150,9 +150,9 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={formData.enableUssdChannel}
                 onChange={(e) => setFormData({ ...formData, enableUssdChannel: e.target.checked })}
-                className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 bg-slate-950 border-slate-800"
+                className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800"
               />
-              <span className="text-xs font-bold text-slate-300">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 Enable Feature Phone USSD Gateway (*804#)
               </span>
             </label>
@@ -162,9 +162,9 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={formData.enableWalkInAgentCash}
                 onChange={(e) => setFormData({ ...formData, enableWalkInAgentCash: e.target.checked })}
-                className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 bg-slate-950 border-slate-800"
+                className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800"
               />
-              <span className="text-xs font-bold text-slate-300">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 Enable Physical Agent Kiosk Walk-in Cash Ticketing
               </span>
             </label>
@@ -182,4 +182,3 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
-

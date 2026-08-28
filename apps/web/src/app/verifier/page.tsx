@@ -106,25 +106,25 @@ function VerifierContent() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 transition-colors">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           <span>Zero-Trust Cryptographic Verification</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           {t.verifier.title}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
           {t.verifier.subtitle}
         </p>
       </div>
 
       {/* Preset Quick Loader */}
       {drawnList.length > 0 && (
-        <div className="bg-slate-100 p-4 rounded-2xl border border-slate-200 space-y-2">
-          <span className="text-xs font-bold text-slate-700 block">
+        <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
             Quick Load Completed Draw to Verify:
           </span>
           <div className="flex flex-wrap gap-2">
@@ -132,10 +132,10 @@ function VerifierContent() {
               <button
                 key={r.id}
                 onClick={() => loadRaffleToVerifier(r)}
-                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-300 transition flex items-center gap-1.5 shadow-xs"
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5 shadow-xs"
               >
                 <span>{r.title}</span>
-                <span className="text-purple-600 font-mono">#{r.winningTicketNumber}</span>
+                <span className="text-purple-600 dark:text-purple-400 font-mono">#{r.winningTicketNumber}</span>
               </button>
             ))}
           </div>
@@ -143,10 +143,10 @@ function VerifierContent() {
       )}
 
       {/* Verification Form */}
-      <form onSubmit={handleVerify} className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+      <form onSubmit={handleVerify} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6 transition-colors">
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
               {t.verifier.revealedSeedLabel}
             </label>
             <div className="relative">
@@ -157,13 +157,13 @@ function VerifierContent() {
                 value={seed}
                 onChange={(e) => setSeed(e.target.value)}
                 placeholder="64-character hex seed (e.g. 7f8b9c2a1d4e...)"
-                className="w-full pl-9 pr-3 py-2.5 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full pl-9 pr-3 py-2.5 text-xs font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
               {t.verifier.commitHashLabel}
             </label>
             <div className="relative">
@@ -174,14 +174,14 @@ function VerifierContent() {
                 value={commitHash}
                 onChange={(e) => setCommitHash(e.target.value)}
                 placeholder="SHA-256 pre-committed hash"
-                className="w-full pl-9 pr-3 py-2.5 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full pl-9 pr-3 py-2.5 text-xs font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Raffle ID
               </label>
               <input
@@ -189,12 +189,12 @@ function VerifierContent() {
                 required
                 value={raffleId}
                 onChange={(e) => setRaffleId(e.target.value)}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 {t.verifier.totalTicketsLabel}
               </label>
               <input
@@ -202,12 +202,12 @@ function VerifierContent() {
                 required
                 value={totalTickets}
                 onChange={(e) => setTotalTickets(e.target.value)}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 {t.verifier.soldTicketsLabel}
               </label>
               <input
@@ -215,13 +215,13 @@ function VerifierContent() {
                 required
                 value={soldTickets}
                 onChange={(e) => setSoldTickets(e.target.value)}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
               {t.verifier.winningTicketLabel}
             </label>
             <input
@@ -229,7 +229,7 @@ function VerifierContent() {
               required
               value={declaredWinner}
               onChange={(e) => setDeclaredWinner(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm font-bold font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-purple-700"
+              className="w-full px-3 py-2.5 text-sm font-bold font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-purple-700 dark:text-purple-400"
             />
           </div>
         </div>

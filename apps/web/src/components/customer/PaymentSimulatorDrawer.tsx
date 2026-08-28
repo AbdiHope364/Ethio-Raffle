@@ -54,7 +54,6 @@ export default function PaymentSimulatorDrawer({
 
   useEffect(() => {
     if (!expiresAt) {
-      // Default to 60 minutes from now if not explicitly passed
       const target = Date.now() + 60 * 60 * 1000;
       updateCountdown(target);
       const interval = setInterval(() => updateCountdown(target), 1000);
@@ -112,16 +111,16 @@ export default function PaymentSimulatorDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-8 shadow-2xl border border-slate-200 space-y-5 sm:space-y-6 relative overflow-y-auto max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5 sm:space-y-6 relative overflow-y-auto max-h-[92vh]">
         {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold">
               <Smartphone className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 text-base">
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
                 {paymentMethod} Gateway
               </h3>
               <span className="text-[11px] text-slate-400 font-mono">Ref: {txRef}</span>
@@ -129,7 +128,7 @@ export default function PaymentSimulatorDrawer({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xl font-bold p-1"
           >
             ×
           </button>
@@ -142,15 +141,15 @@ export default function PaymentSimulatorDrawer({
             <div
               className={`p-3.5 rounded-2xl border flex items-center justify-between transition ${
                 isExpired
-                  ? "bg-red-50 border-red-200 text-red-800"
-                  : "bg-amber-50/90 border-amber-200 text-amber-900"
+                  ? "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+                  : "bg-amber-50/90 dark:bg-amber-950/50 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200"
               }`}
             >
               <div className="flex items-center gap-2.5">
                 {isExpired ? (
-                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
                 ) : (
-                  <Clock className="w-5 h-5 text-amber-600 animate-pulse shrink-0" />
+                  <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400 animate-pulse shrink-0" />
                 )}
                 <div>
                   <span className="text-xs font-extrabold block">
@@ -169,8 +168,8 @@ export default function PaymentSimulatorDrawer({
                   <span
                     className={`text-lg font-black px-2.5 py-1 rounded-xl ${
                       isExpired
-                        ? "bg-red-200 text-red-900"
-                        : "bg-amber-200 text-amber-950 shadow-xs"
+                        ? "bg-red-200 dark:bg-red-900 text-red-900 dark:text-red-100"
+                        : "bg-amber-200 dark:bg-amber-900 text-amber-950 dark:text-amber-100 shadow-xs"
                     }`}
                   >
                     {String(timeLeft.minutes).padStart(2, "0")}:
@@ -181,40 +180,40 @@ export default function PaymentSimulatorDrawer({
             </div>
 
             {/* Payment Summary Box */}
-            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-3">
+            <div className="bg-slate-50 dark:bg-slate-950/60 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 space-y-3">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Raffle:</span>
-                <span className="font-bold text-slate-900 text-right">{raffleTitle}</span>
+                <span className="text-slate-500 dark:text-slate-400">Raffle:</span>
+                <span className="font-bold text-slate-900 dark:text-white text-right">{raffleTitle}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Tickets:</span>
-                <span className="font-bold text-slate-900">{ticketCount} Ticket(s)</span>
+                <span className="text-slate-500 dark:text-slate-400">Tickets:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{ticketCount} Ticket(s)</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Customer Mobile:</span>
-                <span className="font-bold text-slate-900 font-mono">{customerPhone}</span>
+                <span className="text-slate-500 dark:text-slate-400">Customer Mobile:</span>
+                <span className="font-bold text-slate-900 dark:text-white font-mono">{customerPhone}</span>
               </div>
-              <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
-                <span className="text-sm font-bold text-slate-700">Amount Due:</span>
-                <span className="text-2xl font-black text-emerald-700 font-mono">
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between items-baseline">
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Amount Due:</span>
+                <span className="text-2xl font-black text-emerald-700 dark:text-emerald-400 font-mono">
                   {amount.toLocaleString()} ETB
                 </span>
               </div>
             </div>
 
             {/* Gateway UI Simulation Notice */}
-            <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-900 space-y-1">
+            <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3.5 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
               <div className="font-bold flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 <span>Simulated Ethiopian Payment Flow</span>
               </div>
-              <p className="text-[11px] text-emerald-800 leading-relaxed">
+              <p className="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
                 In production, customer receives a Telebirr USSD push or Chapa checkout prompt. Click below to simulate the instant payment callback & ticket minting.
               </p>
             </div>
 
             {errorMsg && (
-              <div className="bg-red-50 text-red-700 p-3 rounded-xl text-xs border border-red-200 flex items-center gap-2">
+              <div className="bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 p-3 rounded-xl text-xs border border-red-200 dark:border-red-800 flex items-center gap-2">
                 <XCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -234,7 +233,7 @@ export default function PaymentSimulatorDrawer({
               <button
                 disabled={loading}
                 onClick={() => handleSimulatePayment("FAILED")}
-                className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm border border-slate-200 flex items-center justify-center gap-2 transition disabled:opacity-50"
+                className="py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition disabled:opacity-50"
               >
                 <XCircle className="w-4 h-4 text-red-500" />
                 <span>Simulate Failure</span>
@@ -247,31 +246,31 @@ export default function PaymentSimulatorDrawer({
         {result && (
           <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
             <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h4 className="font-black text-xl text-slate-900">
+              <h4 className="font-black text-xl text-slate-900 dark:text-white">
                 Payment & Ticketing Complete!
               </h4>
-              <p className="text-xs text-slate-500">
-                Official ticket confirmation has been minted and dispatched to <strong className="text-slate-800">{customerPhone}</strong>.
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Official ticket confirmation has been minted and dispatched to <strong className="text-slate-800 dark:text-slate-200">{customerPhone}</strong>.
               </p>
             </div>
 
             {/* Ticket Numbers Cards */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-              <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+            <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center justify-between">
                 <span>Minted Ticket(s)</span>
-                <span className="text-emerald-700 font-mono">Status: CONFIRMED</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-mono">Status: CONFIRMED</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {result.tickets?.map((tkt: any) => (
                   <div
                     key={tkt.id || tkt.ticketNumber}
-                    className="bg-white p-2.5 rounded-xl border border-emerald-200 shadow-xs flex flex-col items-center justify-center text-center"
+                    className="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-700 shadow-xs flex flex-col items-center justify-center text-center"
                   >
-                    <span className="text-lg font-black text-emerald-700">
+                    <span className="text-lg font-black text-emerald-700 dark:text-emerald-400">
                       #{tkt.ticketNumber}
                     </span>
                     <span className="text-[10px] text-slate-400 font-mono mt-0.5">
@@ -289,7 +288,7 @@ export default function PaymentSimulatorDrawer({
                   onClose();
                   router.push("/my-tickets");
                 }}
-                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md"
+                className="w-full py-3.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md"
               >
                 <Ticket className="w-4 h-4 text-emerald-400" />
                 <span>View in My Tickets Dashboard</span>
@@ -298,7 +297,7 @@ export default function PaymentSimulatorDrawer({
 
               <button
                 onClick={onClose}
-                className="w-full py-2 text-xs text-slate-500 hover:text-slate-800 font-semibold"
+                className="w-full py-2 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-semibold"
               >
                 Close Window
               </button>

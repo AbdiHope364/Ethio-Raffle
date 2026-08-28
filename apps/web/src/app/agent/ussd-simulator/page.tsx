@@ -105,17 +105,17 @@ export default function USSDSimulatorPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 transition-colors">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200">
-          <Smartphone className="w-4 h-4 text-amber-600" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-xs font-bold border border-amber-200 dark:border-amber-800">
+          <Smartphone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>Feature Phone & Offline Kiosk Terminal</span>
         </div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
           USSD Service Emulator (*804#)
         </h1>
-        <p className="text-xs text-slate-500 max-w-xl mx-auto">
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
           Simulate how offline customers and kiosk agents without smartphones access the LuckyEthio raffle system over GSM USSD protocol.
         </p>
       </div>
@@ -123,20 +123,20 @@ export default function USSDSimulatorPage() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Left Column: Phone Settings & Quick Presets */}
         <div className="md:col-span-6 space-y-5">
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <h3 className="font-extrabold text-sm text-slate-900">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4 transition-colors">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
               SIM & Network Profile
             </h3>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 Calling MSISDN (Phone Number)
               </label>
               <input
                 type="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-3 py-2 text-sm font-mono rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
@@ -153,8 +153,8 @@ export default function USSDSimulatorPage() {
                   }}
                   className={`p-2.5 rounded-xl border text-left text-xs transition ${
                     phoneNumber === "+251912345678"
-                      ? "bg-emerald-50 text-emerald-800 border-emerald-600 font-bold"
-                      : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                      ? "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-600 dark:border-emerald-500 font-bold"
+                      : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
                   }`}
                 >
                   <span className="block font-bold">Dawit (Agent)</span>
@@ -168,8 +168,8 @@ export default function USSDSimulatorPage() {
                   }}
                   className={`p-2.5 rounded-xl border text-left text-xs transition ${
                     phoneNumber === "+251933445566"
-                      ? "bg-emerald-50 text-emerald-800 border-emerald-600 font-bold"
-                      : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                      ? "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-600 dark:border-emerald-500 font-bold"
+                      : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
                   }`}
                 >
                   <span className="block font-bold">Helen (Customer)</span>
@@ -179,12 +179,12 @@ export default function USSDSimulatorPage() {
             </div>
           </div>
 
-          <div className="bg-slate-100 rounded-3xl border border-slate-200 p-5 text-xs text-slate-600 space-y-2">
-            <h4 className="font-bold text-slate-800 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="bg-slate-100 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 text-xs text-slate-600 dark:text-slate-400 space-y-2 transition-colors">
+            <h4 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>USSD Architecture Highlights</span>
             </h4>
-            <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-500">
+            <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
               <li>Low bandwidth, 0kb data usage on 2G/3G networks.</li>
               <li>Agent POS mode unlocks automatically when an active agent SIM dials.</li>
               <li>Direct Telebirr & Agent Float deductions via USSD state machine.</li>
@@ -284,4 +284,3 @@ export default function USSDSimulatorPage() {
     </div>
   );
 }
-

@@ -55,7 +55,7 @@ export default function HomePage() {
   );
 
   return (
-    <div className="space-y-10 sm:space-y-12">
+    <div className="space-y-10 sm:space-y-12 transition-colors">
       {/* 24-Hour Live Winner Spotlight (Shown when draw was executed within 24h) */}
       <HeroWinnerSpotlight />
 
@@ -131,15 +131,15 @@ export default function HomePage() {
 
       {/* Value Proposition Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-start gap-4 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "100% ፍትሃዊና ያልተበረዘ (SHA-256)" : "Provably Fair Draws"}
             </h4>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"
                 ? "የዕጣው ሚስጥራዊ ቁጥር ከዕጣው በፊት አስቀድሞ በኮድ ተመዝግቦ ለህዝብ ይፋ ይደረጋል።"
                 : "Every draw seed is pre-committed with SHA-256 cryptographic hashes prior to sales closing."}
@@ -147,15 +147,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-start gap-4 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
             <Zap className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "ፈጣን ክፍያ በቴሌብር እና ሲቢኢ" : "Instant Local Payments"}
             </h4>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"
                 ? "በቀጥታ በቴሌብር፣ በንግድ ባንክ ወይም በቻፓ በደቂቃዎች ውስጥ ክፍያ ፈጽመው የቲኬት SMS ይደርስዎታል።"
                 : "Checkout seamlessly via Telebirr, CBE Birr, or Chapa. SMS ticket delivery sent straight to your phone."}
@@ -163,15 +163,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-start gap-4 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 flex items-center justify-center shrink-0">
             <Smartphone className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "በወኪል እና በ USSD (*804#) መቁረጥ" : "Agent Kiosks & USSD"}
             </h4>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"
                 ? "ኢንተርኔት በሌለበት ሰዓት በባለ ኪቦርድ ስልክ *804# በመደወል ወይም በወኪሎች በኩል በጥሬ ገንዘብ መቁረጥ ይቻላል።"
                 : "No smartphone or internet required. Dial *804# on feature phones or visit certified kiosk agents."}
@@ -182,12 +182,12 @@ export default function HomePage() {
 
       {/* Raffles Catalog Section */}
       <section id="raffles-catalog" className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               {t.raffles.activeRaffles}
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {language === "AM"
                 ? "የመረጡትን ሽልማት ይምረጡና እድልዎን ይሞክሩ"
                 : "Browse active campaigns, select your numbers, and enter the live draw."}
@@ -195,7 +195,7 @@ export default function HomePage() {
           </div>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
             <Filter className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1" />
             {categories.map((cat) => (
               <button
@@ -203,8 +203,8 @@ export default function HomePage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                   selectedCategory === cat.id
-                    ? "bg-white text-emerald-700 shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {cat.label}
@@ -219,20 +219,20 @@ export default function HomePage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl border border-slate-200 h-96 animate-pulse p-4 space-y-4"
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 h-96 animate-pulse p-4 space-y-4"
               >
-                <div className="bg-slate-200 rounded-xl h-48 w-full" />
-                <div className="bg-slate-200 h-6 w-3/4 rounded" />
-                <div className="bg-slate-200 h-4 w-1/2 rounded" />
-                <div className="bg-slate-200 h-10 w-full rounded-xl" />
+                <div className="bg-slate-200 dark:bg-slate-800 rounded-xl h-48 w-full" />
+                <div className="bg-slate-200 dark:bg-slate-800 h-6 w-3/4 rounded" />
+                <div className="bg-slate-200 dark:bg-slate-800 h-4 w-1/2 rounded" />
+                <div className="bg-slate-200 dark:bg-slate-800 h-10 w-full rounded-xl" />
               </div>
             ))}
           </div>
         ) : filteredRaffles.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-            <Trophy className="w-10 h-10 text-slate-300 mx-auto" />
-            <h3 className="font-bold text-slate-700">No raffles found in this category.</h3>
-            <p className="text-xs text-slate-400">Please check back soon for new prize launches.</p>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center space-y-3">
+            <Trophy className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+            <h3 className="font-bold text-slate-700 dark:text-slate-300">No raffles found in this category.</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Please check back soon for new prize launches.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -244,12 +244,12 @@ export default function HomePage() {
       </section>
 
       {/* How it Works Section */}
-      <section className="bg-slate-100/70 rounded-3xl p-8 sm:p-10 border border-slate-200 space-y-8">
+      <section className="bg-slate-100/70 dark:bg-slate-900/60 rounded-3xl p-8 sm:p-10 border border-slate-200 dark:border-slate-800 space-y-8 transition-colors">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h3 className="text-2xl font-black text-slate-900">
+          <h3 className="text-2xl font-black text-slate-900 dark:text-white">
             {language === "AM" ? "እንዴት እንደሚሰራ (በ 3 ቀላል ደረጃዎች)" : "How It Works in 3 Easy Steps"}
           </h3>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {language === "AM"
               ? "ቲኬት ከመቁረጥ ጀምሮ እስከ ሽልማት አሰጣጥ ድረስ ሁሉም ነገር ግልጽና ፍትሃዊ ነው።"
               : "From selecting numbers to transparent live verification, we make raffle ticketing simple."}
@@ -257,42 +257,42 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 text-center">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
+          <div className="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-3 text-center transition-colors">
+            <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
               1
             </div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "1. ዕጣ ይምረጡና ቁጥር ይቁረጡ" : "1. Pick Raffle & Select Numbers"}
             </h4>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {language === "AM"
                 ? "የሚወዱትን መኪና፣ ቤት ወይም ጥሬ ገንዘብ መርጠው በራስ-ሰር (Quick Pick) ወይም የራስዎን እድለኛ ቁጥር ይቁረጡ።"
                 : "Choose your desired prize and pick custom numbers or use 1-click Quick Pick with multi-ticket discounts."}
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 text-center">
-            <div className="w-12 h-12 bg-teal-100 text-teal-700 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
+          <div className="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-3 text-center transition-colors">
+            <div className="w-12 h-12 bg-teal-100 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
               2
             </div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "2. በቴሌብር ወይም ንግድ ባንክ ይክፈሉ" : "2. Instant Local Payment"}
             </h4>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {language === "AM"
                 ? "በቴሌብር፣ በሲቢኢ ብር ወይም በአቅራቢያዎ ለሚገኝ ወኪል በጥሬ ገንዘብ ከፍለው የቲኬት SMS ወዲያውኑ ይቀበሉ።"
                 : "Pay effortlessly using Telebirr, CBE Birr, or cash at an authorized agent. Instant SMS receipt guaranteed."}
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 text-center">
-            <div className="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
+          <div className="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-3 text-center transition-colors">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 rounded-2xl flex items-center justify-center font-black text-lg mx-auto">
               3
             </div>
-            <h4 className="font-extrabold text-slate-900 text-sm">
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
               {language === "AM" ? "3. የቀጥታ ዕጣውን ይከታተሉ" : "3. Watch Live Provably Fair Draw"}
             </h4>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {language === "AM"
                 ? "ዕጣው በቀጥታ ስርጭት ሲወጣ የ SHA-256 ሚስጥር ይፋ ተደርጎ አሸናፊው በሂሳባዊ ስሌት ይረጋገጣል።"
                 : "Watch the draw live! Pre-committed cryptographic seeds are revealed and mathematically verifiable by anyone."}
@@ -303,4 +303,3 @@ export default function HomePage() {
     </div>
   );
 }
-

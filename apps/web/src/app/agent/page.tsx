@@ -108,7 +108,7 @@ export default function AgentPOSPage() {
     return (
       <div className="py-20 text-center space-y-3">
         <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-xs text-slate-500 font-semibold">Loading Agent POS Terminal...</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Loading Agent POS Terminal...</p>
       </div>
     );
   }
@@ -116,17 +116,17 @@ export default function AgentPOSPage() {
   // If user is pending agent approval
   if (agent && agent.status === "PENDING") {
     return (
-      <div className="bg-white rounded-3xl border border-amber-200 p-8 max-w-lg mx-auto text-center space-y-4 shadow-sm">
-        <div className="w-12 h-12 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-amber-200 dark:border-amber-800 p-8 max-w-lg mx-auto text-center space-y-4 shadow-xs">
+        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 rounded-full flex items-center justify-center mx-auto">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-extrabold text-slate-900">
+        <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
           Agent Account Pending Approval
         </h2>
-        <p className="text-xs text-slate-600 leading-relaxed">
+        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           {t.agent.pendingApproval} An Admin must review your national ID and signed agreement before sales can be unlocked.
         </p>
-        <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-500 font-mono">
+        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-xs text-slate-500 dark:text-slate-400 font-mono">
           Agent Phone: {agent.user?.phone || agent.fullName}
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function AgentPOSPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 transition-colors">
       {/* Top Banner: Metrics & Float */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -220,11 +220,11 @@ export default function AgentPOSPage() {
 
       {/* POS Quick Sale Terminal */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6 transition-colors">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <div className="flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-black text-slate-900">
+              <Ticket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">
                 {t.agent.quickSale}
               </h2>
             </div>
@@ -234,13 +234,13 @@ export default function AgentPOSPage() {
           <form onSubmit={handleSale} className="space-y-5">
             {/* Raffle Picker */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.agent.selectRaffle}
               </label>
               <select
                 value={selectedRaffleId}
                 onChange={(e) => setSelectedRaffleId(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white font-medium"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
               >
                 {raffles.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -252,7 +252,7 @@ export default function AgentPOSPage() {
 
             {/* Customer Phone */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.agent.customerPhone}
               </label>
               <div className="relative">
@@ -263,7 +263,7 @@ export default function AgentPOSPage() {
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="+251911223344"
-                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                 />
               </div>
               <p className="text-[11px] text-slate-400">
@@ -273,7 +273,7 @@ export default function AgentPOSPage() {
 
             {/* Ticket Count Buttons */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-700">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.agent.ticketCount}
               </label>
               <div className="grid grid-cols-5 gap-2">
@@ -284,8 +284,8 @@ export default function AgentPOSPage() {
                     onClick={() => setTicketCount(qty)}
                     className={`py-2 rounded-xl text-xs font-black transition ${
                       ticketCount === qty
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {qty}
@@ -295,23 +295,23 @@ export default function AgentPOSPage() {
             </div>
 
             {/* Price & Float Preview Card */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-600">
+            <div className="bg-slate-50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
                 <span>Total Cash to Collect from Customer:</span>
-                <span className="font-bold text-slate-900 text-sm">{totalCost.toLocaleString()} ETB</span>
+                <span className="font-bold text-slate-900 dark:text-white text-sm">{totalCost.toLocaleString()} ETB</span>
               </div>
-              <div className="flex justify-between text-emerald-700 font-semibold">
+              <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold">
                 <span>Agent Commission to Earn ({agent?.commissionRate || 5}%):</span>
                 <span>+ {estimatedCommission.toLocaleString()} ETB</span>
               </div>
-              <div className="flex justify-between text-slate-600 pt-1 border-t border-slate-200">
+              <div className="flex justify-between text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800">
                 <span>Float Deduction from Agent Balance:</span>
-                <span className="font-mono text-red-600 font-bold">- {totalCost.toLocaleString()} ETB</span>
+                <span className="font-mono text-red-600 dark:text-red-400 font-bold">- {totalCost.toLocaleString()} ETB</span>
               </div>
             </div>
 
             {errorMsg && (
-              <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 flex items-center gap-2">
+              <div className="p-3 bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 text-xs rounded-xl border border-red-200 dark:border-red-800 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -331,21 +331,21 @@ export default function AgentPOSPage() {
         {/* Right Column: Instant Sale Receipt */}
         <div className="lg:col-span-5 space-y-6">
           {saleResult ? (
-            <div className="bg-white rounded-3xl border border-emerald-200 p-6 sm:p-7 shadow-lg space-y-5 animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-emerald-200 dark:border-emerald-800 p-6 sm:p-7 shadow-lg space-y-5 animate-in fade-in transition-colors">
               <div className="text-center space-y-1.5">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
-                <h3 className="font-black text-lg text-slate-900">
+                <h3 className="font-black text-lg text-slate-900 dark:text-white">
                   Sale Successful & Dispatched!
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   SMS Ticket confirmation dispatched to {customerPhone}.
                 </p>
               </div>
 
               {/* Minted Tickets */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
+              <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                   Minted Ticket Numbers
                 </span>
@@ -353,9 +353,9 @@ export default function AgentPOSPage() {
                   {saleResult.tickets?.map((tkt: any) => (
                     <div
                       key={tkt.ticketNumber}
-                      className="bg-white p-2.5 rounded-xl border border-slate-200 text-center shadow-xs"
+                      className="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-center shadow-xs"
                     >
-                      <span className="text-lg font-black text-emerald-700 font-mono">
+                      <span className="text-lg font-black text-emerald-700 dark:text-emerald-400 font-mono">
                         #{tkt.ticketNumber}
                       </span>
                       <span className="text-[10px] text-slate-400 font-mono block">
@@ -372,18 +372,18 @@ export default function AgentPOSPage() {
                   setSaleResult(null);
                   setCustomerPhone("+2519");
                 }}
-                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition"
+                className="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition"
               >
                 Sell Next Customer
               </button>
             </div>
           ) : (
-            <div className="bg-slate-100/70 rounded-3xl border border-slate-200 p-8 text-center space-y-3">
+            <div className="bg-slate-100/70 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-3 transition-colors">
               <QrCode className="w-12 h-12 text-slate-400 mx-auto" />
-              <h4 className="font-extrabold text-slate-700 text-sm">
+              <h4 className="font-extrabold text-slate-700 dark:text-slate-300 text-sm">
                 Ready for Walk-in Customer
               </h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Enter the customer's phone number, select ticket quantity, collect cash, and mint tickets instantly.
               </p>
             </div>
@@ -393,4 +393,3 @@ export default function AgentPOSPage() {
     </div>
   );
 }
-

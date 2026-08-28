@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 transition-colors">
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="space-y-2">
@@ -127,70 +127,70 @@ export default function AdminDashboardPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.admin.totalRevenue}
             </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-white font-mono tracking-tight">
+          <div className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
             {stats.totalRevenue.toLocaleString()} <span className="text-sm font-bold text-slate-400">ETB</span>
           </div>
-          <span className="text-[11px] text-emerald-400 font-semibold block">
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold block">
             Across online & agent channels
           </span>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.admin.totalTicketsSold}
             </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 flex items-center justify-center">
               <Ticket className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-white font-mono tracking-tight">
+          <div className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
             {stats.totalTicketsSold.toLocaleString()}
           </div>
-          <span className="text-[11px] text-blue-400 font-semibold block">
+          <span className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block">
             Zero duplicate allocations
           </span>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Certified Agents
             </span>
-            <div className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 flex items-center justify-center">
               <Store className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-white font-mono tracking-tight">
+          <div className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
             {stats.activeAgentsCount}
           </div>
-          <span className="text-[11px] text-amber-400 font-semibold block">
+          <span className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold block">
             {stats.pendingAgentsCount} pending KYC approval
           </span>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-2 shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Agent Float Pool
             </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-white font-mono tracking-tight">
+          <div className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
             {stats.totalAgentFloat.toLocaleString()} <span className="text-sm font-bold text-slate-400">ETB</span>
           </div>
-          <span className="text-[11px] text-purple-400 font-semibold block">
+          <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold block">
             Pre-funded kiosk collateral
           </span>
         </div>
@@ -199,49 +199,49 @@ export default function AdminDashboardPage() {
       {/* Breakdown Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Payment Methods Share */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
-          <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Activity className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 transition-colors">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Channel Payment Velocity</span>
           </h3>
 
           <div className="space-y-3 pt-1 text-xs">
             <div className="space-y-1">
-              <div className="flex justify-between font-bold text-slate-300">
+              <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                 <span>Telebirr (Mobile / USSD)</span>
-                <span className="text-blue-400 font-mono">48%</span>
+                <span className="text-blue-600 dark:text-blue-400 font-mono">48%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: "48%" }} />
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between font-bold text-slate-300">
+              <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                 <span>Agent Cash POS</span>
-                <span className="text-emerald-400 font-mono">28%</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-mono">28%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                 <div className="bg-emerald-500 h-2 rounded-full" style={{ width: "28%" }} />
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between font-bold text-slate-300">
+              <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                 <span>CBE Birr</span>
-                <span className="text-purple-400 font-mono">16%</span>
+                <span className="text-purple-600 dark:text-purple-400 font-mono">16%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                 <div className="bg-purple-500 h-2 rounded-full" style={{ width: "16%" }} />
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between font-bold text-slate-300">
+              <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
                 <span>Chapa & SantimPay</span>
-                <span className="text-amber-400 font-mono">8%</span>
+                <span className="text-amber-600 dark:text-amber-400 font-mono">8%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                 <div className="bg-amber-500 h-2 rounded-full" style={{ width: "8%" }} />
               </div>
             </div>
@@ -249,32 +249,32 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Active Campaigns Table */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 transition-colors">
           <div className="flex items-center justify-between">
-            <h3 className="font-extrabold text-sm text-white">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
               Live Campaigns & Commitments
             </h3>
             <Link
               href="/raffles"
-              className="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center gap-1"
+              className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
             >
               <span>Manage All</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="divide-y divide-slate-800">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {recentRaffles.slice(0, 4).map((r) => (
               <div key={r.id} className="py-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <img
                     src={r.prizeImage}
                     alt={r.title}
-                    className="w-10 h-10 rounded-xl object-cover border border-slate-800 shrink-0"
+                    className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-800 shrink-0"
                   />
                   <div>
-                    <h4 className="font-bold text-xs text-white line-clamp-1">{r.title}</h4>
-                    <span className="text-[11px] text-slate-400 font-mono">
+                    <h4 className="font-bold text-xs text-slate-900 dark:text-white line-clamp-1">{r.title}</h4>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                       {r.soldTickets} / {r.totalTickets} tickets ({r.ticketPrice} ETB)
                     </span>
                   </div>
@@ -284,10 +284,10 @@ export default function AdminDashboardPage() {
                   <span
                     className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
                       r.status === "ACTIVE"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                        ? "bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30"
                         : r.status === "DRAWN"
-                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                        : "bg-slate-800 text-slate-400"
+                        ? "bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
                   >
                     {r.status}
@@ -304,4 +304,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-

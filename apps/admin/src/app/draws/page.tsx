@@ -123,26 +123,26 @@ function AdminDrawsConsoleContent() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto transition-colors">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
-          <Trophy className="w-4 h-4 text-purple-400" />
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-500/30">
+          <Trophy className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           <span>Live Provably Fair RNG Console</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           {t.admin.liveDrawRoom}
         </h1>
-        <p className="text-xs text-slate-400 max-w-xl mx-auto">
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
           Execute cryptographically authentic live draws with full seed reveal, deterministic winner derivation, and instant broadcast.
         </p>
       </div>
 
       {/* Raffle Selector & Commitment Status */}
-      <div className="bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-6 lg:p-8 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 lg:p-8 shadow-xs space-y-6 transition-colors">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center">
           <div className="md:col-span-6 space-y-2">
-            <label className="block text-xs font-bold text-slate-300">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
               Select Active Raffle to Draw
             </label>
             <select
@@ -152,7 +152,7 @@ function AdminDrawsConsoleContent() {
                 setDrawResult(null);
               }}
               disabled={isDrawing}
-              className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-950 border border-slate-800 focus:ring-2 focus:ring-purple-500 text-white font-bold"
+              className="w-full px-3 py-2.5 text-sm rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white font-bold"
             >
               {raffles.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -162,12 +162,12 @@ function AdminDrawsConsoleContent() {
             </select>
           </div>
 
-          <div className="md:col-span-6 bg-slate-950 rounded-2xl p-4 border border-slate-800 text-xs space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-slate-300">
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="md:col-span-6 bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 text-xs space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+              <Lock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Published SHA-256 Pre-Commitment</span>
             </div>
-            <p className="font-mono text-[10px] text-slate-400 truncate" title={selectedRaffle?.commitHash}>
+            <p className="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate" title={selectedRaffle?.commitHash}>
               {selectedRaffle?.commitHash || "Loading commitment hash..."}
             </p>
           </div>
