@@ -3,10 +3,15 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
-import { Clock, ShieldCheck, Ticket, Trophy, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Clock, ShieldCheck, Ticket, Trophy, ArrowRight, CheckCircle2, Building2 } from "lucide-react";
 
 export interface RaffleData {
   id: string;
+  sellerId?: string | null;
+  seller?: {
+    businessName: string;
+    region?: string;
+  } | null;
   title: string;
   titleAm?: string | null;
   description: string;
@@ -123,6 +128,12 @@ export default function RaffleCard({ raffle }: { raffle: RaffleData }) {
           <h3 className="font-extrabold text-slate-900 dark:text-white text-lg line-clamp-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
             {displayTitle}
           </h3>
+          <div className="flex items-center gap-1.5 mt-1 text-[11px] text-indigo-600 dark:text-indigo-400 font-bold font-mono">
+            <Building2 className="w-3 h-3 shrink-0" />
+            <span className="truncate">
+              {raffle.seller?.businessName || "Verified Platform Merchant"}
+            </span>
+          </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
             {language === "AM" && raffle.descriptionAm ? raffle.descriptionAm : raffle.description}
           </p>

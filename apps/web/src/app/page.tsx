@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Lock,
   ArrowRight,
+  Building2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -145,19 +146,35 @@ export default function HomePage() {
       </div>
 
       {/* Value Proposition Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-start gap-4 transition-colors">
           <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
             <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
-              {language === "AM" ? "100% ፍትሃዊና ያልተበረዘ (SHA-256)" : "Provably Fair Draws"}
+              {language === "AM" ? "100% ፍትሃዊና ያልተበረዘ (SHA-256)" : "Provably Fair RNG"}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"
                 ? "የዕጣው ሚስጥራዊ ቁጥር ከዕጣው በፊት አስቀድሞ በኮድ ተመዝግቦ ለህዝብ ይፋ ይደረጋል።"
                 : "Every draw seed is pre-committed with SHA-256 cryptographic hashes prior to sales closing."}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-start gap-4 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shrink-0">
+            <Building2 className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
+              {language === "AM" ? "የስርዓት አቅራቢና የሻጮች መድረክ" : "System Provider & Escrow"}
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              {language === "AM"
+                ? "ገለልተኛ የቴክኖሎጂ አቅራቢ በመሆን የተረጋገጡ ሻጮችን ከቲኬት ገዢዎች ጋር በታማኝነት እናገናኛለን።"
+                : "We operate as the 3rd-party technology provider connecting audited sellers with buyers under full escrow."}
             </p>
           </div>
         </div>
@@ -184,7 +201,7 @@ export default function HomePage() {
           </div>
           <div>
             <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
-              {language === "AM" ? "በወኪል እና በ USSD (*804#) መቁረጥ" : "Agent Kiosks & USSD"}
+              {language === "AM" ? "በወኪል እና በ USSD (*804#)" : "Agent Kiosks & USSD"}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"

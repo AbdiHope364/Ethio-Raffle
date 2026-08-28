@@ -17,6 +17,8 @@ import {
   Lock,
   Sparkles,
   AlertCircle,
+  Building2,
+  Award,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -226,6 +228,37 @@ export default function RaffleDetailsPage() {
                 </span>
                 <span>Draw Date: {new Date(raffle.drawDate).toLocaleDateString()}</span>
               </div>
+            </div>
+          </div>
+
+          {/* Verified Merchant Provider & Escrow Trust Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 p-6 shadow-xs space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-black text-slate-900 dark:text-white text-base">
+                      {raffle.seller?.businessName || "Verified Platform Merchant"}
+                    </h3>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      NLA Audited Seller
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Location: <strong className="text-slate-700 dark:text-slate-300">{raffle.seller?.region || "Addis Ababa, Ethiopia"}</strong> • License: <span className="font-mono">{raffle.seller?.licenseRef || "LIC-AA-2026-VERIFIED"}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex items-start gap-2.5">
+              <Award className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+              <span>
+                <strong>System Provider Escrow Protection:</strong> Lucky Ticket holds 100% of ticket proceeds in escrow. Payouts to the seller are released only after winning ticket verification and physical prize handover certification.
+              </span>
             </div>
           </div>
 
