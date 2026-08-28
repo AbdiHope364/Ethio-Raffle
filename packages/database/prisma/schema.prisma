@@ -121,7 +121,7 @@ model Ticket {
   soldByAgentId    String?
   soldByAgent      Agent?       @relation("SoldByAgent", fields: [soldByAgentId], references: [id], onDelete: SetNull)
   purchaseMethod   String       @default("ONLINE") // ONLINE, AGENT_CASH, USSD
-  verificationCode String       @unique
+  verificationCode String?      @unique // Minted ONLY upon payment completion
   status           String       @default("CONFIRMED") // CONFIRMED, RESERVED, REFUNDED, EXPIRED
   reservedUntil    DateTime?    // 1-hour booking expiration timestamp
   reservedByPhone  String?      // Customer phone who has the active hold

@@ -41,7 +41,6 @@ export interface ReserveResult {
   tickets?: Array<{
     id: string;
     ticketNumber: number;
-    verificationCode: string;
   }>;
 }
 
@@ -92,7 +91,7 @@ export async function cleanupExpiredReservations(raffleId?: string): Promise<num
 
 /**
  * Atomically reserves tickets for 1 hour (60 minutes).
- * Other users will see these as BOOKED / RESERVED and cannot buy them.
+ * No verification code is issued until payment is completed!
  */
 export async function reserveTicketsForOneHour(
   input: TicketReserveInput
@@ -187,6 +186,7 @@ export async function reserveTicketsForOneHour(
         const createdReservations = [];
 
         for (const num of assignedNumbers) {
+          // Temporary 1-hour reservation: verificationCode is NULL until payment is completed!
           const tkt = await tx.ticket.create({
             data: {
               raffleId,
@@ -196,19 +196,18 @@ export async function reserveTicketsForOneHour(
               status: "RESERVED",
               reservedUntil: expiresAt,
               reservedByPhone: customerPhone,
-              verificationCode: generateVerificationCode(),
+              verificationCode: null, // Issued only upon payment confirmation!
             },
           });
           createdReservations.push({
             id: tkt.id,
             ticketNumber: tkt.ticketNumber,
-            verificationCode: tkt.verificationCode,
           });
         }
 
         return {
           success: true,
-          message: `Reserved ${ticketCount} ticket(s) for 1 hour.`,
+          message: `Reserved ${ticketCount} ticket(s) for 1 hour. Verification code will be issued upon payment completion.`,
           expiresAt,
           reservedNumbers: assignedNumbers,
           tickets: createdReservations,
@@ -224,7 +223,7 @@ export async function reserveTicketsForOneHour(
 
 /**
  * Executes an atomic, concurrency-safe ticket purchase and minting inside a database transaction.
- * Confirms reserved tickets or mints new tickets, ensuring zero duplicates and zero overselling.
+ * Issues official unique Verification Code upon confirming payment.
  */
 export async function executeAtomicTicketPurchase(
   input: TicketPurchaseInput
@@ -301,12 +300,14 @@ async function internalAtomicPurchase(
         let createdTickets: Array<{ id: string; ticketNumber: number; verificationCode: string }> = [];
 
         if (existingReserved.length === ticketCount) {
-          // Upgrade existing reservations to CONFIRMED!
+          // Payment Complete: Upgrade existing reservations to CONFIRMED and issue official verification codes!
           for (const tkt of existingReserved) {
+            const officialVerificationCode = generateVerificationCode();
             const updated = await tx.ticket.update({
               where: { id: tkt.id },
               data: {
                 status: "CONFIRMED",
+                verificationCode: officialVerificationCode, // Minted official code!
                 reservedUntil: null,
                 reservedByPhone: null,
                 transactionId: transactionId || undefined,
@@ -318,12 +319,12 @@ async function internalAtomicPurchase(
             createdTickets.push({
               id: updated.id,
               ticketNumber: updated.ticketNumber,
-              verificationCode: updated.verificationCode,
+              verificationCode: officialVerificationCode,
             });
             assignedNumbers.push(updated.ticketNumber);
           }
         } else {
-          // Direct purchase without prior reservation
+          // Direct purchase without prior reservation (e.g. Agent POS cash sale)
           const allActive = await tx.ticket.findMany({
             where: {
               raffleId,
@@ -362,8 +363,9 @@ async function internalAtomicPurchase(
             }
           }
 
-          // Mint confirmed tickets
+          // Mint confirmed tickets with official verification codes
           for (const num of assignedNumbers) {
+            const officialCode = generateVerificationCode();
             const ticket = await tx.ticket.create({
               data: {
                 raffleId,
@@ -373,14 +375,14 @@ async function internalAtomicPurchase(
                 transactionId: transactionId || undefined,
                 soldByAgentId: soldByAgentId || undefined,
                 purchaseMethod,
-                verificationCode: generateVerificationCode(),
+                verificationCode: officialCode,
                 status: "CONFIRMED",
               },
             });
             createdTickets.push({
               id: ticket.id,
               ticketNumber: ticket.ticketNumber,
-              verificationCode: ticket.verificationCode,
+              verificationCode: officialCode,
             });
           }
         }
@@ -433,7 +435,7 @@ async function internalAtomicPurchase(
 
         return {
           success: true,
-          message: `Successfully confirmed ${ticketCount} ticket(s)!`,
+          message: `Payment verified! Successfully confirmed and minted ${ticketCount} official ticket(s).`,
           tickets: createdTickets,
         };
       },

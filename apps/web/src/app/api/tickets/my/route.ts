@@ -11,8 +11,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ tickets: [] });
     }
 
+    // Only return paid and CONFIRMED tickets with valid verification codes
     const tickets = await prisma.ticket.findMany({
       where: {
+        status: "CONFIRMED",
         OR: [
           { userId: session.userId },
           { customerPhone: session.phone },
