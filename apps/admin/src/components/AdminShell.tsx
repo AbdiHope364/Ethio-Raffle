@@ -90,7 +90,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Sidebar (Desktop + Mobile Slide-over) */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-screen lg:sticky ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
