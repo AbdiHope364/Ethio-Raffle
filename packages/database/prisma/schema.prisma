@@ -7,45 +7,97 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ====================================================
+// 1. DYNAMIC RBAC: ROLES & PERMISSIONS (§02, §08 & §09)
+// ====================================================
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique // SUPER_ADMIN, OPERATIONS_ADMIN, FINANCE_ADMIN, COMPLIANCE_ADMIN, DRAW_OPERATOR, SUPPORT_AGENT, AGENT, SELLER, CUSTOMER, AUDITOR
+  description String?
+  createdAt   DateTime         @default(now())
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  key         String           @unique // listing:approve, payout:approve, agent:suspend, draw:execute, dispute:arbitrate, audit:view...
+  description String?
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+// ====================================================
+// 2. USER ACCOUNTS & IDENTITY
+// ====================================================
+
 model User {
   id            String    @id @default(uuid())
   phone         String    @unique
   fullName      String
   nationalId    String?
-  role          String    @default("CUSTOMER") // CUSTOMER, AGENT, SELLER, ADMIN, SUPER_ADMIN
+  role          String    @default("CUSTOMER") // CUSTOMER, AGENT, SELLER, ADMIN, SUPER_ADMIN, FINANCE_ADMIN, DRAW_OPERATOR
+  roleId        String?
+  roleObj       Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
   isVerified    Boolean   @default(false)
+  kycStatus     String    @default("UNVERIFIED") // UNVERIFIED, PENDING_VERIFICATION, VERIFIED, REJECTED
+  walletBalance Float     @default(0.0) // Winner wallet balance / cash payout balance
   status        String    @default("ACTIVE") // ACTIVE, SUSPENDED
   preferredLang String    @default("EN") // EN, AM
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  agentProfile  Agent?
-  sellerProfile Seller?
-  tickets       Ticket[]
-  transactions  Transaction[]
-  adminLogs     AgentAccessLog[] @relation("AdminChanger")
-  wonRaffles    Raffle[]         @relation("RaffleWinner")
-  notifications Notification[]
+  agentProfile        Agent?
+  sellerProfile       Seller?
+  tickets             Ticket[]
+  purchaseOrders      PurchaseOrder[]
+  transactions        Transaction[]
+  adminLogs           AgentAccessLog[]     @relation("AdminChanger")
+  wonRaffles          Raffle[]             @relation("RaffleWinner")
+  notifications       Notification[]
+  dataSubjectRequests DataSubjectRequest[]
+  initiatedApprovals  TwoPersonApproval[]  @relation("Initiator")
+  authorizedApprovals TwoPersonApproval[]  @relation("Approver")
 }
 
 model Seller {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  businessName    String
-  contactPerson   String
-  phone           String
-  tinNumber       String?
-  licenseRef      String?  // Trade registration or business license doc ref
-  region          String   @default("Addis Ababa")
-  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, SUSPENDED
-  rejectionReason String?
-  payoutAccount   String?  // Telebirr / CBE Account for ticket proceeds
-  commissionRate  Float    @default(8.0) // Platform fee percentage (e.g. 8%)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName        String
+  contactPerson       String
+  phone               String
+  tinNumber           String?
+  licenseRef          String?  // Trade registration or business license doc ref
+  faydaIdNumber       String?  // National Fayda ID number
+  faydaIdDocUrl       String?  // High-resolution photo upload of Fayda ID
+  region              String   @default("Addis Ababa")
+  status              String   @default("PENDING") // PENDING, APPROVED, REJECTED, SUSPENDED
+  rejectionReason     String?
+  rejectionReasonCode String?  // DOCS_ILLEGIBLE, FAYDA_MISMATCH, TIN_INVALID, UNLICENSED_CATEGORY
+  payoutAccount       String?  // Telebirr / CBE Account for ticket proceeds
+  payoutBalance       Float    @default(0.0) // Unfrozen balance available for withdrawal
+  escrowBalance       Float    @default(0.0) // Locked balance pending verified delivery
+  commissionRate      Float    @default(8.0) // Platform fee percentage (e.g. 8%)
+  rating              Float    @default(5.0) // Average verified winner rating (1.0 - 5.0)
+  reviewsCount        Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  raffles         Raffle[]
+  raffles             Raffle[]
+  reviews             Review[]
+  cashoutRequests     CashoutRequest[]
 }
 
 model Agent {
@@ -95,66 +147,166 @@ model AgentAccessLog {
   createdAt          DateTime @default(now())
 }
 
-model Raffle {
-  id                 String        @id @default(uuid())
-  sellerId           String?
-  seller             Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)
-  title              String
-  titleAm            String?
-  description        String
-  descriptionAm      String?
-  category           String        @default("VEHICLE") // VEHICLE, ELECTRONICS, REAL_ESTATE, CASH, LUXURY
-  prizeName          String
-  prizeNameAm        String?
-  prizeImage         String
-  prizeValue         Float
-  ticketPrice        Float
-  totalTickets       Int
-  soldTickets        Int           @default(0)
-  maxTicketsPerUser  Int           @default(100)
-  status             String        @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, CLOSED, DRAWN, CANCELLED
-  moderationStatus   String        @default("APPROVED") // PENDING_APPROVAL, APPROVED, REJECTED
-  moderationNotes    String?
-  sellerDrawConsent  Boolean       @default(false) // Required for under-subscribed draws
-  adminDrawConsent   Boolean       @default(false) // Required for under-subscribed draws
-  fallbackPolicy     String        @default("NONE") // NONE, EXTENDED, REFUNDED
-  extendedUntil      DateTime?
-  drawDate           DateTime
-  drawnAt            DateTime?     // Exact timestamp when the provably fair draw occurred
-  commitHash         String?
-  secretSeed         String?
-  revealedSeed       String?
-  winningTicketNumber Int?
-  winnerUserId       String?
-  winnerUser         User?         @relation("RaffleWinner", fields: [winnerUserId], references: [id], onDelete: SetNull)
-  winnerTicketId     String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+// ====================================================
+// 3. RAFFLE CAMPAIGNS, LIFECYCLE & DRAW ENGINE
+// ====================================================
 
-  tickets            Ticket[]
-  transactions       Transaction[]
-  drawAudit          DrawAudit?
-  notifications      Notification[]
+model Raffle {
+  id                  String        @id @default(uuid())
+  sellerId            String?
+  seller              Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)
+  title               String
+  titleAm             String?
+  description         String
+  descriptionAm       String?
+  category            String        @default("VEHICLE") // VEHICLE, ELECTRONICS, REAL_ESTATE, CASH, LUXURY
+  prizeName           String
+  prizeNameAm         String?
+  prizeImage          String        // Primary cover image
+  photo1              String?       // Photo 1 of 3 (Distinct Angle)
+  photo2              String?       // Photo 2 of 3 (Distinct Angle)
+  photo3              String?       // Photo 3 of 3 (Distinct Angle)
+  declaredMarketValue Float         @default(0.0) // Seller declared market value
+  counterOfferPrice   Float?        // Admin anti-gouging mandatory counter-offer price
+  appraisalStatus     String        @default("APPROVED") // PENDING_REVIEW, APPROVED, COUNTER_OFFER_ISSUED, REJECTED
+  prizeValue          Float         // Approved valuation
+  ticketPrice         Float
+  totalTickets        Int
+  soldTickets         Int           @default(0)
+  maxTicketsPerUser   Int           @default(100)
+  
+  // State Machine Lifecycle (§21): DRAFT, PUBLISHED, OPEN, SALES_CLOSED, SNAPSHOT_LOCKED, DRAW_PENDING, DRAWING, WINNER_SELECTED, PRIZE_PENDING, PRIZE_PAID, COMPLETED, CANCELLED
+  status              String        @default("OPEN")
+  moderationStatus    String        @default("APPROVED") // PENDING_APPROVAL, APPROVED, REJECTED
+  moderationNotes     String?
+  rejectionReasonCode String?       // PRICE_GOUGING, INSUFFICIENT_PHOTOS, PROHIBITED_ITEM, INVALID_TERMS
+  sellerDrawConsent   Boolean       @default(false) // Required for under-subscribed draws
+  adminDrawConsent    Boolean       @default(false) // Required for under-subscribed draws
+  sellerConsentAt     DateTime?     // Exact timestamp when seller gave draw consent
+  adminConsentAt      DateTime?     // Exact timestamp when admin gave draw consent
+  dualConsentFlag     Boolean       @default(false) // True when both seller & admin consented
+  fallbackPolicy      String        @default("NONE") // NONE, EXTENDED, REFUNDED
+  extendedUntil       DateTime?
+  drawDate            DateTime
+  drawScheduledTime   DateTime?     // Scheduled exact 12:00 AM Midnight execution timestamp
+  drawnAt             DateTime?     // Exact timestamp when the provably fair draw occurred
+  commitHash          String?
+  secretSeed          String?
+  publicEntropy       String?       // External blockhash / public entropy source
+  revealedSeed        String?
+  winningTicketNumber Int?
+  winnerUserId        String?
+  winnerUser          User?         @relation("RaffleWinner", fields: [winnerUserId], references: [id], onDelete: SetNull)
+  winnerTicketId      String?
+  winnerChoice        String        @default("PENDING_SELECTION") // PENDING_SELECTION, ITEM, CASH
+  cashEquivalentAmount Float        @default(0.0) // Value offered if winner chooses cash
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  tickets             Ticket[]
+  purchaseOrders      PurchaseOrder[]
+  transactions        Transaction[]
+  drawSnapshot        DrawSnapshot?
+  drawAudit           DrawAudit?
+  redemption          Redemption?
+  reviews             Review[]
+  notifications       Notification[]
+}
+
+// Immutable Snapshot created prior to draw execution (§06)
+model DrawSnapshot {
+  id                 String   @id @default(uuid())
+  raffleId           String   @unique
+  raffle             Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  snapshotNumber     String   @unique // SNAP-2026-0001
+  totalTickets       Int
+  soldTickets        Int
+  eligibleTicketCount Int
+  ticketUniverseHash String   // Merkle/SHA-256 hash of all eligible ticket numbers & owners
+  commitmentHash     String   // Initial SHA-256 commitment published before ticket #1
+  secretSeedHash     String   // SHA-256(secretSeed)
+  publicEntropy      String?  // Public random source (e.g. Ethiopian Telecom batch ref)
+  algorithmVersion   String   @default("SHA-256-COMMIT-REVEAL-v2")
+  snapshotHash       String   // Master integrity hash: SHA256(raffleId:ticketHash:seedHash)
+  createdAt          DateTime @default(now())
+}
+
+model DrawAudit {
+  id                  String   @id @default(uuid())
+  raffleId            String   @unique
+  raffle              Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  commitHash          String
+  secretSeed          String
+  publicEntropy       String?
+  revealedAt          DateTime @default(now())
+  totalSoldTickets    Int
+  winningTicketNumber Int
+  formulaDescription  String
+  verifiedBy          String?
+  createdAt           DateTime @default(now())
+}
+
+// ====================================================
+// 4. DECOUPLED PURCHASE & ATOMIC TICKETING PIPELINE (§02 & §04)
+// ====================================================
+
+model PurchaseOrder {
+  id              String           @id @default(uuid())
+  orderNumber     String           @unique // PUR-20260830-00125
+  customerPhone   String
+  userId          String?
+  user            User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  raffleId        String
+  raffle          Raffle           @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  quantity        Int              @default(1)
+  unitPrice       Float
+  totalAmount     Float
+  status          String           @default("PENDING") // PENDING, PAID, CANCELLED, EXPIRED
+  expiresAt       DateTime         // Order reservation expiry (e.g. 15 mins)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  paymentAttempts PaymentAttempt[]
+  tickets         Ticket[]
+}
+
+model PaymentAttempt {
+  id                   String        @id @default(uuid())
+  purchaseOrderId      String
+  purchaseOrder        PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  provider             String        // CHAPA, TELEBIRR, CBE_BIRR, SANTIMPAY, AGENT_CASH
+  providerReference    String?       @unique // External transaction reference from payment provider
+  amount               Float
+  status               String        @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  idempotencyKey       String        @unique // Prevents double-processing of webhooks
+  rawWebhookPayload    String?       // Full audit payload from payment gateway
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 }
 
 model Ticket {
-  id               String       @id @default(uuid())
-  raffleId         String
-  raffle           Raffle       @relation(fields: [raffleId], references: [id], onDelete: Cascade)
-  userId           String?
-  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-  customerPhone    String?
-  ticketNumber     Int
-  transactionId    String?
-  transaction      Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
-  soldByAgentId    String?
-  soldByAgent      Agent?       @relation("SoldByAgent", fields: [soldByAgentId], references: [id], onDelete: SetNull)
-  purchaseMethod   String       @default("ONLINE") // ONLINE, AGENT_CASH, USSD
-  verificationCode String?      @unique // Minted ONLY upon payment completion
-  status           String       @default("CONFIRMED") // CONFIRMED, RESERVED, REFUNDED, EXPIRED
-  reservedUntil    DateTime?    // 1-hour booking expiration timestamp
-  reservedByPhone  String?      // Customer phone who has the active hold
-  createdAt        DateTime     @default(now())
+  id                 String         @id @default(uuid())
+  raffleId           String
+  raffle             Raffle         @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  purchaseOrderId    String?
+  purchaseOrder      PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  userId             String?
+  user               User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerPhone      String?
+  ticketNumber       Int
+  transactionId      String?
+  transaction        Transaction?   @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  soldByAgentId      String?
+  soldByAgent        Agent?         @relation("SoldByAgent", fields: [soldByAgentId], references: [id], onDelete: SetNull)
+  purchaseMethod     String         @default("ONLINE") // ONLINE, AGENT_CASH, USSD
+  verificationCode   String?        @unique // Minted ONLY upon payment completion
+  qrVerificationUrl  String?        // Signed opaque URL for public verification
+  vatDeductedAmount  Float          @default(0.0) // 15% Statutory VAT deducted at source
+  netEscrowAmount    Float          @default(0.0) // 85% Net ticket pool locked in platform escrow
+  status             String         @default("ACTIVE") // ACTIVE, RESERVED, REFUNDED, EXPIRED, CANCELLED
+  reservedUntil      DateTime?      // Hold expiration
+  reservedByPhone    String?        // Customer phone hold
+  createdAt          DateTime       @default(now())
 
   @@unique([raffleId, ticketNumber])
 }
@@ -169,6 +321,8 @@ model Transaction {
   txRef          String    @unique
   amount         Float
   ticketCount    Int       @default(1)
+  vatAmount      Float     @default(0.0) // 15% VAT component
+  netAmount      Float     @default(0.0) // Net escrow component
   paymentMethod  String    // CHAPA, SANTIMPAY, TELEBIRR, CBE_BIRR, AGENT_CASH
   status         String    @default("PENDING") // PENDING, SUCCESS, FAILED, EXPIRED, REFUNDED
   expiresAt      DateTime? // 1-hour transaction booking expiration timestamp
@@ -179,18 +333,171 @@ model Transaction {
   tickets        Ticket[]
 }
 
-model DrawAudit {
-  id                  String   @id @default(uuid())
-  raffleId            String   @unique
-  raffle              Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
-  commitHash          String
-  secretSeed          String
-  revealedAt          DateTime @default(now())
-  totalSoldTickets    Int
-  winningTicketNumber Int
-  formulaDescription  String
-  verifiedBy          String?
-  createdAt           DateTime @default(now())
+// ====================================================
+// 5. DOUBLE-ENTRY FINANCIAL LEDGER (§03)
+// ====================================================
+
+model LedgerAccount {
+  id          String        @id @default(uuid())
+  code        String        @unique // 1010-CASH-TRANSIT, 2010-PRIZE-ESCROW, 2020-VAT-PAYABLE, 2030-AGENT-COMMISSION, 4010-PLATFORM-REVENUE
+  name        String
+  type        String        // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  currency    String        @default("ETB")
+  balance     Float         @default(0.0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  entries     LedgerEntry[]
+}
+
+model LedgerTransaction {
+  id                String        @id @default(uuid())
+  transactionNumber String        @unique // LTX-20260830-0001
+  referenceType     String        // TICKET_PURCHASE, AGENT_COMMISSION, VAT_REMITTANCE, SELLER_PAYOUT, REFUND, ADJUSTMENT
+  referenceId       String?       // ID of ticket, cashout, or purchase order
+  description       String
+  status            String        @default("POSTED") // POSTED, VOIDED
+  postedAt          DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+
+  entries           LedgerEntry[]
+}
+
+model LedgerEntry {
+  id                  String            @id @default(uuid())
+  ledgerTransactionId String
+  ledgerTransaction   LedgerTransaction @relation(fields: [ledgerTransactionId], references: [id], onDelete: Cascade)
+  ledgerAccountId     String
+  ledgerAccount       LedgerAccount     @relation(fields: [ledgerAccountId], references: [id], onDelete: Cascade)
+  entryType           String            // DEBIT, CREDIT
+  amount              Float
+  createdAt           DateTime          @default(now())
+}
+
+model TaxLedger {
+  id              String   @id @default(uuid())
+  transactionId   String?
+  ticketId        String?
+  raffleId        String
+  ticketPrice     Float
+  vatAmount       Float    // Exactly 15% statutory Ethiopian VAT
+  netEscrowAmount Float    // 85% Escrow
+  remittedToGov   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model CashoutRequest {
+  id            String    @id @default(uuid())
+  sellerId      String
+  seller        Seller    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  amount        Float
+  payoutAccount String
+  status        String    @default("PENDING_REVIEW") // PENDING_REVIEW, APPROVED, REJECTED
+  adminNote     String?
+  createdAt     DateTime  @default(now())
+  reviewedAt    DateTime?
+}
+
+// ====================================================
+// 6. TWO-PERSON RULE & IMMUTABLE AUDIT LOGS (§07 & §09)
+// ====================================================
+
+model TwoPersonApproval {
+  id             String    @id @default(uuid())
+  operationType  String    // DRAW_EXECUTION, PRIZE_PAYOUT, RAFFLE_CANCELLATION, LARGE_REFUND, AGENT_FLOAT_ADJUST
+  entityId       String    // ID of raffle, cashout, or ticket
+  entityType     String    // RAFFLE, CASHOUT, AGENT
+  initiatedById  String
+  initiator      User      @relation("Initiator", fields: [initiatedById], references: [id], onDelete: Cascade)
+  approvedById   String?
+  approver       User?     @relation("Approver", fields: [approvedById], references: [id], onDelete: SetNull)
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  metadata       String?   // JSON string with operational details
+  requestedAt    DateTime  @default(now())
+  approvedAt     DateTime?
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorId     String?
+  actorType   String   @default("SYSTEM") // ADMIN, SELLER, AGENT, SYSTEM, BUYER
+  action      String   // ADMIN_LOGIN, RAFFLE_CREATED, TICKET_ALLOCATED, DRAW_STARTED, DRAW_COMPLETED, PAYOUT_APPROVED...
+  entityType  String   // RAFFLE, TICKET, USER, CASHOUT, PAYMENT, LEDGER
+  entityId    String?
+  beforeState String?  // JSON snapshot before change
+  afterState  String?  // JSON snapshot after change
+  ipAddress   String?
+  userAgent   String?
+  requestId   String?
+  createdAt   DateTime @default(now())
+}
+
+// ====================================================
+// 7. FRAUD & RISK SCORING ENGINE (§17)
+// ====================================================
+
+model RiskEvent {
+  id              String   @id @default(uuid())
+  userId          String?
+  customerPhone   String?
+  transactionId   String?
+  purchaseOrderId String?
+  riskScore       Int      // 0-100 (0-30 LOW, 31-70 REVIEW, 71-100 BLOCK)
+  riskLevel       String   @default("LOW") // LOW, REVIEW, BLOCK
+  reasonCode      String   // HIGH_VELOCITY, MULTIPLE_CARDS_SAME_PHONE, RAPID_REFUNDS, SUSPICIOUS_IP
+  details         String?  // JSON payload
+  isResolved      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+// ====================================================
+// 8. WINNER REDEMPTION, RATINGS & PDPP COMPLIANCE
+// ====================================================
+
+model Redemption {
+  id                   String    @id @default(uuid())
+  raffleId             String    @unique
+  raffle               Raffle    @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  winnerUserId         String?
+  winnerPhone          String
+  choice               String    @default("PENDING_SELECTION") // PENDING_SELECTION, ITEM, CASH
+  claimQrHash          String    // Cryptographic hash of dynamic QR token
+  claimQrCode          String    @unique // Unique secure token embedded in QR
+  qrScannedTimestamp   DateTime?
+  autoReleaseDeadline  DateTime  // 7 days from draw completion
+  deliveryStatus       String    @default("PENDING_SELECTION") // PENDING_SELECTION, QR_GENERATED, VERIFIED_COMPLETE, AUTO_APPROVED, DISPUTED
+  disputeReason        String?
+  disputedAt           DateTime?
+  disputeResolvedAt    DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model Review {
+  id               String   @id @default(uuid())
+  raffleId         String
+  raffle           Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  sellerId         String
+  seller           Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  winnerPhone      String
+  rating           Int      // 1 to 5 stars
+  comment          String
+  isVerifiedWinner Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+model DataSubjectRequest {
+  id              String    @id @default(uuid())
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  phoneNumber     String
+  fullName        String?
+  requestType     String    // ACCESS, CORRECTION, DELETION, OBJECTION
+  status          String    @default("RECEIVED") // RECEIVED, IN_PROGRESS, COMPLETED, REJECTED
+  details         String
+  resolutionNotes String?
+  submittedAt     DateTime  @default(now())
+  resolvedAt      DateTime?
 }
 
 model Notification {
@@ -214,7 +521,7 @@ model USSDSession {
   sessionId   String   @unique
   phoneNumber String
   currentMenu String   @default("MAIN")
-  sessionData String   @default("{}") // JSON string for session context
+  sessionData String   @default("{}") // JSON string for state machine context
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 }
