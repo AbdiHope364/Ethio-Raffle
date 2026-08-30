@@ -51,63 +51,72 @@ export default function Footer() {
               type="button"
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-800 dark:text-emerald-300 font-medium cursor-default focus:outline-none select-none text-left"
             >
-              <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>NLA Permit No: NLA/ETH/2026/89</span>
+              <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>Regulatory Status: NLA & MoR Tax Escrow Framework Ready</span>
             </button>
           </div>
 
-          {/* Col 2: Quick Links */}
-          <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              {t.common.raffles}
-            </h4>
-            <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
-              <li>
-                <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  {t.raffles.activeRaffles}
-                </Link>
-              </li>
-              <li>
-                <Link href="/winners" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  {t.common.winners}
-                </Link>
-              </li>
-              <li>
-                <Link href="/verifier" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  {t.common.verifier}
-                </Link>
-              </li>
-              <li>
-                <Link href="/my-tickets" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  {t.common.myTickets}
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Col 2 & 3: Raffles and Channels side-by-side on mobile in a single row */}
+          <div className="grid grid-cols-2 gap-6 md:contents">
+            {/* Col 2: Quick Links */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                {t.common.raffles}
+              </h4>
+              <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                <li>
+                  <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    {t.raffles.activeRaffles}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/winners" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    {t.common.winners}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/verifier" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    {t.common.verifier}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/my-tickets" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    {t.common.myTickets}
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-          {/* Col 3: Channels & Offline Access */}
-          <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Channels & Offline
-            </h4>
-            <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
-              <li className="flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <Link href="/agent/ussd-simulator" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  USSD Dial <strong className="text-slate-900 dark:text-white">*804#</strong>
-                </Link>
-              </li>
-              <li>
-                <Link href="/agent" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  Agent POS Kiosk Terminal
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  Admin Control Console
-                </Link>
-              </li>
-            </ul>
+            {/* Col 3: Channels & Offline Access */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                Channels & Offline
+              </h4>
+              <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                <li className="flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <Link href="/agent/ussd-simulator" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    USSD <strong className="text-slate-900 dark:text-white">*804#</strong>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/agent" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    Agent POS Kiosk
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/seller/login" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+                    Merchant Portal
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy/data-request" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1 font-semibold text-emerald-700 dark:text-emerald-400">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Data Privacy (PDPP)</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Col 4: Payments & Security */}

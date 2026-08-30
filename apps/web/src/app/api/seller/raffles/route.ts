@@ -41,6 +41,10 @@ export async function POST(req: NextRequest) {
       prizeName,
       prizeNameAm,
       prizeImage,
+      photo1,
+      photo2,
+      photo3,
+      declaredMarketValue,
       prizeValue,
       ticketPrice,
       totalTickets,
@@ -72,6 +76,12 @@ export async function POST(req: NextRequest) {
     const totalTixInt = parseInt(totalTickets, 10);
     const commitHash = generateCommitHash(secretSeed, raffleId, totalTixInt);
     const drawDate = new Date(Date.now() + parseInt(drawDays, 10) * 24 * 60 * 60 * 1000);
+    const declaredVal = parseFloat(declaredMarketValue || prizeValue || "100000");
+    const tktPrice = parseFloat(ticketPrice);
+    const totalPool = tktPrice * totalTixInt;
+    const cashEquivalent = Math.round(declaredVal * 0.9); // 90% of declared valuation
+
+    const primaryImg = prizeImage || photo1 || "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=1200&q=80";
 
     const raffle = await prisma.raffle.create({
       data: {
@@ -84,14 +94,20 @@ export async function POST(req: NextRequest) {
         category,
         prizeName,
         prizeNameAm: prizeNameAm || undefined,
-        prizeImage: prizeImage || "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=1200&q=80",
-        prizeValue: parseFloat(prizeValue || "100000"),
-        ticketPrice: parseFloat(ticketPrice),
+        prizeImage: primaryImg,
+        photo1: photo1 || primaryImg,
+        photo2: photo2 || undefined,
+        photo3: photo3 || undefined,
+        declaredMarketValue: declaredVal,
+        prizeValue: declaredVal,
+        cashEquivalentAmount: cashEquivalent,
+        ticketPrice: tktPrice,
         totalTickets: totalTixInt,
         soldTickets: 0,
         maxTicketsPerUser: parseInt(maxTicketsPerUser, 10),
         status: "ACTIVE",
         moderationStatus: "PENDING_APPROVAL", // Gate 2: Moderation Queue
+        appraisalStatus: "PENDING_REVIEW",
         drawDate,
         commitHash,
         secretSeed,

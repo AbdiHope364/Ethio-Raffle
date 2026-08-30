@@ -17,6 +17,7 @@ import {
   ChevronRight,
   TrendingUp,
   Award,
+  Lock,
 } from "lucide-react";
 
 export default function SellerDashboardPage() {
@@ -220,12 +221,96 @@ export default function SellerDashboardPage() {
         )}
       </div>
 
-      {statusMessage && (
-        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          <span>{statusMessage}</span>
+      {/* Escrow Balance & Verified Delivery QR Scanner Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Escrow Locked Card */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Locked Escrow Balance</span>
+            <Lock className="w-4 h-4 text-amber-500" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono">
+            {(seller.escrowBalance || 0).toLocaleString()} <span className="text-xs font-sans text-slate-400">ETB</span>
+          </div>
+          <p className="text-[11px] text-slate-400">
+            Funds locked in escrow until verified winner delivery QR scan or 7-day auto-release.
+          </p>
         </div>
-      )}
+
+        {/* Available Payout Balance Card */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Available for Cashout</span>
+            <DollarSign className="w-4 h-4 text-emerald-500" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+            {(seller.payoutBalance || 0).toLocaleString()} <span className="text-xs font-sans text-slate-400">ETB</span>
+          </div>
+          <button
+            onClick={async () => {
+              const amountStr = prompt(`Enter amount to withdraw (Available: ${(seller.payoutBalance || 0).toLocaleString()} ETB):`, String(seller.payoutBalance || 0));
+              if (!amountStr) return;
+              const amount = parseFloat(amountStr);
+              if (isNaN(amount) || amount <= 0) return alert("Please enter a valid amount");
+
+              const res = await fetch("/api/seller/cashout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  sellerId: seller.id,
+                  amount,
+                  payoutAccount: seller.payoutAccount,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok) alert(data.error || "Cashout request failed");
+              else {
+                alert(data.message);
+                fetchSellerData();
+              }
+            }}
+            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition"
+          >
+            Request Cashout Disbursement
+          </button>
+        </div>
+
+        {/* Physical Handover QR Scanner Tool */}
+        <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-6 rounded-3xl border border-indigo-800/80 shadow-md space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-indigo-200 uppercase tracking-wider">Delivery Handover Scanner</span>
+            <ShieldCheck className="w-4 h-4 text-indigo-400" />
+          </div>
+          <p className="text-[11px] text-slate-300">
+            Scan or enter the Winner's Dynamic Claim QR Code to unfreeze escrow balance.
+          </p>
+          <button
+            onClick={async () => {
+              const code = prompt("Scan or enter the Winner's Claim QR Code (e.g. CLAIM-QR-XXXXXXXX):");
+              if (!code || !code.trim()) return;
+
+              const res = await fetch("/api/seller/delivery/scan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  claimQrCode: code.trim(),
+                  sellerId: seller.id,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok) alert(data.error || "Delivery scan verification failed.");
+              else {
+                alert(data.message);
+                fetchSellerData();
+              }
+            }}
+            className="w-full py-2 bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Verify Handover QR Code</span>
+          </button>
+        </div>
+      </div>
 
       {/* Seller Campaigns / Moderation Status */}
       <div className="space-y-4">

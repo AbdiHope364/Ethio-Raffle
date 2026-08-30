@@ -119,6 +119,39 @@ function VerifierContent() {
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
           {t.verifier.subtitle}
         </p>
+
+        {/* 3-Step Simple Explanation Card */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-left">
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-xs">
+              1
+            </div>
+            <h4 className="text-xs font-black text-slate-900 dark:text-white">Sealed in Advance</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              The secret number was sealed into a SHA-256 fingerprint before ticket #1 was sold.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs">
+              2
+            </div>
+            <h4 className="text-xs font-black text-slate-900 dark:text-white">Pure Mathematics</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              At 12:00 AM Midnight, the formula calculates the winner from the secret key and ticket pool.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-xs">
+              3
+            </div>
+            <h4 className="text-xs font-black text-slate-900 dark:text-white">Verify in 1-Click</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              Press "Verify Draw Fairness" below to confirm the math and prove no admin altered the winner.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Preset Quick Loader */}

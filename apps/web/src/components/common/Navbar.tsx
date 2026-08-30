@@ -21,7 +21,16 @@ import {
   Sun,
   Moon,
   Building2,
+  ChevronRight,
 } from "lucide-react";
+
+interface NavLinkItem {
+  href: string;
+  label: string;
+  icon: any;
+  badge?: string;
+  external?: boolean;
+}
 
 export default function Navbar() {
   const { t, language, setLanguage } = useI18n();
@@ -94,7 +103,7 @@ export default function Navbar() {
 
   const isAgent = currentUser?.role === "AGENT" || currentUser?.role === "ADMIN" || currentUser?.role === "SUPER_ADMIN";
 
-  const navLinks: { href: string; label: string; icon: any; badge?: string; external?: boolean }[] = [
+  const navLinks: NavLinkItem[] = [
     { href: "/", label: t.common.raffles, icon: Ticket },
     { href: "/my-tickets", label: t.common.myTickets, icon: Sparkles },
     { href: "/winners", label: t.common.winners, icon: Trophy },
@@ -108,7 +117,7 @@ export default function Navbar() {
       <AdminStealthAuthModal isOpen={stealthModalOpen} onClose={() => setStealthModalOpen(false)} />
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
+          {/* Brand Logo (Far Left) */}
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
             <div className="relative group-hover:scale-105 transition-transform duration-200">
               <LuckyTicketIcon size={42} />
@@ -124,8 +133,229 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          {/* Right-Aligned Desktop Navigation Links & Action Controls */}
+          <div className="hidden md:flex items-center gap-2 lg:gap-3 ml-auto">
+            {/* Desktop Nav Links */}
+            <nav className="flex items-center gap-1 lg:gap-1.5">
+              {navLinks.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return item.external ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/60 dark:border-purple-800/60"
+                  >
+                    <Icon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <span>{item.label}</span>
+                    <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
+                      {item.badge}
+                    </span>
+                  </a>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold shadow-xs border border-emerald-200/60 dark:border-emerald-800/60"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`} />
+                    <span>{item.label}</span>
+                    {item.badge && (
+                      <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
+
+            {/* Right Header Actions: Theme Toggle + Notification Bell + Language Toggle */}
+            <div className="flex items-center gap-2">
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
+                title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {resolvedTheme === "dark" ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-slate-600" />
+                )}
+              </button>
+
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => setNotifOpen(!notifOpen)}
+                  className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
+                  title="Buyer Notifications"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown Menu */}
+                {notifOpen && (
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
+                      <span className="flex items-center gap-1.5">
+                        <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <span>{language === "AM" ? "ማሳወቂያዎች" : "Buyer Alerts & Draws"}</span>
+                      </span>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllRead}
+                          className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:border-slate-800 mt-1">
+                      {notifications.length === 0 ? (
+                        <div className="py-6 text-center text-xs text-slate-400">
+                          No recent notifications
+                        </div>
+                      ) : (
+                        notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            className={`p-2.5 rounded-xl text-xs transition ${
+                              !n.isRead
+                                ? "bg-emerald-50/60 dark:bg-emerald-950/40 font-semibold"
+                                : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-1">
+                              <span className="font-bold text-slate-900 dark:text-slate-100">
+                                {language === "AM" && n.titleAm ? n.titleAm : n.title}
+                              </span>
+                              <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                                {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5 leading-snug">
+                              {language === "AM" && n.messageAm ? n.messageAm : n.message}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Language Switcher */}
+              <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                <Globe className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 ml-1 mr-1.5" />
+                <button
+                  onClick={() => setLanguage("EN")}
+                  className={`px-2 py-1 rounded transition-colors ${
+                    language === "EN"
+                      ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLanguage("AM")}
+                  className={`px-2 py-1 rounded transition-colors ${
+                    language === "AM"
+                      ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  አማርኛ
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Actions: Far Right Positioned */}
+          <div className="flex md:hidden items-center gap-2 ml-auto">
+            {/* Mobile Notification Bell */}
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
+                title="Buyer Notifications"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-red-500 text-white font-bold text-[8px] flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition"
+              title="Toggle theme"
+            >
+              {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            </button>
+
+            {/* Language Switcher */}
+            <button
+              onClick={() => setLanguage(language === "EN" ? "AM" : "EN")}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 transition"
+            >
+              {language === "EN" ? "አማ" : "EN"}
+            </button>
+
+            {/* Mobile Menu Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-rose-500" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Backdrop Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40 md:hidden animate-in fade-in"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Right-Hand Side Floating Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute right-3 sm:right-6 top-16 mt-2 w-72 sm:w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur border border-slate-200 dark:border-slate-800 rounded-3xl p-3 shadow-2xl space-y-1.5 z-50 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-between px-3 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+            <span>Navigation Menu</span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="space-y-1 pt-1">
             {navLinks.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -135,214 +365,49 @@ export default function Navbar() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/60 dark:border-purple-800/60"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 transition group"
                 >
-                  <Icon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span>{item.label}</span>
-                  <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
-                    {item.badge}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <span>{item.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
+                      {item.badge}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-purple-400 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </a>
               ) : (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-bold transition group ${
                     isActive
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold shadow-xs border border-emerald-200/60 dark:border-emerald-800/60"
-                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs"
+                      : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`} />
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="ml-1 px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
-                      {item.badge}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <Icon className={`w-4 h-4 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`} />
+                    <span>{item.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2 ml-auto">
+                    {item.badge && (
+                      <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                        {item.badge}
+                      </span>
+                    )}
+                    <ChevronRight className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${
+                      isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"
+                    }`} />
+                  </div>
                 </Link>
               );
             })}
-          </nav>
-
-          {/* Right Header Actions: Theme Toggle + Notification Bell + Language Toggle */}
-          <div className="hidden md:flex items-center gap-2.5">
-            {/* Theme Toggle Button (Light / Dark) */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
-              title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {resolvedTheme === "dark" ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-slate-600" />
-              )}
-            </button>
-
-            {/* Notification Bell */}
-            <div className="relative">
-              <button
-                onClick={() => setNotifOpen(!notifOpen)}
-                className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800"
-                title="Buyer Notifications"
-              >
-                <Bell className="w-4 h-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Notification Dropdown Menu */}
-              {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
-                    <span className="flex items-center gap-1.5">
-                      <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      <span>{language === "AM" ? "ማሳወቂያዎች" : "Buyer Alerts & Draws"}</span>
-                    </span>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllRead}
-                        className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
-                      >
-                        Mark all as read
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 mt-1">
-                    {notifications.length === 0 ? (
-                      <div className="py-6 text-center text-xs text-slate-400">
-                        No recent notifications
-                      </div>
-                    ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          className={`p-2.5 rounded-xl text-xs transition ${
-                            !n.isRead
-                              ? "bg-emerald-50/60 dark:bg-emerald-950/40 font-semibold"
-                              : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-1">
-                            <span className="font-bold text-slate-900 dark:text-slate-100">
-                              {language === "AM" && n.titleAm ? n.titleAm : n.title}
-                            </span>
-                            <span className="text-[10px] text-slate-400 whitespace-nowrap">
-                              {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                          </div>
-                          <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5 leading-snug">
-                            {language === "AM" && n.messageAm ? n.messageAm : n.message}
-                          </p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Language Switcher */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
-              <Globe className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 ml-1 mr-1.5" />
-              <button
-                onClick={() => setLanguage("EN")}
-                className={`px-2 py-1 rounded transition-colors ${
-                  language === "EN"
-                    ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => setLanguage("AM")}
-                className={`px-2 py-1 rounded transition-colors ${
-                  language === "AM"
-                    ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                አማርኛ
-              </button>
-            </div>
           </div>
-
-          {/* Mobile Actions: Theme + Lang + Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-              title="Toggle theme"
-            >
-              {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
-            </button>
-            <button
-              onClick={() => setLanguage(language === "EN" ? "AM" : "EN")}
-              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-emerald-700 dark:text-emerald-400 border border-slate-200 dark:border-slate-700"
-            >
-              {language === "EN" ? "አማ" : "EN"}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 space-y-1">
-          {navLinks.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            return item.external ? (
-              <a
-                key={item.href}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-base font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  <span>{item.label}</span>
-                </div>
-                <span className="px-2 py-0.5 text-xs font-bold rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-100">
-                  {item.badge}
-                </span>
-              </a>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-base font-medium ${
-                  isActive
-                    ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                  <span>{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span className="px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
         </div>
       )}
     </header>

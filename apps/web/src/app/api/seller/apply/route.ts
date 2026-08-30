@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
       contactPerson,
       tinNumber,
       licenseRef,
+      faydaIdNumber,
+      faydaIdDocUrl,
       region = "Addis Ababa",
       payoutAccount,
     } = body;
@@ -35,6 +37,7 @@ export async function POST(req: NextRequest) {
           fullName: contactPerson,
           role: "SELLER",
           status: "ACTIVE",
+          kycStatus: "PENDING_VERIFICATION",
         },
       });
     } else {
@@ -42,7 +45,7 @@ export async function POST(req: NextRequest) {
       if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
         await prisma.user.update({
           where: { id: user.id },
-          data: { role: "SELLER" },
+          data: { role: "SELLER", kycStatus: "PENDING_VERIFICATION" },
         });
       }
     }
@@ -69,6 +72,8 @@ export async function POST(req: NextRequest) {
         phone: cleanPhone,
         tinNumber: tinNumber || undefined,
         licenseRef: licenseRef || undefined,
+        faydaIdNumber: faydaIdNumber || undefined,
+        faydaIdDocUrl: faydaIdDocUrl || undefined,
         region,
         payoutAccount: payoutAccount || undefined,
         status: "PENDING",

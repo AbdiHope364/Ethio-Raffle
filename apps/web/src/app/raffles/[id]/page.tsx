@@ -262,38 +262,66 @@ export default function RaffleDetailsPage() {
             </div>
           </div>
 
-          {/* Provably Fair Commitment Box */}
-          <div className="bg-emerald-950 text-emerald-100 rounded-2xl p-6 border border-emerald-800/80 shadow-md space-y-3">
-            <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <span>{t.raffles.publishedHash} (Provably Fair)</span>
+          {/* Tamper-Proof Fair Draw Digital Seal */}
+          <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-6 border border-indigo-500/30 shadow-md space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-emerald-400 font-black text-sm">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <span>100% Anti-Cheat Guarantee (Digital Seal)</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                NLA Certified
+              </span>
             </div>
-            <p className="text-xs text-emerald-200/80 leading-relaxed">
-              Before selling any tickets, this raffle's secret seed was hashed using SHA-256 and committed publicly. When the draw concludes, the plain-text seed is revealed, allowing anyone to verify the winner with zero trust.
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              To guarantee that <strong>no admin or seller can rig or manipulate the draw</strong>, a cryptographic secret was generated and locked with this digital fingerprint before any tickets were sold:
             </p>
 
             {raffle.commitHash && (
-              <div className="flex items-center justify-between gap-2 bg-slate-900/90 p-3 rounded-xl border border-emerald-700/50 font-mono text-xs">
-                <span className="truncate text-emerald-300 font-semibold select-all">
-                  {raffle.commitHash}
-                </span>
-                <button
-                  onClick={() => copyToClipboard(raffle.commitHash)}
-                  className="p-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white shrink-0 transition"
-                  title="Copy SHA-256 Hash"
-                >
-                  {copiedHash ? <Check className="w-4 h-4 text-green-300" /> : <Copy className="w-4 h-4" />}
-                </button>
+              <div className="space-y-1.5">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Cryptographic Lock (SHA-256 Seal)</span>
+                  <span className="text-emerald-400 font-mono">Immutable</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 bg-black/40 p-3 rounded-2xl border border-white/10 font-mono text-xs">
+                  <span className="truncate text-indigo-300 font-bold select-all">
+                    {raffle.commitHash}
+                  </span>
+                  <button
+                    onClick={() => copyToClipboard(raffle.commitHash)}
+                    className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white shrink-0 transition"
+                    title="Copy SHA-256 Hash"
+                  >
+                    {copiedHash ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-300" />}
+                  </button>
+                </div>
               </div>
             )}
 
-            <div className="flex justify-between items-center text-[11px] text-emerald-300/80 pt-1">
-              <span>National Lottery Administration Verified</span>
+            {/* 3 Simple Anti-Cheat Promises */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                <span className="font-bold text-indigo-300 block">1. Locked Early</span>
+                <span className="text-slate-400 block text-[10px]">The secret was generated before ticket #1 was sold.</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                <span className="font-bold text-indigo-300 block">2. Cannot Be Rigged</span>
+                <span className="text-slate-400 block text-[10px]">Changing 1 letter changes the entire hash code.</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1">
+                <span className="font-bold text-indigo-300 block">3. Open to Anyone</span>
+                <span className="text-slate-400 block text-[10px]">Verify results yourself at 12:00 AM Midnight.</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-white/10">
+              <span>National Lottery Authority Audited</span>
               <Link
-                href={`/verifier?raffleId=${raffle.id}`}
-                className="underline hover:text-white font-bold"
+                href={`/verifier?raffleId=${raffle.id}&commit=${raffle.commitHash}`}
+                className="text-indigo-300 hover:text-white font-bold underline transition"
               >
-                Open Independent Verifier →
+                Test Draw Verifier →
               </Link>
             </div>
           </div>

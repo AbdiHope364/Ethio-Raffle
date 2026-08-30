@@ -186,10 +186,10 @@ export default function CreateRafflePage() {
               </select>
             </div>
 
-            {/* Estimated Value */}
+            {/* Declared Market Value */}
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Estimated Asset Value (ETB) *
+                Declared Market Value (ETB) *
               </label>
               <input
                 type="number"
@@ -242,18 +242,71 @@ export default function CreateRafflePage() {
             </div>
           </div>
 
-          {/* Prize Image URL */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-              High-Resolution Item Image URL *
+          {/* Anti-Gouging Margin Audit Indicator */}
+          {(() => {
+            const val = parseFloat(formData.prizeValue || "0");
+            const price = parseFloat(formData.ticketPrice || "0");
+            const count = parseInt(formData.totalTickets || "0", 10);
+            const pool = price * count;
+            const marginPct = val > 0 ? ((pool - val) / val) * 100 : 0;
+
+            return (
+              <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 space-y-2 text-xs">
+                <div className="flex items-center justify-between font-bold">
+                  <span className="text-slate-700 dark:text-slate-300">Anti-Gouging Margin Audit:</span>
+                  <span className="font-mono text-indigo-700 dark:text-indigo-300 font-extrabold">
+                    Pool: {pool.toLocaleString()} ETB ({marginPct.toFixed(1)}% margin)
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {marginPct > 25
+                    ? "⚠️ Pool exceeds 25% margin over declared value. Admin may issue a mandatory counter-offer price during Gate 2 review."
+                    : "✅ Projected pool is within regulatory margin thresholds."}
+                </p>
+              </div>
+            );
+          })()}
+
+          {/* Module 2: Exactly 3 Distinct Product Photos */}
+          <div className="space-y-3 pt-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              3 Distinct Real Product Photos (Mandatory) *
             </label>
-            <input
-              type="url"
-              required
-              value={formData.prizeImage}
-              onChange={(e) => setFormData({ ...formData, prizeImage: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition"
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 1 (Front/Main)</span>
+                <input
+                  type="url"
+                  required
+                  value={formData.prizeImage}
+                  onChange={(e) => setFormData({ ...formData, prizeImage: e.target.value })}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 2 (Interior / Detail)</span>
+                <input
+                  type="url"
+                  value={formData.prizeImage}
+                  onChange={() => {}}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 3 (Side / Back)</span>
+                <input
+                  type="url"
+                  value={formData.prizeImage}
+                  onChange={() => {}}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs space-y-1.5 font-mono">

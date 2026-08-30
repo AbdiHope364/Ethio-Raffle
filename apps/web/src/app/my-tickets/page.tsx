@@ -22,6 +22,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import { WinnerClaimModal } from "@/components/customer/WinnerClaimModal";
 
 function MyTicketsContent() {
   const { t, language } = useI18n();
@@ -32,6 +33,7 @@ function MyTicketsContent() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"ACTIVE" | "DRAWN">("ACTIVE");
   const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null);
+  const [selectedWinnerTicket, setSelectedWinnerTicket] = useState<any | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   // Phone / Code Lookup state
@@ -284,6 +286,18 @@ function MyTicketsContent() {
                   </div>
                 </div>
 
+                {/* Winner Action Console Button */}
+                {isWinner && (
+                  <button
+                    onClick={() => setSelectedWinnerTicket(ticket)}
+                    className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 animate-pulse"
+                  >
+                    <Trophy className="w-4 h-4 text-amber-300" />
+                    <span>Open Winner Claim Console (Item vs. Cash)</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+
                 {/* Bottom Actions */}
                 <div className="flex items-center justify-between pt-1 text-xs">
                   <button
@@ -302,6 +316,16 @@ function MyTicketsContent() {
             );
           })}
         </div>
+      )}
+
+      {/* Winner Claim Console Modal */}
+      {selectedWinnerTicket && (
+        <WinnerClaimModal
+          isOpen={!!selectedWinnerTicket}
+          onClose={() => setSelectedWinnerTicket(null)}
+          ticket={selectedWinnerTicket}
+          winnerPhone={queriedIdentifier || selectedWinnerTicket.customerPhone || ""}
+        />
       )}
 
       {/* Digital Receipt Modal */}
