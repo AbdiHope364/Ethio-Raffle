@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dire Dawa University - Software Engineering Internship Report & Presentation Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Ethiopic:wght@400;700;900&display=swap');
+
+    :root {
+      --primary: #1e3a8a;
+      --primary-dark: #0f172a;
+      --secondary: #0d9488;
+      --accent: #b45309;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Noto Sans Ethiopic', -apple-system, sans-serif;
+      color: #1e293b;
+      background-color: #f8fafc;
+      line-height: 1.65;
+      font-size: 14px;
+      padding: 30px;
+    }
+
+    .document-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 60px 70px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      border-radius: 8px;
+    }
+
+    /* Print settings */
+    @media print {
+      body { background: #fff; padding: 0; font-size: 12pt; }
+      .document-container { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
+      .page-break { page-break-before: always; }
+      .no-print { display: none !important; }
+    }
+
+    /* University Header */
+    .univ-header {
+      text-align: center;
+      border-bottom: 3px double #0f172a;
+      padding-bottom: 20px;
+      margin-bottom: 35px;
+    }
+    .univ-title-en {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #0f172a;
+    }
+    .univ-title-am {
+      font-family: 'Noto Sans Ethiopic', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #1e3a8a;
+      margin-top: 4px;
+    }
+    .faculty-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      margin-top: 6px;
+      letter-spacing: 0.8px;
+    }
+    .dept-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+    .contact-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #64748b;
+      margin-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+    }
+
+    /* Cover Page Elements */
+    .cover-box {
+      text-align: center;
+      padding: 40px 20px;
+      margin: 30px 0;
+      border: 1px solid #e2e8f0;
+      background: #fcfdfe;
+      border-radius: 12px;
+    }
+    .cover-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    .report-main-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .project-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0d9488;
+      margin-bottom: 30px;
+    }
+    .student-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      text-align: left;
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+    .meta-item strong { color: #0f172a; display: block; font-size: 11px; text-transform: uppercase; color: #64748b; margin-bottom: 2px; }
+
+    /* Headings */
+    h1.section-h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 6px;
+      margin-top: 35px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h2.section-h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-top: 22px;
+      margin-bottom: 10px;
+    }
+    h3.section-h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    p { margin-bottom: 14px; text-align: justify; }
+    ul, ol { margin-left: 24px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 13px;
+    }
+    table.data-table th, table.data-table td {
+      border: 1px solid #cbd5e1;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    table.data-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+    table.data-table tr:nth-child(even) { background-color: #f8fafc; }
+
+    /* Code & Formulas */
+    pre, code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      line-height: 1.5;
+    }
+    .math-callout {
+      background: #eef2ff;
+      border-left: 4px solid #4f46e5;
+      padding: 14px 18px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      color: #1e1b4b;
+    }
+
+    /* Slide Deck Formatting */
+    .slide-card {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .slide-number {
+      background: #1e3a8a;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .slide-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .speaker-note {
+      background: #f8fafc;
+      border-left: 3px solid #0d9488;
+      padding: 10px 14px;
+      margin-top: 14px;
+      font-size: 12px;
+      font-style: italic;
+      color: #475569;
+    }
+
+    /* Print Button */
+    .action-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .btn-print {
+      background: #1e3a8a;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(30, 58, 138, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-print:hover { background: #0f172a; transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+  <div class="action-bar no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+
+  <div class="document-container">
+
+    <!-- University Header -->
+    <header class="univ-header">
+      <div class="univ-title-en">DIRE DAWA UNIVERSITY</div>
+      <div class="univ-title-am">ድሬዳዋ ዩኒቨርሲቲ ቴክኖሎጂ ኢንስቲትዩት</div>
+      <div class="faculty-title">Institute of Technology &bull; School of Computing (በኮምፒዩቲንግ ትምህርት ቤት)</div>
+      <div class="dept-title">Department of Software Engineering (የሶፍትዌር ምህንድስና ትምህርት ክፍል)</div>
+      <div class="contact-bar">
+        <span>TEL: +251-9-10-78-3938</span>
+        <span>E-MAIL: sinedos2001@gamil.com</span>
+        <span>P.O. BOX: 1362</span>
+        <span>FAX: +251-025-112-79-71</span>
+        <span>Dire Dawa, Ethiopia</span>
+      </div>
+    </header>
+
+    <!-- Cover Section -->
+    <section class="cover-box">
+      <span class="cover-badge">Software Engineering Internship Report &amp; Presentation</span>
+      <h1 class="report-main-title">Architecting &amp; Engineering a High-Concurrency Multi-Vendor Digital Raffle Platform with Double-Entry Accounting and Provably Fair Cryptography</h1>
+      <div class="project-name">Project: LuckyEthio (Idil) Enterprise Infrastructure</div>
+
+      <div class="student-meta-grid">
+        <div class="meta-item">
+          <strong>Student Name</strong>
+          <span>[Student Full Name]</span>
+        </div>
+        <div class="meta-item">
+          <strong>Student ID</strong>
+          <span>[DDU/UGR/XXXX/XX]</span>
+        </div>
+        <div class="meta-item">
+          <strong>Host Organization</strong>
+          <span>LuckyEthio FinTech Solutions PLC</span>
+        </div>
+        <div class="meta-item">
+          <strong>Academic Year</strong>
+          <span>2017 / 2018 E.C.</span>
+        </div>
+        <div class="meta-item">
+          <strong>Date of Submission</strong>
+          <span>10/01/2018 E.C.</span>
+        </div>
+        <div class="meta-item">
+          <strong>Date of Presentation</strong>
+          <span>12/01/2018 E.C.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART ONE -->
+    <div class="page-break"></div>
+    <h1 class="section-h1">PART ONE: COMPREHENSIVE INTERNSHIP REPORT</h1>
+
+    <!-- 2. Acknowledgment -->
+    <h2 class="section-h2">2. Acknowledgment</h2>
+    <p>
+      First and foremost, I offer my profound thanks to Almighty God for providing me the perseverance, good health, and intellectual clarity to successfully accomplish my Software Engineering internship and author this technical report.
+    </p>
+    <p>
+      I express my deepest appreciation to <strong>Dire Dawa University, Institute of Technology (IoT), School of Computing, and the Department of Software Engineering</strong> for curating a forward-looking curriculum and facilitating this vital industry attachment. Special gratitude is extended to my <strong>Academic Advisor</strong> for providing continuous academic oversight and constructive evaluation.
+    </p>
+    <p>
+      I am deeply indebted to <strong>LuckyEthio Digital Solutions PLC</strong>, my <strong>Industry Supervisor</strong>, and the entire engineering team. Their mentorship, willingness to share advanced system architecture knowledge, and confidence in assigning me core financial, cryptographic, and backend concurrency modules were instrumental to the success of this internship.
+    </p>
+
+    <!-- 3. List of Acronyms -->
+    <h2 class="section-h2">3. List of Acronyms &amp; Abbreviations</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Acronym</th><th>Definition</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>API</strong></td><td>Application Programming Interface</td></tr>
+        <tr><td><strong>CBE</strong></td><td>Commercial Bank of Ethiopia</td></tr>
+        <tr><td><strong>ECA</strong></td><td>Ethiopian Communications Authority</td></tr>
+        <tr><td><strong>ETB</strong></td><td>Ethiopian Birr</td></tr>
+        <tr><td><strong>HMAC</strong></td><td>Hash-based Message Authentication Code</td></tr>
+        <tr><td><strong>MoR</strong></td><td>Ministry of Revenues (Federal Democratic Republic of Ethiopia)</td></tr>
+        <tr><td><strong>NLA</strong></td><td>National Lottery Administration (Ethiopia)</td></tr>
+        <tr><td><strong>PDPP</strong></td><td>Personal Data Protection Proclamation (No. 1321/2024)</td></tr>
+        <tr><td><strong>POS</strong></td><td>Point of Sale</td></tr>
+        <tr><td><strong>RBAC</strong></td><td>Role-Based Access Control</td></tr>
+        <tr><td><strong>RNG</strong></td><td>Random Number Generator</td></tr>
+        <tr><td><strong>SHA</strong></td><td>Secure Hash Algorithm (e.g. SHA-256)</td></tr>
+        <tr><td><strong>USSD</strong></td><td>Unstructured Supplementary Service Data (e.g. *804#)</td></tr>
+        <tr><td><strong>VAT</strong></td><td>Value Added Tax (15% Statutory Rate)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 4. Table of Contents -->
+    <h2 class="section-h2">4. Table of Contents Summary</h2>
+    <ul>
+      <li>1. Executive Summary &bull; 2. Acknowledgment &bull; 3. List of Acronyms &bull; 4. Table of Contents</li>
+      <li>5. Introduction (Objectives, Academic Relevance) &bull; 6. Company Background (LuckyEthio PLC)</li>
+      <li>7. Internship Activities (Turborepo, Backend, Payments, Concurrency, Ledgers)</li>
+      <li>8. Technical Skills Utilized (TypeScript, Next.js 14, Prisma, SHA-256, Double-Entry)</li>
+      <li>9. Collaboration &amp; Teamwork &bull; 10. Deep-Dive: LuckyEthio System Highlights</li>
+      <li>11. Challenges &amp; Solutions &bull; 12. Organizational Contributions &bull; 13. Conclusion &amp; Recommendations</li>
+      <li>14. References &bull; 15. Technical Appendices</li>
+    </ul>
+
+    <!-- 5. Introduction -->
+    <h2 class="section-h2">5. Introduction</h2>
+    <p>
+      The Software Engineering Internship (SEng-4182) at Dire Dawa University is a cornerstone practical course designed to immerse students into enterprise software development workflows. The attachment allows students to apply theoretical knowledge from courses like <em>Database Systems</em>, <em>Web Engineering</em>, <em>Software Architecture</em>, and <em>Computer Security</em> directly to commercial systems.
+    </p>
+    <p>
+      During my 4-month attachment with <strong>LuckyEthio Digital Solutions PLC</strong>, I was embedded within the core engineering team responsible for architecting and building high-traffic, secure, and regulatory-compliant digital ticketing and financial settlement systems.
+    </p>
+
+    <!-- 6. Company Background -->
+    <h2 class="section-h2">6. Host Company Profile: LuckyEthio Digital Solutions PLC</h2>
+    <p>
+      <strong>LuckyEthio</strong> is a specialized Ethiopian technology startup focused on revolutionizing traditional promotional raffles, commercial lotteries, and point-of-sale ticketing. By replacing physical paper slips with cryptographically verifiable digital receipts, automated 15% VAT withholding, and instant mobile money settlements (Telebirr, CBE Birr, Chapa), LuckyEthio bridges digital convenience with strict regulatory transparency.
+    </p>
+    <p>
+      <strong>Organizational Hierarchy:</strong> The engineering division comprises the Chief Technology Officer, Frontend UI/UX Team, Core Systems &amp; Backend Team (where I served as Software Engineering Intern), Quality Assurance, and Regulatory Compliance Officers.
+    </p>
+
+    <!-- 7. Activities -->
+    <h2 class="section-h2">7. Internship Activities &amp; Roles</h2>
+    <p>
+      My primary responsibilities centered around full-stack feature engineering, database architecture, and cryptographic protocol implementation:
+    </p>
+    <ul>
+      <li><strong>Monorepo Engineering:</strong> Restructured the codebase into a modular <code>Turborepo</code> containing <code>apps/web</code>, <code>apps/admin</code>, <code>packages/database</code>, and <code>packages/shared</code>.</li>
+      <li><strong>Double-Entry Financial Ledger:</strong> Engineered balanced ledger transactions (Debits = Credits) for ticket receipts, 15% VAT escrow, seller holdings, and agent commissions.</li>
+      <li><strong>Atomic Ticket Concurrency:</strong> Implemented database-level transaction locks (<code>tx.$transaction</code>) and composite unique constraints to guarantee zero overselling under high concurrency.</li>
+      <li><strong>Multi-Provider Payment Adapters:</strong> Built unified provider adapters for Chapa, Telebirr, CBE Birr, and SantimPay with idempotent webhook handlers.</li>
+      <li><strong>Provably Fair RNG Engine:</strong> Designed a multi-entropy commit-reveal formula with immutable <code>DrawSnapshot</code> state locks.</li>
+      <li><strong>Data Privacy Governance:</strong> Implemented customer data rights workflows adhering to Ethiopian PDPP Proclamation No. 1321/2024.</li>
+    </ul>
+
+    <!-- 8. Technical Skills -->
+    <h2 class="section-h2">8. Technical Skills Utilized</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Domain</th><th>Technologies &amp; Methodologies Applied</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Frontend</strong></td><td>Next.js 14 (App Router), React 18, Tailwind CSS, Lucide Icons, Responsive Layouts</td></tr>
+        <tr><td><strong>Backend &amp; API</strong></td><td>Node.js, TypeScript, REST API Route Handlers, Signed Webhook Verification</td></tr>
+        <tr><td><strong>Database &amp; Storage</strong></td><td>Prisma ORM, SQLite / PostgreSQL, Relational Schema Normalization</td></tr>
+        <tr><td><strong>Financial Accounting</strong></td><td>Double-Entry General Ledger, Chart of Accounts, Trial Balance Verification</td></tr>
+        <tr><td><strong>Cryptography &amp; Security</strong></td><td>SHA-256 Hashing, HMAC Signatures, Two-Person Authorization, Dynamic QR Tokens</td></tr>
+        <tr><td><strong>Project Management</strong></td><td>Agile Scrum, 2-Week Sprints, GitHub Pull Requests, Static Type Checking</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 9. Collaboration -->
+    <h2 class="section-h2">9. Collaboration &amp; Teamwork</h2>
+    <p>
+      Working within an Agile Scrum framework, I actively participated in daily standups, code review sessions, and backlog refinement. Key collaborative milestones included re-engineering the mobile drawer navigation to float on the right-hand side, standardizing dual-consent seller draw agreements, and building the stealth administrative authentication portal.
+    </p>
+
+    <!-- 10. Project Deep Dive -->
+    <h2 class="section-h2">10. Project Deep Dive: LuckyEthio System Highlights</h2>
+    <p>
+      The platform decouples ticket purchasing into a robust multi-stage pipeline:
+    </p>
+    <pre><code>// Decoupled Lifecycle:
+Customer Intent ──► PurchaseOrder (PUR-XXXX) ──► Payment Gateway (Chapa/Telebirr)
+      ▲
+      │ (Webhook Verified + Idempotency Guard)
+      ▼
+Atomic DB Transaction ──► Allocate Tickets (TKT-XXXX) ──► Double-Entry Ledger Posting</code></pre>
+
+    <div class="math-callout">
+      Provably Fair Formula: Winner = (BigInt(SHA256(v2.0 : RaffleID : SecretSeed : SoldTickets : PublicEntropy : Algorithm)) % SoldTickets) + 1
+    </div>
+
+    <!-- 11. Challenges -->
+    <h2 class="section-h2">11. Challenges Encountered &amp; Engineering Solutions</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Challenge Encountered</th><th>Root Cause</th><th>Engineering Solution Implemented</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Inventory Race Conditions</strong></td><td>Concurrent requests reading stale counts.</td><td>Atomic database transactions with <code>UNIQUE(raffleId, ticketNumber)</code>.</td></tr>
+        <tr><td><strong>Duplicate Webhooks</strong></td><td>Gateway retries sending duplicate HTTP posts.</td><td>Enforced strict <code>idempotencyKey</code> tracking.</td></tr>
+        <tr><td><strong>Ledger Drift</strong></td><td>Rounding discrepancies across VAT and escrow.</td><td>Strict double-entry journal ensuring Total Debits === Total Credits.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 12. Contribution -->
+    <h2 class="section-h2">12. Organizational Contributions</h2>
+    <p>
+      I delivered 57 fully compiled Next.js routes (34 web pages, 23 admin pages) with <strong>zero TypeScript errors</strong>, configured Turborepo caching for lightning-fast builds, and authored complete regulatory and user documentation.
+    </p>
+
+    <!-- 13. Conclusion -->
+    <h2 class="section-h2">13. Conclusion &amp; Recommendations</h2>
+    <p>
+      This internship successfully bridged software engineering theory with the rigorous demands of production fintech and digital gaming platforms.
+    </p>
+    <ul>
+      <li><strong>For the Company:</strong> Implement hardware security modules (HSM) for automated secret seed rotation and integrate telecom SMPP gateways.</li>
+      <li><strong>For Dire Dawa University:</strong> Incorporate enterprise monorepo tooling (Turborepo) and financial ledger design into advanced programming labs.</li>
+    </ul>
+
+    <!-- 14. References -->
+    <h2 class="section-h2">14. References</h2>
+    <ol>
+      <li>National Lottery Administration (NLA) of Ethiopia, <em>Proclamation No. 535/2007</em>.</li>
+      <li>Ethiopian Communications Authority (ECA), <em>Personal Data Protection Proclamation No. 1321/2024</em>.</li>
+      <li>Ministry of Revenues (MoR), <em>Value Added Tax (VAT) Proclamation No. 285/2002</em>.</li>
+      <li>Vercel &amp; Next.js Core Team, <em>Next.js 14 App Router Documentation</em>, 2024.</li>
+      <li>Prisma ORM Team, <em>Prisma Client &amp; Concurrency Documentation</em>, 2024.</li>
+    </ol>
+
+    <!-- PART TWO: PRESENTATION SLIDES -->
+    <div class="page-break"></div>
+    <h1 class="section-h1">PART TWO: INTERNSHIP PRESENTATION SLIDE DECK</h1>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 1</span>
+        <span class="slide-title">Cover Page &amp; Title</span>
+      </div>
+      <p><strong>Title:</strong> Software Engineering Internship Presentation</p>
+      <p><strong>Project:</strong> LuckyEthio (Idil) — Enterprise Digital Raffle &amp; Double-Entry Financial Marketplace Platform</p>
+      <p><strong>Student:</strong> [Student Full Name] &bull; <strong>ID:</strong> [DDU/UGR/XXXX/XX] &bull; <strong>Date:</strong> 12/01/2018 E.C.</p>
+      <div class="speaker-note">
+        <strong>Speaker Note:</strong> "Good morning honorable academic committee and advisors. Today, I am proud to present my Software Engineering internship report on architecting LuckyEthio, a production-grade digital raffle and financial transaction platform."
+      </div>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 2</span>
+        <span class="slide-title">Agenda &amp; Presentation Contents</span>
+      </div>
+      <ul>
+        <li>1. Introduction &amp; Host Company Profile</li>
+        <li>2. Problem Statement &amp; Objectives</li>
+        <li>3. System Specifications &amp; Feasibility Analysis</li>
+        <li>4. Architecture &amp; Methodology (Agile Turborepo)</li>
+        <li>5. Key Results: Double-Entry Ledger, Atomic Allocation, Fair RNG</li>
+        <li>6. Live System Demonstration</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 3</span>
+        <span class="slide-title">Problem Statement</span>
+      </div>
+      <ul>
+        <li><strong>Opaque Draws:</strong> Traditional lotteries lack independent mathematical verification.</li>
+        <li><strong>Inventory Overselling:</strong> High concurrency web traffic causes duplicate seat/ticket reservations.</li>
+        <li><strong>Escrow Delivery Disputes:</strong> Winner prizes are often disputed without dynamic verification.</li>
+        <li><strong>Manual Tax Reconciliation:</strong> Difficulties in remitting statutory 15% VAT to Ministry of Revenues.</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 4</span>
+        <span class="slide-title">Project Objectives &amp; System Scope</span>
+      </div>
+      <ul>
+        <li>Implement decoupled purchase orders and idempotent payment webhook handling.</li>
+        <li>Build a balanced double-entry chart of accounts (Cash Transit, Prize Escrow, VAT Payable, Platform Revenue).</li>
+        <li>Implement multi-entropy SHA-256 commit-reveal RNG and immutable draw snapshots.</li>
+        <li>Enforce Two-Person consensus on draw execution and high-value cashout disbursements.</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 5</span>
+        <span class="slide-title">System Architecture &amp; Technology Stack</span>
+      </div>
+      <p><strong>Monorepo Structure (Turborepo):</strong></p>
+      <ul>
+        <li><code>apps/web</code>: Customer Web Portal, POS Kiosk, USSD (*804#) Simulator, Public Verifier</li>
+        <li><code>apps/admin</code>: Stealth Admin Operations, Financial Ledger, Live Draw Console, Risk Engine</li>
+        <li><code>packages/database</code>: Prisma ORM, 18 Relational Models, SQLite / PostgreSQL</li>
+        <li><code>packages/shared</code>: Ledger, Payments, Fair-RNG, Risk, Two-Person, i18n (Amharic/English)</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 6</span>
+        <span class="slide-title">Double-Entry Financial Ledger Results</span>
+      </div>
+      <ul>
+        <li>Every ticket purchase atomically posts balanced journal entries.</li>
+        <li><strong>Debit:</strong> <code>1010-CASH-TRANSIT</code> (100%)</li>
+        <li><strong>Credit:</strong> <code>2020-VAT-PAYABLE</code> (15% MoR), <code>2010-PRIZE-ESCROW</code> (77% Seller), <code>4010-PLATFORM-REVENUE</code> (8%)</li>
+        <li>Live Trial Balance verification confirms <strong>100% Balanced status (Debits = Credits)</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 7</span>
+        <span class="slide-title">Provably Fair Verification &amp; Two-Person Consensus</span>
+      </div>
+      <ul>
+        <li><strong>Pre-Commitment:</strong> SHA-256 digital hash published before selling ticket #1.</li>
+        <li><strong>Draw Snapshot:</strong> Sales close &rarr; eligible ticket universe frozen into cryptographic snapshot.</li>
+        <li><strong>Two-Person Consensus:</strong> Initiated by Draw Operator &rarr; Approved by Super Admin.</li>
+        <li><strong>Public Verifier:</strong> Any regulator or customer can verify winner mathematics in 1 click at <code>/verifier</code>.</li>
+      </ul>
+    </div>
+
+    <div class="slide-card">
+      <div class="slide-header">
+        <span class="slide-number">Slide 8</span>
+        <span class="slide-title">Live System Demonstration Guide</span>
+      </div>
+      <ol>
+        <li><strong>Demo Flow 1:</strong> Customer buys 2 tickets via Telebirr adapter &rarr; instant sequential ticket minting.</li>
+        <li><strong>Demo Flow 2:</strong> Open Admin Financials &rarr; inspect balanced Double-Entry journal entries &amp; 15% VAT escrow.</li>
+        <li><strong>Demo Flow 3:</strong> Execute Provably Fair live draw with Two-Person consensus &rarr; check public verifier.</li>
+        <li><strong>Demo Flow 4:</strong> Winner dynamic QR code redemption &amp; merchant scanner validation.</li>
+        <li><strong>Demo Flow 5:</strong> Exercise PDPP data privacy request portal.</li>
+      </ol>
+    </div>
+
+  </div>
+
+</body>
+</html>
