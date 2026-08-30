@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { sellerId, status, rejectionReason, commissionRate } = await req.json();
+    const { sellerId, status, rejectionReason, rejectionReasonCode, commissionRate } = await req.json();
 
     if (!sellerId || !status) {
       return NextResponse.json({ error: "sellerId and status are required." }, { status: 400 });
@@ -27,6 +27,7 @@ export async function PATCH(req: NextRequest) {
 
     const data: any = { status };
     if (rejectionReason) data.rejectionReason = rejectionReason;
+    if (rejectionReasonCode) data.rejectionReasonCode = rejectionReasonCode;
     if (commissionRate !== undefined) data.commissionRate = parseFloat(commissionRate);
 
     const seller = await prisma.seller.update({

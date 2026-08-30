@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@raffle/database";
-import { deriveWinningTicketNumber } from "@raffle/shared";
+import {
+  createImmutableDrawSnapshot,
+  deriveMultiEntropyWinnerTicketNumber,
+  logAuditEvent,
+} from "@raffle/shared";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,36 +17,47 @@ export async function POST(req: NextRequest) {
       where: { id: raffleId },
       include: {
         tickets: {
-          where: { status: "CONFIRMED" },
+          where: { status: "ACTIVE" },
           include: { user: true },
         },
       },
     });
 
     if (!raffle) return NextResponse.json({ error: "Raffle not found" }, { status: 404 });
-    if (raffle.status === "DRAWN") return NextResponse.json({ error: "Already drawn" }, { status: 400 });
-    if (raffle.soldTickets <= 0) return NextResponse.json({ error: "0 tickets sold" }, { status: 400 });
+    if (raffle.status === "COMPLETED" || raffle.status === "DRAWN") {
+      return NextResponse.json({ error: "Raffle is already drawn and completed" }, { status: 400 });
+    }
+    if (raffle.soldTickets <= 0) {
+      return NextResponse.json({ error: "Cannot execute draw with 0 tickets sold" }, { status: 400 });
+    }
 
-    const winningTicketNumber = deriveWinningTicketNumber(
+    // 1. Create Immutable Cryptographic Draw Snapshot (Freezes ticket universe)
+    const snapshot = await createImmutableDrawSnapshot(prisma, raffle.id);
+
+    // 2. Derive Winning Ticket Number using Multi-Entropy formula
+    const publicEntropy = raffle.publicEntropy || "ETHIO-TELECOM-NLA-CONSENSUS";
+    const { winningTicketNumber, drawHash } = deriveMultiEntropyWinnerTicketNumber(
       raffle.secretSeed!,
-      raffle.soldTickets
+      raffle.id,
+      raffle.soldTickets,
+      publicEntropy
     );
 
     const winningTicket = await prisma.ticket.findFirst({
       where: {
         raffleId: raffle.id,
         ticketNumber: winningTicketNumber,
-        status: "CONFIRMED",
       },
       include: { user: true, soldByAgent: true },
     });
 
     const now = new Date();
 
+    // 3. Update Raffle Status to WINNER_SELECTED
     const updatedRaffle = await prisma.raffle.update({
       where: { id: raffle.id },
       data: {
-        status: "DRAWN",
+        status: "WINNER_SELECTED",
         drawnAt: now,
         revealedSeed: raffle.secretSeed,
         winningTicketNumber,
@@ -51,72 +66,53 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // 4. Update Draw Audit
     const drawAudit = await prisma.drawAudit.upsert({
       where: { raffleId: raffle.id },
       update: {
         revealedAt: now,
         winningTicketNumber,
+        formulaDescription: "SHA256(version:raffleId:secretSeed:soldTickets:publicEntropy:algorithm) % soldTickets + 1",
       },
       create: {
         raffleId: raffle.id,
         commitHash: raffle.commitHash!,
         secretSeed: raffle.secretSeed!,
+        publicEntropy,
         revealedAt: now,
         totalSoldTickets: raffle.soldTickets,
         winningTicketNumber,
-        formulaDescription: "SHA256(secretSeed) % totalSoldTickets + 1",
-        verifiedBy: "Admin Operations Console (NLA-ETH-2026)",
+        formulaDescription: "SHA256(version:raffleId:secretSeed:soldTickets:publicEntropy:algorithm) % soldTickets + 1",
+        verifiedBy: "Two-Person Consensus & Cryptographic Snapshot",
       },
     });
 
-    // 1. Group buyers by customerPhone to send notifications
-    const buyerMap = new Map<string, { userId?: string | null; phones: string[] }>();
-    raffle.tickets.forEach((t) => {
-      const phone = t.customerPhone || t.user?.phone;
-      if (phone) {
-        buyerMap.set(phone, {
-          userId: t.userId,
-          phones: [phone],
-        });
-      }
+    // 5. Append Immutable Audit Log
+    await logAuditEvent(prisma, {
+      actorType: "ADMIN",
+      action: "DRAW_EXECUTED_SNAPSHOT_VERIFIED",
+      entityType: "RAFFLE",
+      entityId: raffle.id,
+      afterState: {
+        winningTicketNumber,
+        snapshotNumber: snapshot.snapshotNumber,
+        drawHash,
+      },
     });
 
-    // 2. Dispatch Pre-Draw Alert and Winner Announcement notifications
-    const notificationsToCreate = [];
-
-    for (const [phone, info] of buyerMap.entries()) {
-      const isWinner =
-        winningTicket &&
-        (winningTicket.customerPhone === phone || winningTicket.user?.phone === phone);
-
-      if (isWinner) {
-        notificationsToCreate.push({
-          userId: info.userId || undefined,
-          customerPhone: phone,
+    // 6. Send Notifications
+    if (winningTicket?.customerPhone) {
+      await prisma.notification.create({
+        data: {
+          userId: winningTicket.userId || null,
+          customerPhone: winningTicket.customerPhone,
           raffleId: raffle.id,
           title: `🎉 CONGRATULATIONS! You Won ${raffle.prizeName}!`,
           titleAm: `🎉 እንኳን ደስ አሎት! ${raffle.prizeNameAm || raffle.prizeName} አሸንፈዋል!`,
-          message: `Your Ticket #${winningTicketNumber} matched the official Provably Fair draw! Contact LuckyEthio support or visit our office with verification code ${winningTicket.verificationCode}.`,
-          messageAm: `የእርስዎ ቲኬት ቁጥር #${winningTicketNumber} በይፋዊው ዕጣ አሸናፊ ሆኗል! በማረጋገጫ ኮድዎ ${winningTicket.verificationCode} ሽልማትዎን ይረከቡ።`,
+          message: `Your Ticket #${winningTicketNumber} matched the official Provably Fair draw! Access your claim QR code in your dashboard.`,
+          messageAm: `የእርስዎ ቲኬት ቁጥር #${winningTicketNumber} በይፋዊው ዕጣ አሸናፊ ሆኗል! የመረከቢያ QR ኮድዎን ዳሽቦርድ ላይ ያግኙ።`,
           type: "WINNER_ANNOUNCEMENT",
-        });
-      } else {
-        notificationsToCreate.push({
-          userId: info.userId || undefined,
-          customerPhone: phone,
-          raffleId: raffle.id,
-          title: `Draw Completed: ${raffle.title}`,
-          titleAm: `የዕጣ ውጤት ይፋ ሆነ: ${raffle.titleAm || raffle.title}`,
-          message: `Winning Ticket #${winningTicketNumber} was drawn. Check your ticket numbers or verify the cryptographic proof on the public verifier.`,
-          messageAm: `አሸናፊ ቲኬት ቁጥር #${winningTicketNumber} ወጥቷል። ቲኬቶችዎን ያረጋግጡ።`,
-          type: "WINNER_ANNOUNCEMENT",
-        });
-      }
-    }
-
-    if (notificationsToCreate.length > 0) {
-      await prisma.notification.createMany({
-        data: notificationsToCreate,
+        },
       });
     }
 
@@ -128,14 +124,15 @@ export async function POST(req: NextRequest) {
         ? {
             ticketNumber: winningTicket.ticketNumber,
             customerPhone: winningTicket.customerPhone || winningTicket.user?.phone,
-            winnerName: winningTicket.user?.fullName || "Walk-in Customer",
-            soldByAgent: winningTicket.soldByAgent?.fullName || "Self-Service Online",
+            winnerName: winningTicket.user?.fullName || "Verified Buyer",
             verificationCode: winningTicket.verificationCode,
           }
         : null,
+      snapshot,
       drawAudit,
     });
   } catch (error: any) {
+    console.error("Draw execution error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

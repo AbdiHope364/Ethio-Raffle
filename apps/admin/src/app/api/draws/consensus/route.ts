@@ -43,6 +43,8 @@ export async function POST(req: NextRequest) {
           where: { id: raffle.id },
           data: {
             adminDrawConsent: true,
+            adminConsentAt: now,
+            dualConsentFlag: true,
             status: "DRAWN",
             drawnAt: now,
             revealedSeed: raffle.secretSeed,
@@ -76,7 +78,7 @@ export async function POST(req: NextRequest) {
       } else {
         const updated = await prisma.raffle.update({
           where: { id: raffle.id },
-          data: { adminDrawConsent: true },
+          data: { adminDrawConsent: true, adminConsentAt: new Date() },
         });
         return NextResponse.json({
           success: true,

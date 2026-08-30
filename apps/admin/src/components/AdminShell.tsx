@@ -21,6 +21,7 @@ import {
   Sun,
   Moon,
   Shield,
+  ShieldAlert,
   Award,
 } from "lucide-react";
 
@@ -58,6 +59,8 @@ export default function AdminShell({ children }: AdminShellProps) {
     { href: "/agents", label: t.admin.manageAgents, icon: Users },
     { href: "/draws", label: t.admin.liveDrawRoom, icon: Trophy },
     { href: "/financials", label: t.admin.financialLedger, icon: Wallet },
+    { href: "/risk", label: "Fraud & Risk Engine", icon: ShieldAlert },
+    { href: "/privacy", label: "Data Privacy (PDPP)", icon: ShieldCheck },
     { href: "/audits", label: t.admin.securityAudits, icon: ShieldCheck },
     { href: "/settings", label: t.admin.systemSettings, icon: Settings },
   ];

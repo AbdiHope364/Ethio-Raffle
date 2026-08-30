@@ -352,26 +352,73 @@ export default function ModerationHubPage() {
                     </div>
 
                     {/* Metadata chips */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
                       <div>
-                        <span className="text-slate-400 block text-[10px]">VALUATION</span>
-                        <span className="font-bold text-slate-700 dark:text-slate-300">{r.prizeValue.toLocaleString()} ETB</span>
+                        <span className="text-slate-400 block text-[10px]">DECLARED VALUATION</span>
+                        <span className="font-bold text-slate-700 dark:text-slate-300">{(r.declaredMarketValue || r.prizeValue).toLocaleString()} ETB</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">TOTAL TICKET POOL</span>
+                        <span className="font-bold text-slate-700 dark:text-slate-300">{(r.ticketPrice * r.totalTickets).toLocaleString()} ETB</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">MARGIN AUDIT</span>
+                        {(() => {
+                          const val = r.declaredMarketValue || r.prizeValue || 1;
+                          const pool = r.ticketPrice * r.totalTickets;
+                          const margin = ((pool - val) / val) * 100;
+                          return (
+                            <span className={`font-black ${margin > 25 ? "text-rose-500" : "text-emerald-500"}`}>
+                              {margin > 0 ? "+" : ""}{margin.toFixed(1)}% {margin > 25 ? "(EXCESSIVE)" : "(COMPLIANT)"}
+                            </span>
+                          );
+                        })()}
                       </div>
                       <div>
                         <span className="text-slate-400 block text-[10px]">TICKET PRICE</span>
                         <span className="font-bold text-slate-700 dark:text-slate-300">{r.ticketPrice} ETB</span>
                       </div>
                       <div>
-                        <span className="text-slate-400 block text-[10px]">CAPACITY</span>
-                        <span className="font-bold text-slate-700 dark:text-slate-300">{r.soldTickets} / {r.totalTickets} Tickets</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[10px]">COMMIT HASH</span>
-                        <span className="font-bold text-slate-700 dark:text-slate-300 truncate block">
-                          {r.commitHash?.substring(0, 10)}...
+                        <span className="text-slate-400 block text-[10px]">APPRAISAL STATUS</span>
+                        <span className="font-bold text-purple-600 dark:text-purple-400">
+                          {r.appraisalStatus || "PENDING_REVIEW"}
                         </span>
                       </div>
                     </div>
+
+                    {/* Counter-Offer Action */}
+                    {isPending && (
+                      <div className="pt-2 flex justify-end">
+                        <button
+                          onClick={async () => {
+                            const newPriceStr = prompt(`Issue mandatory Counter-Offer Ticket Price for anti-gouging (Current: ${r.ticketPrice} ETB):`, String(Math.round((r.prizeValue * 1.15) / r.totalTickets)));
+                            if (!newPriceStr) return;
+                            const newPrice = parseFloat(newPriceStr);
+                            if (isNaN(newPrice) || newPrice <= 0) return alert("Invalid price");
+
+                            const res = await fetch("/api/moderation/raffles", {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                raffleId: r.id,
+                                counterOfferPrice: newPrice,
+                                appraisalStatus: "COUNTER_OFFER_ISSUED",
+                                moderationNotes: `Admin issued mandatory counter-offer of ${newPrice} ETB/ticket.`,
+                              }),
+                            });
+                            const d = await res.json();
+                            if (!res.ok) alert(d.error);
+                            else {
+                              alert(d.message);
+                              fetchData();
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                        >
+                          <span>Issue Anti-Gouging Counter-Offer</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}

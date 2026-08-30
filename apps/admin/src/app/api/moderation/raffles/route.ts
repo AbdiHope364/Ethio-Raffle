@@ -18,14 +18,30 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { raffleId, moderationStatus, moderationNotes } = await req.json();
+    const {
+      raffleId,
+      moderationStatus,
+      moderationNotes,
+      rejectionReasonCode,
+      counterOfferPrice,
+      appraisalStatus,
+    } = await req.json();
 
-    if (!raffleId || !moderationStatus) {
-      return NextResponse.json({ error: "raffleId and moderationStatus are required." }, { status: 400 });
+    if (!raffleId) {
+      return NextResponse.json({ error: "raffleId is required." }, { status: 400 });
     }
 
-    const data: any = { moderationStatus };
+    const data: any = {};
+    if (moderationStatus !== undefined) data.moderationStatus = moderationStatus;
     if (moderationNotes !== undefined) data.moderationNotes = moderationNotes;
+    if (rejectionReasonCode !== undefined) data.rejectionReasonCode = rejectionReasonCode;
+    if (counterOfferPrice !== undefined) data.counterOfferPrice = parseFloat(counterOfferPrice);
+    if (appraisalStatus !== undefined) data.appraisalStatus = appraisalStatus;
+
+    if (counterOfferPrice && counterOfferPrice > 0) {
+      data.appraisalStatus = "COUNTER_OFFER_ISSUED";
+      data.moderationStatus = "PENDING_APPROVAL";
+    }
 
     const raffle = await prisma.raffle.update({
       where: { id: raffleId },
@@ -36,7 +52,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({
       success: true,
       raffle,
-      message: `Raffle listing status updated to ${moderationStatus}.`,
+      message: `Raffle listing updated successfully (Status: ${raffle.moderationStatus}, Appraisal: ${raffle.appraisalStatus}).`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
