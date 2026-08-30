@@ -1,3 +1,7 @@
+<div align="center">
+
+![Dire Dawa University Logo](ddu_logo.jpg)
+
 # DIRE DAWA UNIVERSITY
 ## INSTITUTE OF TECHNOLOGY (ድሬዳዋ ዩኒቨርሲቲ ቴክኖሎጂ ኢንስቲትዩት)
 ### SCHOOL OF COMPUTING (በኮምፒዩቲንግ ትምህርት ቤት)
@@ -11,12 +15,14 @@
 # FINAL INTERNSHIP REPORT & PRESENTATION GUIDE
 ## Title: Software Engineering Internship Presentation & Technical Report
 ### Project: LuckyEthio (Idil) — Enterprise Digital Raffle & Double-Entry Financial Marketplace Platform
+### Host Organization: SORARDI PLC
 
 **Academic Year:** 2017/2018 E.C.  
 **Submission Date:** 10/01/2018 E.C.  
 **Presentation Date:** 12/01/2018 E.C.  
 **Department:** Software Engineering  
-**Target Organization:** LuckyEthio FinTech & Digital Gaming Solutions PLC (Addis Ababa / Remote, Ethiopia)  
+
+</div>
 
 ---
 
@@ -31,7 +37,7 @@
 * **Report Title:** Software Engineering Internship Presentation & Final Project Report: *Architecting and Engineering a High-Concurrency Multi-Vendor Digital Raffle Platform with Double-Entry Accounting and Provably Fair Cryptography*
 * **Student Name:** [Student Full Name]
 * **Student ID Number:** [DDU/UGR/XXXX/XX]
-* **Host Organization:** LuckyEthio Digital Solutions & FinTech PLC
+* **Host Organization:** SORARDI PLC (Technology & Software Solutions)
 * **Internship Period:** Sene 01, 2017 E.C. – Meskerem 05, 2018 E.C. (4 Months)
 * **Academic Advisor:** [Advisor Name, MSc/PhD]
 * **Host Company Supervisor:** [Industry Supervisor Name, Lead Software Engineer]
@@ -40,13 +46,13 @@
 ---
 
 ## 2. Acknowledgment
-First and foremost, I would like to express my deepest gratitude to the Almighty God for providing me with the strength, health, and wisdom to successfully complete my internship and this technical report.
+First and foremost, I would like to express my deepest gratitude to Almighty God for providing me with the strength, health, and wisdom to successfully complete my internship and this technical report.
 
 I would like to extend my heartfelt appreciation to **Dire Dawa University, Institute of Technology (IoT), School of Computing, and the Department of Software Engineering** for designing a comprehensive academic curriculum and offering this internship program, which bridges theoretical software engineering concepts with industry practice.
 
 My sincere gratitude goes to my **Academic Advisor** for their constructive guidance, continuous feedback, and mentorship throughout the internship semester. 
 
-Special thanks and appreciation are extended to the management and engineering staff at **LuckyEthio Digital Solutions PLC**, especially my **Industry Supervisor** and the development team, who warmly welcomed me, shared their rich industry experience, provided access to modern cloud development tools, and entrusted me with core production-level responsibilities on the **LuckyEthio (Idil)** digital raffle and financial transaction platform.
+Special thanks and appreciation are extended to the management and engineering staff at **SORARDI PLC**, especially my **Industry Supervisor** and the development team, who warmly welcomed me, shared their rich industry experience, provided access to modern cloud development tools, and entrusted me with core production-level responsibilities on the **LuckyEthio (Idil)** digital raffle and financial transaction platform.
 
 Finally, I express my gratitude to my family and fellow software engineering classmates for their continuous encouragement and moral support.
 
@@ -88,7 +94,7 @@ Finally, I express my gratitude to my family and fellow software engineering cla
 2. Chapter 1: Introduction
    - 1.1 Purpose and Objectives of the Internship
    - 1.2 Relevance to Software Engineering Curriculum
-3. Chapter 2: Company Profile & Organizational Background
+3. Chapter 2: Company Profile & Organizational Background (SORARDI PLC)
    - 2.1 Industry Overview & Market Context
    - 2.2 Host Company Services and Mission
    - 2.3 Organizational Structure and Team Placement
@@ -117,12 +123,12 @@ Finally, I express my gratitude to my family and fellow software engineering cla
    - 7.1 Database Race Conditions & Inventory Overselling
    - 7.2 Financial Ledger Imbalances
    - 7.3 Multi-Channel Access & USSD State Handling
-9. Chapter 8: Value Added to the Host Organization
+9. Chapter 8: Value Added to SORARDI PLC
    - 8.1 Production Codebase & Monorepo Infrastructure
    - 8.2 Technical Documentation & System Guides
 10. Chapter 9: Conclusion & Recommendations
     - 9.1 Summary of Experience
-    - 9.2 Recommendations for the Host Company
+    - 9.2 Recommendations for SORARDI PLC
     - 9.3 Recommendations for Dire Dawa University
     - 9.4 Career Impact and Future Outlook
 11. References
@@ -148,35 +154,35 @@ The internship program directly aligns with key courses in the Software Engineer
 
 ---
 
-## 6. Company Background [Profile]
+## 6. Company Background [Profile]: SORARDI PLC
 ### 6.1 Industry Overview
-The Ethiopian digital economy is experiencing unprecedented growth, accelerated by the expansion of mobile broadband, the National Digital Payments Strategy, and the adoption of mobile money platforms like **Telebirr**, **CBE Birr**, and **Chapa**. However, the traditional lottery and promotional raffle sector has historically relied on physical paper tickets, manual drum draws, and centralized draws that lack real-time public transparency, automated statutory tax withholding, and independent digital verification.
+The Ethiopian digital economy is experiencing rapid modernization, propelled by national financial inclusion strategies and the widespread adoption of mobile money systems such as **Telebirr**, **CBE Birr**, and **Chapa**. However, the digital promotional gaming, lottery, and merchant ticketing sector has historically lacked real-time public transparency, mathematical verifiability, and automated statutory tax escrow mechanisms.
 
-### 6.2 Host Company: LuckyEthio Digital Solutions PLC
-**LuckyEthio** is a pioneer Ethiopian technology startup focused on building transparent, cryptographically verifiable, and regulatory-compliant digital raffle marketplaces, point-of-sale agent networks, and financial transaction engines.
+### 6.2 Host Company: SORARDI PLC
+**SORARDI PLC** is an Ethiopian technology and software engineering enterprise dedicated to developing robust cloud applications, enterprise financial systems, and high-concurrency digital platforms.
 
-* **Vision:** To become East Africa's most trusted, transparent, and accessible digital promotional raffle and ticketing marketplace.
+* **Mission:** To empower Ethiopian businesses and consumers with transparent, secure, and world-class digital platforms.
 * **Core Products & Services:**
-  1. *Customer Web & Mobile Portal:* Self-service raffle browsing, instant digital ticketing, and winner claim console.
-  2. *Merchant Seller Portal:* Multi-vendor car, electronics, and real estate asset appraisal and raffle listing.
-  3. *Agent POS & USSD Network (`*804#`):* Field kiosk ticket sales and offline feature phone accessibility.
-  4. *Admin Governance & Draw Console:* Double-entry financial ledger, live draw execution, and compliance monitoring.
+  1. *Customer Web & Mobile Portals:* High-speed ticketing and interactive claim interfaces.
+  2. *Merchant Systems:* Multi-vendor inventory management, KYC compliance, and delivery verification.
+  3. *Agent POS & USSD Gateways (`*804#`):* Field kiosk software and feature phone accessibility.
+  4. *Enterprise Financial & Governance Consoles:* Double-entry bookkeeping, audit telemetry, and automated tax withholding.
 
 ### 6.3 Organizational Structure & Team Placement
-LuckyEthio operates with an engineering-centric organizational structure:
-* **Executive Leadership:** Chief Executive Officer (CEO) & Product Management.
+SORARDI PLC maintains a collaborative, engineering-driven hierarchy:
+* **Executive Leadership:** General Manager & Product Director.
 * **Engineering Department:**
-  * Lead Software Architect
+  * Technical Lead & Software Architect
   * Frontend & UI/UX Engineering Team
   * Backend & Core Systems Team *(Intern Placement Team)*
   * Quality Assurance & Security Engineering
-* **Operations & Compliance Department:** Regulatory Liaison (NLA), Ministry of Revenues (MoR) Tax Compliance, and Merchant KYC Reviewers.
+* **Operations & Compliance Department:** Regulatory Liaison (NLA), Ministry of Revenues (MoR) Tax Compliance, and Merchant Reviewers.
 
 ---
 
 ## 7. Internship Activities & Detailed Work Breakdown
 ### 7.1 Roles and Responsibilities
-As a Software Engineering Intern within the Core Systems Engineering team, my responsibilities included:
+As a Software Engineering Intern within the Core Systems Engineering team at SORARDI PLC, my responsibilities included:
 1. Contributing to the architectural refactoring of the monolithic raffle repository into a high-performance **Turborepo monorepo** (`apps/web`, `apps/admin`, `packages/database`, `packages/shared`).
 2. Designing and implementing the **Double-Entry Financial Ledger** service to ensure all ticket proceeds, 15% VAT, and escrow funds balance to zero discrepancy.
 3. Implementing the **Two-Stage Purchase and Atomic Ticket Allocation Engine** to eliminate race-condition overselling.
@@ -221,7 +227,7 @@ The engineering team adhered to Agile Scrum practices:
 ---
 
 ## 9. Collaboration, Teamwork & Contributions
-During the internship, I collaborated closely with frontend designers, backend engineers, and compliance specialists. Key collaborative achievements include:
+During the internship at SORARDI PLC, I collaborated closely with frontend designers, backend engineers, and compliance specialists. Key collaborative achievements include:
 1. **Refactoring the Mobile Navigation Experience:** Re-architecting `Navbar.tsx` on mobile to float on the right-hand side and formatting `Footer.tsx` so that categories sit side-by-side on mobile screens.
 2. **Building the Admin Moderation & Anti-Gouging System:** Creating multi-photo inspection (3 distinct angles), fair market value counter-offers, and Fayda National ID verification workflows for merchant onboarding.
 3. **Establishing Zero-Error Build Pipelines:** Ensuring all 34 customer web pages and 23 admin console pages compile cleanly with zero TypeScript errors or ESLint warnings.
@@ -275,8 +281,8 @@ To address these challenges, we built **LuckyEthio (Idil)**, an enterprise-grade
 
 ---
 
-## 12. Contribution to the Organization
-My contributions delivered tangible, long-term value to LuckyEthio:
+## 12. Contribution to SORARDI PLC
+My contributions delivered tangible, long-term value to SORARDI PLC:
 1. **Production-Ready Codebase:** Delivered modular packages for payments, ledger, risk monitoring, provably fair RNG, and audit logging.
 2. **Clean Monorepo Infrastructure:** Configured Turborepo build caching, reducing local build and testing times significantly.
 3. **Comprehensive Documentation:** Produced detailed technical architecture manuals, PDF user guides, and API integration guides.
@@ -287,9 +293,9 @@ My contributions delivered tangible, long-term value to LuckyEthio:
 ## 13. Conclusion & Recommendations
 
 ### 13.1 Conclusion
-The 4-month software engineering internship at LuckyEthio was a transformative academic and professional experience. It provided me with first-hand experience in designing scalable, secure, and regulatory-compliant fintech systems. Working on the LuckyEthio platform deepened my mastery of full-stack engineering, database concurrency, financial accounting in software, applied cryptography, and agile collaboration.
+The 4-month software engineering internship at SORARDI PLC was a transformative academic and professional experience. It provided me with first-hand experience in designing scalable, secure, and regulatory-compliant fintech systems. Working on the platform deepened my mastery of full-stack engineering, database concurrency, financial accounting in software, applied cryptography, and agile collaboration.
 
-### 13.2 Recommendations for the Host Organization
+### 13.2 Recommendations for SORARDI PLC
 1. **Automated End-to-End Load Testing:** Integrate tools like k6 or Artillery to simulate 10,000+ concurrent users on live draw nights.
 2. **Hardware Security Modules (HSM):** Transition seed commitments to dedicated cloud HSMs for enhanced cryptographic protection.
 3. **Direct Telecom SMPP SMS Gateway:** Deploy dedicated short-code SMS aggregators for sub-second ticket delivery.
@@ -297,7 +303,7 @@ The 4-month software engineering internship at LuckyEthio was a transformative a
 ### 13.3 Recommendations for Dire Dawa University
 1. **Incorporate Monorepo & Cloud Tooling into Lab Sessions:** Introduce modern tooling like Turborepo, Docker, and Prisma into Web Engineering courses.
 2. **Financial Technology & Distributed Ledger Course:** Introduce coursework covering financial ledger design, idempotency patterns, and high-concurrency database isolation.
-3. **Strengthen Industry Partnerships:** Expand formal internship linkage agreements with emerging tech hubs and fintech startups.
+3. **Strengthen Industry Partnerships:** Expand formal internship linkage agreements with emerging tech hubs and software development enterprises.
 
 ---
 
@@ -345,15 +351,15 @@ function verifyDrawProof(secretSeed: string, raffleId: string, soldTickets: numb
 * **Department:** Department of Software Engineering
 * **Title:** Software Engineering Internship Presentation
 * **Sub-Title:** *Engineering LuckyEthio — Enterprise Digital Raffle & Double-Entry Financial Marketplace Platform*
+* **Host Organization:** SORARDI PLC
 * **Student Name:** [Student Name] | **ID:** [Student ID]
-* **Company:** LuckyEthio Digital Solutions PLC
 * **Advisor:** [Advisor Name] | **Supervisor:** [Supervisor Name]
 * **Date:** 12/01/2018 E.C.
 
 ---
 
 ### SLIDE 2: Presentation Contents (Agenda)
-1. Introduction & Background
+1. Introduction & Host Company Profile (SORARDI PLC)
 2. Problem Statement
 3. Project Objectives (General & Specific)
 4. Scope and Limitations
@@ -366,8 +372,8 @@ function verifyDrawProof(secretSeed: string, raffleId: string, soldTickets: numb
 
 ---
 
-### SLIDE 3: Introduction & Company Profile
-* **Host Company:** LuckyEthio Digital Solutions PLC (Addis Ababa, Ethiopia).
+### SLIDE 3: Introduction & Company Profile: SORARDI PLC
+* **Host Company:** SORARDI PLC (Technology & Software Solutions, Ethiopia).
 * **Core Focus:** Building transparent, cryptographically verifiable digital raffle infrastructure, point-of-sale agent networks, and financial accounting engines.
 * **Internship Purpose:** Bridging academic software engineering concepts (databases, web architectures, applied cryptography, and agile development) with production fintech systems.
 
