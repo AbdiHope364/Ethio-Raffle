@@ -299,6 +299,10 @@ async function internalAtomicPurchase(
         let assignedNumbers: number[] = [];
         let createdTickets: Array<{ id: string; ticketNumber: number; verificationCode: string }> = [];
 
+        const vatRate = 0.15; // 15% Statutory Ethiopian VAT
+        const perTicketVat = raffle.ticketPrice * vatRate;
+        const perTicketNetEscrow = raffle.ticketPrice * (1 - vatRate);
+
         if (existingReserved.length === ticketCount) {
           // Payment Complete: Upgrade existing reservations to CONFIRMED and issue official verification codes!
           for (const tkt of existingReserved) {
@@ -308,6 +312,8 @@ async function internalAtomicPurchase(
               data: {
                 status: "CONFIRMED",
                 verificationCode: officialVerificationCode, // Minted official code!
+                vatDeductedAmount: perTicketVat,
+                netEscrowAmount: perTicketNetEscrow,
                 reservedUntil: null,
                 reservedByPhone: null,
                 transactionId: transactionId || undefined,
@@ -316,6 +322,20 @@ async function internalAtomicPurchase(
                 userId: userId || tkt.userId || undefined,
               },
             });
+
+            // Record statutory tax split in TaxLedger
+            await tx.taxLedger.create({
+              data: {
+                transactionId: transactionId || undefined,
+                ticketId: updated.id,
+                raffleId,
+                ticketPrice: raffle.ticketPrice,
+                vatAmount: perTicketVat,
+                netEscrowAmount: perTicketNetEscrow,
+                remittedToGov: false,
+              },
+            });
+
             createdTickets.push({
               id: updated.id,
               ticketNumber: updated.ticketNumber,
@@ -363,7 +383,7 @@ async function internalAtomicPurchase(
             }
           }
 
-          // Mint confirmed tickets with official verification codes
+          // Mint confirmed tickets with official verification codes & VAT split
           for (const num of assignedNumbers) {
             const officialCode = generateVerificationCode();
             const ticket = await tx.ticket.create({
@@ -376,9 +396,25 @@ async function internalAtomicPurchase(
                 soldByAgentId: soldByAgentId || undefined,
                 purchaseMethod,
                 verificationCode: officialCode,
+                vatDeductedAmount: perTicketVat,
+                netEscrowAmount: perTicketNetEscrow,
                 status: "CONFIRMED",
               },
             });
+
+            // Record statutory tax split in TaxLedger
+            await tx.taxLedger.create({
+              data: {
+                transactionId: transactionId || undefined,
+                ticketId: ticket.id,
+                raffleId,
+                ticketPrice: raffle.ticketPrice,
+                vatAmount: perTicketVat,
+                netEscrowAmount: perTicketNetEscrow,
+                remittedToGov: false,
+              },
+            });
+
             createdTickets.push({
               id: ticket.id,
               ticketNumber: ticket.ticketNumber,
@@ -387,18 +423,41 @@ async function internalAtomicPurchase(
           }
         }
 
-        // Update Raffle sold count
+        // Update Raffle sold count & check 100% capacity for 12:00 AM Midnight Draw
         const confirmedTicketsCount = await tx.ticket.count({
           where: { raffleId, status: "CONFIRMED" },
         });
+
+        const isSoldOut = confirmedTicketsCount >= raffle.totalTickets;
+        let drawScheduledTime = raffle.drawScheduledTime;
+
+        if (isSoldOut && !drawScheduledTime) {
+          // Calculate Next Day 12:00 AM (Midnight)
+          const nextMidnight = new Date();
+          nextMidnight.setDate(nextMidnight.getDate() + 1);
+          nextMidnight.setHours(0, 0, 0, 0);
+          drawScheduledTime = nextMidnight;
+        }
 
         await tx.raffle.update({
           where: { id: raffleId },
           data: {
             soldTickets: confirmedTicketsCount,
-            status: confirmedTicketsCount >= raffle.totalTickets ? "CLOSED" : raffle.status,
+            status: isSoldOut ? "CLOSED" : raffle.status,
+            drawScheduledTime: drawScheduledTime || undefined,
           },
         });
+
+        // Credit Seller Escrow balance (pending verified QR delivery)
+        if (raffle.sellerId) {
+          const addedEscrow = perTicketNetEscrow * ticketCount;
+          await tx.seller.update({
+            where: { id: raffle.sellerId },
+            data: {
+              escrowBalance: { increment: addedEscrow },
+            },
+          });
+        }
 
         // If Agent sale, deduct float & record commission
         if (agent && soldByAgentId) {
