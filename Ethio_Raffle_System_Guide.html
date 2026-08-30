@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ethio-Raffle Platform Guide & Architecture Document</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 12mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 11pt;
+    }
+    .header {
+      border-bottom: 3px solid #4f46e5;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title-area h1 {
+      font-size: 20pt;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+    .title-area p {
+      font-size: 10pt;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+      border-radius: 9999px;
+      font-size: 8pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .section {
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-size: 12pt;
+      font-weight: 800;
+      color: #1e1b4b;
+      border-left: 4px solid #4f46e5;
+      padding-left: 8px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .card h4 {
+      font-size: 10pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .card p {
+      font-size: 8.5pt;
+      color: #475569;
+      line-height: 1.4;
+    }
+    .card.highlight {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .card.highlight h4 {
+      color: #166534;
+    }
+    .card.indigo {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+    }
+    .card.indigo h4 {
+      color: #3730a3;
+    }
+    .card.amber {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+    .card.amber h4 {
+      color: #92400e;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 9pt;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .callout {
+      background: #f8fafc;
+      border-left: 4px solid #0ea5e9;
+      padding: 10px 12px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 9pt;
+      color: #334155;
+    }
+    .callout strong {
+      color: #0369a1;
+    }
+    .flow-steps {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .step-box {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-top: 3px solid #4f46e5;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 8.5pt;
+    }
+    .step-num {
+      font-weight: 900;
+      color: #4f46e5;
+      font-size: 10pt;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .footer {
+      margin-top: 15px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title-area">
+      <h1>ETHIO-RAFFLE PLATFORM</h1>
+      <p>Simplified System Architecture & Operational Guide (SRS v1.0.0)</p>
+    </div>
+    <div style="text-align: right;">
+      <span class="badge">NLA & MoR Compliant</span>
+      <div style="font-size: 8pt; color: #64748b; margin-top: 4px; font-weight: bold;">System Provider Model</div>
+    </div>
+  </div>
+
+  <!-- 1. Platform Identity -->
+  <div class="section">
+    <div class="section-title">1. Platform Identity (System Provider Model)</div>
+    <div class="callout">
+      <strong>Who We Are:</strong> Ethio-Raffle is strictly a <strong>Technology Infrastructure & Escrow Provider</strong>. The platform owns zero physical inventory. We provide a trusted, licensed bridge connecting independent merchants (Sellers) with ticket buyers, backed by automated escrow protection and statutory government tax deduction.
+    </div>
+  </div>
+
+  <!-- 2. The 3 Core Roles -->
+  <div class="section">
+    <div class="section-title">2. How It Works for All 3 Parties</div>
+    <div class="card-grid">
+      <div class="card indigo">
+        <h4>👤 Ticket Buyers</h4>
+        <p>• <strong>No registration required</strong> — purchase with mobile phone number.<br>
+        • Instant ticket confirmation via SMS.<br>
+        • Pay via Telebirr, CBE Birr, Chapa, Awash, or Agent Kiosks.<br>
+        • <strong>Winner Choice</strong>: Physical item delivery OR Instant cash to wallet.</p>
+      </div>
+
+      <div class="card highlight">
+        <h4>🏪 Verified Merchants</h4>
+        <p>• Must register with <strong>Fayda National ID</strong> & Business License.<br>
+        • Post items with <strong>3 distinct photos</strong> & fair market value.<br>
+        • Protected by <strong>Escrow</strong>: funds unlocked instantly upon Winner QR scan.<br>
+        • 7-Day Auto-Release safety rule.</p>
+      </div>
+
+      <div class="card amber">
+        <h4>🛡️ Platform Admins</h4>
+        <p>• <strong>Stealth Access</strong>: Triggered exclusively via <code>Ctrl + Shift + A</code>.<br>
+        • Gate 1: Verify & approve Seller Fayda IDs.<br>
+        • Gate 2: Anti-Gouging appraisal & counter-offers.<br>
+        • Audit statutory 15% VAT & authorize seller cashouts.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. The Anti-Cheat Guarantee -->
+  <div class="section">
+    <div class="section-title">3. 100% Anti-Cheat Guarantee (SHA-256 Explained Simply)</div>
+    <p style="font-size: 9pt; color: #475569; margin-bottom: 8px;">
+      To make it mathematically impossible for admins or sellers to rig the draw, the system uses a <strong>"Digital Wax Seal"</strong>:
+    </p>
+
+    <div class="flow-steps">
+      <div class="step-box">
+        <span class="step-num">Step 1</span>
+        <strong>Sealed in Advance</strong><br>
+        Before ticket #1 is sold, a secret key is locked into a public SHA-256 fingerprint (e.g. <code>c9a9d30d...</code>).
+      </div>
+      <div class="step-box">
+        <span class="step-num">Step 2</span>
+        <strong>Tamper-Proof Sales</strong><br>
+        Tickets #1 to #10,000 are sold. Changing even 1 letter in the secret completely changes the hash, exposing any cheat.
+      </div>
+      <div class="step-box">
+        <span class="step-num">Step 3</span>
+        <strong>Midnight Draw (12:00 AM)</strong><br>
+        When 100% sold out, the computer calculates the winner using pure math: <code>(Seed + Tickets) % Total = Winner</code>.
+      </div>
+      <div class="step-box">
+        <span class="step-num">Step 4</span>
+        <strong>Public 1-Click Verification</strong><br>
+        Anyone can test the draw on the <strong>/verifier</strong> tool to confirm the math was 100% honest.
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Winner Settlement & Escrow Protection -->
+  <div class="section">
+    <div class="section-title">4. Winner Settlement & Handover Protection</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>What Happens</th>
+          <th>Security & Financial Safeguard</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Winner Notification</strong></td>
+          <td>Winner receives SMS notification and accesses settlement console on <code>/my-tickets</code>.</td>
+          <td>Verified phone number authentication gate.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Choice of Prize</strong></td>
+          <td><strong>Option 1</strong>: Physical Item (Car/Phone/Condo)<br><strong>Option 2</strong>: Cash Equivalent credited to wallet.</td>
+          <td>If Cash is chosen, funds credit instantly to wallet; item stays in merchant stock.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Physical QR Handover</strong></td>
+          <td>Winner presents Dynamic Claim QR Code to the merchant during physical pickup.</td>
+          <td>Merchant scans QR $\rightarrow$ Escrow balance instantly unfreezes into merchant payout balance.</td>
+        </tr>
+        <tr>
+          <td><strong>4. 7-Day Safety Fallback</strong></td>
+          <td>If QR scan is not completed, system auto-releases funds to merchant after 7 days.</td>
+          <td>If buyer reports non-receipt, escrow is permanently frozen for Admin Arbitration.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. Taxes & Financial Summary -->
+  <div class="section">
+    <div class="section-title">5. Financial Safety, Escrow & Statutory 15% VAT</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Revenue Stream</th>
+          <th>Percentage / Rate</th>
+          <th>Routing & Escrow Flow</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Statutory Ethiopian VAT</strong></td>
+          <td><strong>15% of Ticket Price</strong></td>
+          <td>Deducted at source on every ticket $\rightarrow$ Segregated into Government Tax Escrow (MoR compliance).</td>
+        </tr>
+        <tr>
+          <td><strong>Seller Net Proceeds</strong></td>
+          <td><strong>85% Net Escrow</strong></td>
+          <td>Locked in <code>escrowBalance</code> until physical QR scan or 7-day auto-release $\rightarrow$ <code>payoutBalance</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Seller Cashout Gate</strong></td>
+          <td><strong>100% Admin Authorized</strong></td>
+          <td>Seller requests withdrawal $\rightarrow$ Admin verifies and authorizes bank/Telebirr disbursement.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>Ethio-Raffle Production Specification Document • SRS v1.0.0</span>
+    <span>Addis Ababa, Ethiopia • Confidential & Official</span>
+  </div>
+
+</body>
+</html>
+

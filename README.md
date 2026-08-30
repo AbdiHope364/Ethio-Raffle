@@ -1,80 +1,118 @@
-# LuckyEthio Raffle Platform (Turborepo Monorepo)
+# LuckyEthio (Idil) — Enterprise Digital Raffle & Financial Marketplace Infrastructure
 
-A production-ready web platform for selling and managing raffle tickets in Ethiopia, featuring multi-channel ticketing, local Ethiopian payment integrations, verifiable random draws with SHA-256 commit-reveal mechanics, USSD feature phone interface (`*804#`), and full bilingual English & Amharic (አማርኛ) support.
+An enterprise-grade, high-concurrency multi-vendor digital raffle platform and double-entry financial ledger engineered for the Ethiopian market. Built with decoupled purchase pipelines, multi-entropy cryptographic draw proofs, atomic ticket allocation, two-person governance rules, and automated statutory tax escrow (Ministry of Revenues & National Lottery Administration compliance).
 
 ---
 
-## 🏛️ Monorepo Architecture
+## 🏛️ System Architecture
 
 ```
-raffle-monorepo/
+luckyethio/
 ├── apps/
-│   ├── web/        # Customer Portal, Agent POS & Kiosk, USSD Simulator (*804#), Public Verifier (Port 3000)
-│   └── admin/      # Dedicated Admin Operations Portal, Live Draw Console, Financial Ledger, KYC (Port 3001)
+│   ├── web/            # Customer Portal, POS Kiosk, USSD Simulator (*804#), Public Verifier (Port 3000)
+│   └── admin/          # Admin Operations, Double-Entry Finance, Live Draw & Two-Person Console (Port 3001)
 ├── packages/
-│   ├── database/   # Shared Prisma ORM Schema, Client Singleton & Seed scripts
-│   └── shared/     # Provably Fair SHA-256 Engine, Concurrency Mutex Queue, i18n (EN/AM), Payment Adapters
-└── turbo.json      # Turborepo build & dev pipeline configuration
+│   ├── database/       # Prisma ORM Schema, Double-Entry Chart of Accounts & Seed Dataset
+│   └── shared/         # Enterprise Core Engine:
+│       ├── ledger/     # Double-entry financial accounting (Debits = Credits)
+│       ├── payments/   # Provider adapters (Chapa, Telebirr, CBE Birr, SantimPay)
+│       ├── fair-rng/   # Multi-entropy commit-reveal RNG & immutable snapshot engine
+│       ├── risk/       # Fraud risk scoring engine (0-100 Low/Review/Block)
+│       ├── audit/      # Append-only immutable audit event stream
+│       ├── two-person/ # Two-Person Rule authorization engine
+│       ├── i18n/       # First-class bilingual English & Amharic (አማርኛ) dictionaries
+│       └── ussd/       # Formal USSD (*804#) session state machine
+└── turbo.json          # Monorepo build and development pipelines
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🔐 Core Enterprise Security & Architecture Principles
+
+### 1. Decoupled Purchase $\rightarrow$ Payment $\rightarrow$ Atomic Ticket Allocation Pipeline
+```
+Customer Intent → PurchaseOrder (PENDING)
+       ↓
+PaymentAttempt → Payment Gateway (Chapa/Telebirr/CBE)
+       ↓
+Server-Side Signed Webhook Verification + Idempotency Guard
+       ↓
+Atomic Ticket Allocation (Inside DB Transaction with UNIQUE(raffleId, ticketNumber))
+       ↓
+Double-Entry Ledger Journal Posting (Balanced Debits & Credits)
+       ↓
+Instant SMS Delivery + Opaque Signed QR Verification URL
+```
+
+### 2. Double-Entry Financial Ledger (§03)
+Every single Ethiopian Birr (ETB) flowing through LuckyEthio is balanced across formal Chart of Accounts:
+- **`1010-CASH-TRANSIT`** (Asset): Payment Gateway clearing balance.
+- **`2010-PRIZE-ESCROW`** (Liability): Seller proceeds locked in escrow until verified QR handover.
+- **`2020-VAT-PAYABLE`** (Liability): Statutory 15% Ethiopian VAT deducted at source for Ministry of Revenues (MoR).
+- **`2030-AGENT-COMMISSION`** (Liability): Commission payable to POS kiosk network.
+- **`4010-PLATFORM-REVENUE`** (Revenue/Equity): Operating platform fee.
+
+### 3. Multi-Entropy Provably Fair RNG & Immutable Draw Snapshot (§05 & §06)
+- **Pre-Commitment**: Initial digital seal published before ticket #1:
+  $$\text{Commitment} = \text{SHA-256}(\text{Version} : \text{RaffleID} : \text{SecretSeed} : \text{TotalTickets} : \text{PublicEntropy} : \text{Algorithm})$$
+- **Immutable Snapshot**: When sales close, ticket universe is hashed into `DrawSnapshot` (freezing eligible tickets).
+- **Multi-Entropy Draw Calculation**:
+  $$\text{Winner} = (\text{BigInt}(\text{SHA-256}(\text{Version} : \text{RaffleID} : \text{RevealedSeed} : \text{SoldTickets} : \text{PublicEntropy} : \text{Algorithm})) \pmod{\text{SoldTickets}}) + 1$$
+- Public 1-click independent cryptographic verification available on `/verifier`.
+
+### 4. Two-Person Rule for High-Value Governance (§09)
+Critical operations require dual authorization:
+- **Draw Execution**: Initiated by `DRAW_OPERATOR` $\rightarrow$ Approved by `SUPER_ADMIN`.
+- **Seller Cashout Disbursements**: Initiated by `OPERATIONS_ADMIN` $\rightarrow$ Approved by `FINANCE_ADMIN`.
+- **Under-Subscribed Raffles**: Dual-consent required by both Seller and Admin.
+
+### 5. Fraud & Risk Monitoring Engine (§17)
+- Real-time heuristic scoring (0 to 100).
+- **0–30 (LOW)**: Instant auto-approval.
+- **31–70 (REVIEW)**: Velocity anomaly flagged in Admin Risk Console.
+- **71–100 (BLOCK)**: Immediate checkout hold and dispute arbitration.
+
+### 6. Personal Data Protection (PDPP No. 1321/2024 Compliance)
+- Full support for statutory Data Subject Rights: Right of Access, Rectification, Erasure (Deletion), and Objection.
+- Customer request portal at `/privacy/data-request`.
+- Admin Data Governance & Privacy Console at `/privacy`.
+
+---
+
+## 🚀 Quick Start Guide
 
 ### 1. Prerequisites
-- Node.js 18+ (or 20+)
+- Node.js 18+ or 20+
 - npm / pnpm
 
-### 2. Install Dependencies
+### 2. Installation & Database Migration
 ```bash
+# 1. Install monorepo dependencies
 npm install
-```
 
-### 3. Setup Database
-```bash
-# Push schema and generate Prisma client
+# 2. Push Prisma database schema
 npm run db:push
 
-# Seed demo users, active raffles, agent wallets & draw audits
+# 3. Seed double-entry chart of accounts, users, active raffles & audits
 npm run db:seed
 ```
 
-### 4. Run Development Servers
+### 3. Launch Development Servers
 ```bash
-# Run both Web Client (3000) and Admin Portal (3001) concurrently
+# Runs Customer Portal (Port 3000) and Stealth Admin Console (Port 3001)
 npm run dev
 ```
 
-- **Web Client & Customer Portal**: [http://localhost:3000](http://localhost:3000)
-- **Admin Operations Console**: [http://localhost:3001](http://localhost:3001)
+- **Customer Web App & Verifier**: [http://localhost:3000](http://localhost:3000)
+- **Admin Operations Console**: [http://localhost:3001](http://localhost:3001) (Stealth Access Hotkey: `Ctrl + Shift + A`)
 
-### 5. Run Verification Test Suite
+### 4. Production Build Verification
 ```bash
-npx tsx scripts/test-platform.ts
+npm run build
 ```
 
 ---
 
-## 🌟 Key Features
+## ⚖️ Regulatory Status & Legal Framework
 
-1. **Provably Fair SHA-256 Commit-Reveal RNG**:
-   - $\text{CommitHash} = \text{SHA-256}(\text{SecretSeed} : \text{RaffleID} : \text{TotalTickets})$
-   - $\text{Winner} = (\text{BigInt}(\text{SHA-256}(\text{Seed})) \pmod{\text{TotalSoldTickets}}) + 1$
-   - Public validator tool at `/verifier` for regulators and players.
-
-2. **Concurrency & Anti-Overselling**:
-   - In-memory sequential queue per raffle and atomic database transactions guaranteeing zero duplicate numbers and zero overselling.
-
-3. **Ethiopian Payment Integrations**:
-   - Telebirr (Instant USSD / QR), CBE Birr, Chapa, SantimPay, and Agent Cash Float.
-
-4. **Agent Sales Channel & POS**:
-   - Physical kiosk ticketing, float balance ledger, automatic commission accruals, and USSD feature phone interface (`*804#`).
-
-5. **Regulatory & Compliance**:
-   - Designed in compliance with National Lottery Administration (NLA) standards, 18+ restrictions, and immutable audit logging.
-
----
-
-## 📜 License
-Licensed by National Lottery Administration (NLA/ETH/2026/89). All rights reserved.
+> **Regulatory Notice**: This software infrastructure is engineered to comply with applicable Ethiopian lottery regulations under the National Lottery Administration (NLA) Proclamation No. 535/2007, the Ethiopian Personal Data Protection Proclamation No. 1321/2024 (ECA), and Ministry of Revenues (MoR) source-deducted statutory VAT tax withholding. Production commercial operation is subject to obtaining and maintaining all required regulatory authorizations, operational permits, and payment provider agreements.
