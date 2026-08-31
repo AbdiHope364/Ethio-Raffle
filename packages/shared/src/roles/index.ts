@@ -97,6 +97,15 @@ export function hasPermission(role: string, permission: PermissionKey): boolean 
 }
 
 /**
+ * Asserts that the role has the required permission, or throws a descriptive 403 Forbidden Error.
+ */
+export function assertRolePermission(role: string, permission: PermissionKey): void {
+  if (!hasPermission(role, permission)) {
+    throw new Error(`FORBIDDEN: Role '${role}' lacks the required permission '${permission}'.`);
+  }
+}
+
+/**
  * Checks if an operation is classified as High-Risk and requires step-up re-authentication.
  */
 export function isSensitiveOperation(permission: PermissionKey): boolean {
@@ -110,4 +119,5 @@ export function isSensitiveOperation(permission: PermissionKey): boolean {
   ];
   return sensitiveList.includes(permission);
 }
+
 
