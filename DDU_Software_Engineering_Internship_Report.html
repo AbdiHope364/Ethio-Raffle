@@ -3,17 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dire Dawa University - Interactive Internship Technical Report (SORARDI PLC)</title>
+  <title>Dire Dawa University - Final Software Engineering Internship Technical Report (SORARDI PLC)</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Ethiopic:wght@400;700;900&display=swap');
 
     :root {
       --primary: #1e3a8a;
+      --primary-dark: #0f172a;
       --accent: #0d9488;
+      --accent-gold: #b45309;
       --bg-light: #f8fafc;
+      --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #475569;
       --border-color: #e2e8f0;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
@@ -21,7 +26,7 @@
       font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', -apple-system, sans-serif;
       color: var(--text-main);
       background-color: var(--bg-light);
-      line-height: 1.7;
+      line-height: 1.75;
       font-size: 14.5px;
     }
 
@@ -37,7 +42,7 @@
       justify-content: space-between;
       align-items: center;
       z-index: 100;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-sm);
     }
     .toolbar-brand {
       display: flex;
@@ -76,7 +81,7 @@
 
     /* Layout Wrapper */
     .app-layout {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 25px auto;
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -94,7 +99,7 @@
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      box-shadow: var(--shadow-sm);
     }
     .sidebar-toc h4 {
       font-size: 11.5px;
@@ -106,19 +111,19 @@
     }
     .toc-link {
       display: block;
-      padding: 7px 10px;
-      font-size: 12.5px;
+      padding: 6px 10px;
+      font-size: 12px;
       color: var(--text-muted);
       text-decoration: none;
       border-radius: 6px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       transition: all 0.15s;
     }
     .toc-link:hover, .toc-link.active {
       background: #eff6ff;
       color: var(--primary);
       font-weight: 700;
-      padding-left: 14px;
+      padding-left: 12px;
     }
 
     /* Main Document Article */
@@ -127,7 +132,7 @@
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 50px 60px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
+      box-shadow: var(--shadow-md);
     }
 
     /* Interactive Input Fields with Placeholders */
@@ -283,7 +288,7 @@
 
     /* Headings */
     h1.section-h1 {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 900;
       color: #0f172a;
       border-bottom: 2.5px solid var(--primary);
@@ -294,11 +299,18 @@
       letter-spacing: 0.5px;
     }
     h2.section-h2 {
-      font-size: 16.5px;
+      font-size: 16px;
       font-weight: 800;
       color: var(--primary);
       margin-top: 28px;
       margin-bottom: 12px;
+    }
+    h3.section-h3 {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 20px;
+      margin-bottom: 8px;
     }
 
     p { margin-bottom: 16px; text-align: justify; }
@@ -327,7 +339,7 @@
     }
     table.data-table tr:nth-child(even) { background-color: #f8fafc; }
 
-    /* Interactive Widgets */
+    /* Interactive Widgets & Callouts */
     .interactive-widget {
       background: #f8fafc;
       border: 2px solid #cbd5e1;
@@ -381,6 +393,17 @@
       overflow-x: auto;
     }
 
+    .figma-callout {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 14px 18px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #14532d;
+    }
+    .figma-callout strong { color: #166534; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+
     pre {
       background: #0f172a;
       color: #f8fafc;
@@ -409,7 +432,7 @@
   <!-- Top Sticky Navigation Toolbar (Interactive in Default Browser) -->
   <div class="top-toolbar no-print">
     <div class="toolbar-brand">
-      <span>🎓 Dire Dawa University &bull; Software Engineering Internship</span>
+      <span>🎓 Dire Dawa University &bull; Software Engineering Internship Report</span>
     </div>
     <div class="toolbar-actions">
       <button class="btn-tool" onclick="resetInputs()">🔄 Clear Form</button>
@@ -422,19 +445,21 @@
     <!-- Left Interactive Table of Contents -->
     <aside class="sidebar-toc no-print">
       <h4>Table of Contents</h4>
-      <a href="#cover" class="toc-link active">1. Cover Page</a>
-      <a href="#acknowledgment" class="toc-link">2. Acknowledgment</a>
-      <a href="#acronyms" class="toc-link">3. List of Acronyms</a>
-      <a href="#introduction" class="toc-link">5. Introduction</a>
-      <a href="#company" class="toc-link">6. SORARDI PLC Profile</a>
-      <a href="#activities" class="toc-link">7. Internship Activities</a>
-      <a href="#technical-skills" class="toc-link">8. Technical Skills</a>
-      <a href="#collaboration" class="toc-link">9. Collaboration</a>
-      <a href="#project-deep-dive" class="toc-link">10. Project Deep Dive</a>
+      <a href="#cover" class="toc-link active">Cover Page</a>
+      <a href="#acknowledgment" class="toc-link">1. Acknowledgment</a>
+      <a href="#acronyms" class="toc-link">2. List of Acronyms</a>
+      <a href="#introduction" class="toc-link">3. Introduction</a>
+      <a href="#company" class="toc-link">4. Organization Background</a>
+      <a href="#activities" class="toc-link">5. Internship Activities</a>
       <a href="#calculator" class="toc-link">⚡ Fair RNG Simulator</a>
+      <a href="#technical-skills" class="toc-link">6. Technical Skills</a>
+      <a href="#collaboration" class="toc-link">7. Collaboration &amp; Teamwork</a>
+      <a href="#contributions" class="toc-link">8. Achievements &amp; Contributions</a>
+      <a href="#highlights" class="toc-link">9. Project Highlights</a>
+      <a href="#growth" class="toc-link">10. Learning and Growth</a>
       <a href="#challenges" class="toc-link">11. Challenges &amp; Solutions</a>
-      <a href="#contribution" class="toc-link">12. Value Added</a>
-      <a href="#conclusion" class="toc-link">13. Conclusion</a>
+      <a href="#org-contribution" class="toc-link">12. Value Added to Org</a>
+      <a href="#conclusion" class="toc-link">13. Conclusion &amp; Recommendations</a>
       <a href="#references" class="toc-link">14. References</a>
       <a href="#appendices" class="toc-link">15. Appendices</a>
     </aside>
@@ -461,7 +486,7 @@
       <section class="cover-box">
         <span class="cover-badge">Final Internship Technical Report (SEng-4182)</span>
         <h1 class="report-main-title">Architecting &amp; Engineering a High-Concurrency Multi-Vendor Digital Raffle Platform with Double-Entry Accounting and Provably Fair Cryptography</h1>
-        <div class="project-name">Project: LuckyEthio Enterprise Infrastructure</div>
+        <div class="project-name">Project: LuckyEthio (Idil) Enterprise Infrastructure</div>
 
         <div class="student-meta-grid">
           <div class="meta-item">
@@ -493,126 +518,278 @@
 
       <div class="page-break"></div>
 
-      <!-- 2. Acknowledgment -->
+      <!-- 1. Acknowledgment -->
       <section id="acknowledgment">
-        <h1 class="section-h1">2. Acknowledgment</h1>
+        <h1 class="section-h1">1. Acknowledgment</h1>
         <p>
-          First and foremost, I offer my profound thanks to Almighty God for providing me the perseverance, good health, and intellectual clarity to successfully accomplish my Software Engineering internship and author this technical report.
+          I would like to express my sincere gratitude to <strong>Dire Dawa University, Institute of Technology, School of Computing, and the Department of Software Engineering</strong> for giving me the opportunity to participate in an internship program that enabled me to connect academic knowledge with practical software engineering.
         </p>
         <p>
-          I express my deepest appreciation to <strong>Dire Dawa University, Institute of Technology (IoT), School of Computing, and the Department of Software Engineering</strong> for curating a forward-looking curriculum and facilitating this vital industry attachment. Special gratitude is extended to my <strong>Academic Advisor</strong> for providing continuous academic oversight and constructive evaluation.
+          I am also grateful to the organization, <strong>SORARDI PLC</strong>, and the development team involved in the <strong>LuckyEthio (Idil)</strong> project for providing a professional environment where I could participate in software development, testing, debugging, system integration, and technical documentation.
         </p>
         <p>
-          I am deeply indebted to <strong>SORARDI PLC</strong>, my <strong>Industry Supervisor</strong>, and the entire software engineering team. Their mentorship, willingness to share advanced system architecture knowledge, and confidence in assigning me core financial, cryptographic, and backend concurrency modules on the LuckyEthio digital platform were instrumental to the success of this internship.
+          I would especially like to thank my <strong>Industry Supervisor</strong> and <strong>Academic Advisor</strong> for their guidance, constructive feedback, and continuous support throughout the internship period.
+        </p>
+        <p>
+          Finally, I would like to thank my classmates, friends, and family for their encouragement and support during my academic and professional development.
         </p>
       </section>
 
-      <!-- 3. List of Acronyms -->
+      <!-- 2. List of Acronyms -->
       <section id="acronyms">
-        <h1 class="section-h1">3. List of Acronyms &amp; Abbreviations</h1>
+        <h1 class="section-h1">2. List of Acronyms &amp; Abbreviations</h1>
         <table class="data-table">
           <thead>
-            <tr><th>Acronym</th><th>Definition</th></tr>
+            <tr><th>Acronym</th><th>Full Meaning</th></tr>
           </thead>
           <tbody>
             <tr><td><strong>API</strong></td><td>Application Programming Interface</td></tr>
+            <tr><td><strong>ACID</strong></td><td>Atomicity, Consistency, Isolation, Durability</td></tr>
             <tr><td><strong>CBE</strong></td><td>Commercial Bank of Ethiopia</td></tr>
-            <tr><td><strong>ECA</strong></td><td>Ethiopian Communications Authority</td></tr>
-            <tr><td><strong>ETB</strong></td><td>Ethiopian Birr</td></tr>
-            <tr><td><strong>HMAC</strong></td><td>Hash-based Message Authentication Code</td></tr>
-            <tr><td><strong>MoR</strong></td><td>Ministry of Revenues (Federal Democratic Republic of Ethiopia)</td></tr>
-            <tr><td><strong>NLA</strong></td><td>National Lottery Administration (Ethiopia)</td></tr>
+            <tr><td><strong>DB</strong></td><td>Database</td></tr>
+            <tr><td><strong>KYC</strong></td><td>Know Your Customer</td></tr>
+            <tr><td><strong>NLA</strong></td><td>National Lottery Administration</td></tr>
+            <tr><td><strong>ORM</strong></td><td>Object-Relational Mapping</td></tr>
             <tr><td><strong>PDPP</strong></td><td>Personal Data Protection Proclamation (No. 1321/2024)</td></tr>
             <tr><td><strong>POS</strong></td><td>Point of Sale</td></tr>
+            <tr><td><strong>QR</strong></td><td>Quick Response</td></tr>
             <tr><td><strong>RBAC</strong></td><td>Role-Based Access Control</td></tr>
             <tr><td><strong>RNG</strong></td><td>Random Number Generator</td></tr>
             <tr><td><strong>SHA</strong></td><td>Secure Hash Algorithm (e.g. SHA-256)</td></tr>
+            <tr><td><strong>SMS</strong></td><td>Short Message Service</td></tr>
+            <tr><td><strong>UI</strong></td><td>User Interface</td></tr>
             <tr><td><strong>USSD</strong></td><td>Unstructured Supplementary Service Data (e.g. *157#)</td></tr>
             <tr><td><strong>VAT</strong></td><td>Value Added Tax (15% Statutory Rate)</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- 5. Introduction -->
+      <!-- 3. Introduction -->
       <section id="introduction">
-        <h1 class="section-h1">5. Introduction</h1>
+        <h1 class="section-h1">3. Introduction</h1>
+        <h2 class="section-h2">3.1 Background</h2>
         <p>
-          The Software Engineering Internship (SEng-4182) at Dire Dawa University is a cornerstone practical course designed to immerse students into enterprise software development workflows. The attachment allows students to apply theoretical knowledge from courses like <em>Database Systems</em>, <em>Web Engineering</em>, <em>Software Architecture</em>, and <em>Computer Security</em> directly to commercial systems.
+          Software engineering education provides students with both theoretical knowledge and practical skills. However, real-world software development requires students to apply these concepts to actual systems involving requirements, architecture, implementation, testing, debugging, collaboration, security, and deployment.
         </p>
         <p>
-          During my 4-month attachment with <strong>SORARDI PLC</strong>, I was embedded within the core engineering team responsible for architecting and building high-traffic, secure, and regulatory-compliant digital ticketing and financial settlement systems.
+          The internship provided an opportunity to participate in the development and integration of <strong>LuckyEthio (Idil)</strong>, a digital raffle platform designed to support raffle management and ticket sales through multiple channels.
         </p>
-      </section>
+        <p>
+          The system provides a customer-facing web application, agent POS/kiosk functionality, USSD access (<strong>*157#</strong>), payment processing, ticket allocation, administrative operations, financial management, draw verification, security controls, and auditing. The project follows a modern monorepo architecture in which applications and reusable packages are maintained within one repository.
+        </p>
 
-      <!-- 6. Company Background -->
-      <section id="company">
-        <h1 class="section-h1">6. Host Company Profile: SORARDI PLC</h1>
+        <h2 class="section-h2">3.2 Purpose of the Internship</h2>
         <p>
-          <strong>SORARDI PLC</strong> is an innovative Ethiopian software development and technology solutions enterprise specializing in modern web architectures, enterprise resource planning (ERP), digital financial systems, and high-concurrency cloud applications.
+          The main purpose of the internship was to gain practical experience in software engineering by participating in the development and testing of a real-world application. Specific purposes included:
         </p>
-        <p>
-          <strong>Organizational Hierarchy:</strong> The engineering division at SORARDI PLC comprises the Chief Technology Officer, Frontend UI/UX Team, Core Systems &amp; Backend Team (where I served as Software Engineering Intern), Quality Assurance, and Regulatory Compliance Officers.
-        </p>
-      </section>
+        <ol>
+          <li>Applying software engineering concepts in a real project.</li>
+          <li>Understanding full-stack application architecture.</li>
+          <li>Developing and integrating frontend and backend functionality.</li>
+          <li>Working with databases and ORM technologies.</li>
+          <li>Understanding API design and integration.</li>
+          <li>Learning secure payment workflows.</li>
+          <li>Understanding concurrency and transaction management.</li>
+          <li>Practicing software testing and debugging.</li>
+          <li>Improving teamwork and communication skills.</li>
+          <li>Understanding professional software development workflows.</li>
+        </ol>
 
-      <!-- 7. Activities -->
-      <section id="activities">
-        <h1 class="section-h1">7. Internship Activities &amp; Roles</h1>
+        <h2 class="section-h2">3.3 Relationship with Software Engineering</h2>
         <p>
-          My primary responsibilities at SORARDI PLC centered around full-stack feature engineering, database architecture, and cryptographic protocol implementation:
+          The LuckyEthio project is directly related to Software Engineering because it requires application of:
         </p>
         <ul>
-          <li><strong>Monorepo Engineering:</strong> Restructured the codebase into a modular <code>Turborepo</code> containing <code>apps/web</code>, <code>apps/admin</code>, <code>packages/database</code>, and <code>packages/shared</code>.</li>
-          <li><strong>Double-Entry Financial Ledger:</strong> Engineered balanced ledger transactions (Debits = Credits) for ticket proceeds, 15% VAT escrow, seller holdings, and agent commissions.</li>
-          <li><strong>Atomic Ticket Concurrency:</strong> Implemented database-level transaction locks (<code>tx.</code>) and composite unique constraints to guarantee zero overselling under high concurrency.</li>
-          <li><strong>Multi-Provider Payment Adapters:</strong> Built unified provider adapters for Chapa, Telebirr, CBE Birr, and SantimPay with idempotent webhook handlers.</li>
-          <li><strong>Provably Fair RNG Engine:</strong> Designed a multi-entropy commit-reveal formula with immutable <code>DrawSnapshot</code> state locks.</li>
-          <li><strong>Data Privacy Governance:</strong> Implemented customer data rights workflows adhering to Ethiopian PDPP Proclamation No. 1321/2024.</li>
+          <li><strong>Requirements engineering:</strong> Functional/non-functional specification, regulatory compliance (NLA, PDPP, MoR).</li>
+          <li><strong>Software architecture:</strong> Turborepo monorepo, Layered Clean Architecture, Adapter &amp; State Machine patterns.</li>
+          <li><strong>Database design:</strong> 18 relational 3NF models, double-entry accounting ledgers, ACID concurrency transactions.</li>
+          <li><strong>Object-oriented and modular programming:</strong> 100% strict TypeScript types, shared domain packages.</li>
+          <li><strong>API development:</strong> REST route handlers, signed webhook receivers, USSD state machine API.</li>
+          <li><strong>User interface design:</strong> Responsive mobile-first layouts, Amharic/English runtime i18n, dark/light themes.</li>
+          <li><strong>Security engineering:</strong> Provably fair multi-entropy SHA-256 commit-reveal RNG, Two-Person Rule, dynamic QR nonces.</li>
+          <li><strong>Software testing:</strong> Automated concurrency test scripts, trial balance assertions, build validations.</li>
+          <li><strong>Version control:</strong> Git branching workflows, atomic semantic Conventional Commits.</li>
+          <li><strong>Debugging:</strong> Structured telemetry, audit trails, and risk event logging.</li>
+          <li><strong>Documentation:</strong> System manuals, API specifications, sequence diagrams, academic reports.</li>
+          <li><strong>Agile development:</strong> 2-week Sprint Agile Scrum framework at SORARDI PLC.</li>
         </ul>
       </section>
 
-      <!-- 8. Technical Skills -->
-      <section id="technical-skills">
-        <h1 class="section-h1">8. Technical Skills Utilized</h1>
-        <table class="data-table">
-          <thead>
-            <tr><th>Domain</th><th>Technologies &amp; Methodologies Applied</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Frontend</strong></td><td>Next.js 14 (App Router), React 18, Tailwind CSS, Lucide Icons, Responsive Layouts</td></tr>
-            <tr><td><strong>Backend &amp; API</strong></td><td>Node.js, TypeScript, REST API Route Handlers, Signed Webhook Verification</td></tr>
-            <tr><td><strong>Database &amp; Storage</strong></td><td>Prisma ORM, SQLite / PostgreSQL, Relational Schema Normalization</td></tr>
-            <tr><td><strong>Financial Accounting</strong></td><td>Double-Entry General Ledger, Chart of Accounts, Trial Balance Verification</td></tr>
-            <tr><td><strong>Cryptography &amp; Security</strong></td><td>SHA-256 Hashing, HMAC Signatures, Two-Person Authorization, Dynamic QR Tokens</td></tr>
-            <tr><td><strong>Project Management</strong></td><td>Agile Scrum, 2-Week Sprints, GitHub Pull Requests, Static Type Checking</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- 9. Collaboration -->
-      <section id="collaboration">
-        <h1 class="section-h1">9. Collaboration &amp; Teamwork</h1>
+      <!-- 4. Company Background -->
+      <section id="company">
+        <h1 class="section-h1">4. Company / Organization Background</h1>
+        <h2 class="section-h2">4.1 Organization Profile</h2>
         <p>
-          Working within SORARDI PLC's Agile Scrum framework, I actively participated in daily standups, code review sessions, and backlog refinement. Key collaborative milestones included re-engineering the mobile drawer navigation to float on the right-hand side, standardizing dual-consent seller draw agreements, and building the stealth administrative authentication portal.
+          <strong>Host Organization:</strong> <strong>SORARDI PLC</strong> (Technology &amp; Software Solutions).
         </p>
-      </section>
-
-      <!-- 10. Project Deep Dive -->
-      <section id="project-deep-dive">
-        <h1 class="section-h1">10. Project Deep Dive: LuckyEthio Platform Highlights</h1>
         <p>
-          The platform decouples ticket purchasing into a robust multi-stage pipeline:
+          SORARDI PLC operates in the technology and software development sector, providing cutting-edge software solutions involving digital platforms, cloud applications, and online financial services in Ethiopia. During the internship, I participated in the core backend and full-stack engineering of the <strong>LuckyEthio (Idil)</strong> digital raffle infrastructure.
         </p>
-        <pre><code>// Decoupled Lifecycle:
-Customer Intent ──► PurchaseOrder (PUR-XXXX) ──► Payment Gateway (Chapa/Telebirr)
-      ▲
-      │ (Webhook Verified + Idempotency Guard)
-      ▼
-Atomic DB Transaction ──► Allocate Tickets (TKT-XXXX) ──► Double-Entry Ledger Posting</code></pre>
 
-        <div class="math-callout">
-          Provably Fair Formula: Winner = (BigInt(SHA256(v2.0 : RaffleID : SecretSeed : SoldTickets : PublicEntropy : Algorithm)) % SoldTickets) + 1
+        <h2 class="section-h2">4.2 LuckyEthio Project Profile</h2>
+        <p>
+          LuckyEthio is designed as a multi-channel raffle marketplace. The major system actors include:
+        </p>
+        <ul>
+          <li><strong>Customers:</strong> Self-service ticket browsing, checkout, and QR claim retrieval.</li>
+          <li><strong>Agents:</strong> Kiosk cash ticket sales and float management.</li>
+          <li><strong>Administrators:</strong> Platform moderation, seller verification, and configuration.</li>
+          <li><strong>Finance Personnel:</strong> Double-entry ledger audit, VAT reconciliation, and cashouts.</li>
+          <li><strong>Draw Operators:</strong> Draw initiation and pre-commitment management.</li>
+          <li><strong>Super Administrators:</strong> Master governance, Two-Person approval, and role assignments.</li>
+          <li><strong>Auditors &amp; Support:</strong> Telemetry inspection and compliance oversight.</li>
+        </ul>
+
+        <h2 class="section-h2">4.3 Organizational Structure</h2>
+        <pre><code>                    SORARDI PLC
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+     MANAGEMENT                    TECHNOLOGY
+                                        │
+                         ┌──────────────┼──────────────┐
+                         │              │              │
+                    Development       QA          Operations
+                         │
+               ┌─────────┴─────────┐
+               │                   │
+           Frontend              Backend
+               │                   │
+          Web / Admin        API / Database</code></pre>
+
+        <div class="figma-callout">
+          <strong>Figma AI / FigJam Diagram Prompt:</strong>
+          Create a professional organizational structure diagram for a Software Engineering internship report. Use a clean corporate style, white background, dark navy text, subtle green accent, rounded rectangular nodes, and thin connector lines. Top node: "Organization (SORARDI PLC)". Second level: "Management" and "Technology". Under Technology create "Development", "QA / Testing", and "Operations". Under Development create "Frontend Development" and "Backend Development". Under Frontend create "Customer Web" and "Admin Portal". Under Backend create "API Services" and "Database". Make the diagram academic, clean, balanced, readable when printed in an A4 report.
         </div>
+      </section>
+
+      <!-- 5. Internship Activities -->
+      <section id="activities">
+        <h1 class="section-h1">5. Internship Activities &amp; Engineering Roles</h1>
+        <h2 class="section-h2">5.1 Role and Responsibilities</h2>
+        <p>
+          During the internship, my activities focused on software development, integration, testing, debugging, and documentation. My responsibilities included:
+        </p>
+        <ul>
+          <li>Understanding existing system architecture and monorepo configurations.</li>
+          <li>Working with frontend interfaces across customer and administrative portals.</li>
+          <li>Connecting frontend interfaces to backend API route handlers.</li>
+          <li>Testing ticket allocation and verifying anti-overselling locks.</li>
+          <li>Testing multi-provider payment workflows (Chapa, Telebirr, CBE Birr, SantimPay).</li>
+          <li>Testing agent POS kiosk functionality and cash float deduction.</li>
+          <li>Working with public draw verification using SHA-256 commit-reveal math.</li>
+          <li>Debugging application issues and analyzing server telemetry.</li>
+          <li>Reviewing API behavior and enforcing idempotency guards.</li>
+          <li>Working with database-related functionality and Prisma migrations.</li>
+          <li>Preparing technical documentation and academic reports.</li>
+          <li>Participating in daily Agile Scrum development standups.</li>
+        </ul>
+
+        <h2 class="section-h2">5.2 Projects Participated In</h2>
+        <p>
+          The primary project was the <strong>LuckyEthio (Idil) Raffle Platform</strong>, encompassing:
+        </p>
+        <p>
+          Customer portal, Raffle catalogue, Raffle details, Ticket selection, Checkout, Payment processing, My Tickets, Agent POS, Kiosk, USSD simulator (<strong>*157#</strong>), Public verifier, Admin portal, Financial ledger, Live draw console, KYC/risk functionality, Privacy portal, and Audit system.
+        </p>
+
+        <h2 class="section-h2">5.3 Monorepo Architecture</h2>
+        <pre><code>raffle-monorepo/
+│
+├── apps/
+│   ├── web/           # Customer + Agent + Kiosk + Verifier + USSD (Port 3000)
+│   └── admin/         # Operations + Financials + Live Draws + Audits (Port 3001)
+│
+├── packages/
+│   ├── database/      # Prisma Schema (18 Models) + Migrations + Seed
+│   └── shared/        # Ledger + Payments + Fair-RNG + Risk + Two-Person + i18n
+│
+├── turbo.json         # Turborepo Pipeline Orchestration
+├── package.json
+└── README.md</code></pre>
+
+        <div class="figma-callout">
+          <strong>Figma Architecture Diagram Prompt:</strong>
+          Create a professional software architecture diagram for a project called "LuckyEthio (Idil)". Use a three-layer architecture. Top layer: "Frontend Applications" containing "Customer Web", "Agent POS", "Kiosk", "USSD Simulator", and "Public Verifier". Middle layer: "Backend API and Security Layer" containing "Raffle Service", "Order Service", "Payment Service", "Ticket Allocation", "Draw Engine", "Risk Service", and "Audit Service". Bottom layer: "Shared Services and Persistence" containing "Prisma ORM", "PostgreSQL", "Double-Entry Ledger", "SHA-256 Fair Draw Engine", and "Audit Storage". Add arrows showing data flow from frontend to backend to database. Add a side section for external services: Telebirr, CBE Birr, Chapa, SantimPay, USSD Gateway (*157#), and SMS. Modern enterprise architecture style, clean white background, navy/green accents.
+        </div>
+
+        <h2 class="section-h2">5.4 Frontend Development</h2>
+        <ul>
+          <li><strong>Customer functions:</strong> Browse raffles, view raffle details, select specific or quick-pick tickets, checkout, complete payment, view purchased tickets, retrieve dynamic QR claim tokens, verify draws, submit PDPP privacy requests.</li>
+          <li><strong>Agent functions:</strong> Agent authentication, customer info intake, ticket sales, cash transactions, float management, commission tracking, instant receipt generation.</li>
+          <li><strong>Administrative functions:</strong> Raffle creation and moderation, user management, double-entry financial ledger exploration, live two-person draw execution, regulatory compliance, immutable audit telemetry.</li>
+        </ul>
+
+        <h2 class="section-h2">5.5 Backend Integration</h2>
+        <pre><code>Customer Interface ──► POST /api/orders/create ──► Order Service ──► DB Transaction ──► Purchase Created
+Raffle Page        ──► GET  /api/raffles       ──► Raffle Service ──► Prisma ORM    ──► PostgreSQL Data</code></pre>
+
+        <h2 class="section-h2">5.6 Payment Integration</h2>
+        <pre><code>Customer ──► Select Ticket ──► Create Order ──► Initialize Payment ──► Payment Provider (Telebirr/Chapa)
+                                                                                  │
+Order Confirmation ◄── Issue Ticket ◄── Allocate Ticket ◄── Verify Webhook ◄──────┘</code></pre>
+
+        <div class="figma-callout">
+          <strong>Figma Payment Sequence Prompt:</strong>
+          Create a professional payment sequence diagram titled "LuckyEthio Payment Processing Flow". Participants: Customer, Web Application, Order API, Payment Service, Payment Provider, Database, Ticket Allocation Service. Show arrows in this exact sequence: Customer selects ticket → Web Application creates order → Order API creates pending purchase → Payment Service initializes payment → Payment Provider processes payment → Provider sends webhook → Payment Service verifies webhook → Database checks idempotency → Ticket Allocation Service atomically allocates ticket → Database commits transaction → Web Application displays confirmation. Modern UML sequence diagram styling.
+        </div>
+
+        <h2 class="section-h2">5.7 Ticket Allocation and Concurrency</h2>
+        <pre><code>User A ─────┐
+User B ─────┼────► Ticket Allocation ──► Atomic Transaction (tx.)
+User C ─────┘                                    │
+                                 ┌───────────────┴───────────────┐
+                                 │                               │
+                          Availability Check              Unique Constraint
+                                 │                               │
+                                 └───────────────┬───────────────┘
+                                                 ▼
+                                        Ticket Issued (#100)</code></pre>
+
+        <h2 class="section-h2">5.8 Provably Fair Draw Architecture</h2>
+        <pre><code>Stage 1: COMMIT   ──► Secret Seed + Raffle ID + Public Entropy ──► SHA-256 ──► Commitment Hash
+Stage 2: SNAPSHOT ──► Sales Closed ──► Eligible Tickets Locked ──► Immutable Draw Snapshot
+Stage 3: REVEAL   ──► Seed Revealed ──► Deterministic Math ──► Winner Selected
+Stage 4: VERIFY   ──► Public Verifier ──► Recomputes Hash ──► Confirms Winner Independently</code></pre>
+
+        <div class="figma-callout">
+          <strong>Figma Provably Fair Diagram Prompt:</strong>
+          Create a professional four-stage cryptographic process diagram titled "LuckyEthio Provably Fair Draw". Stage 1: COMMIT — Secret Seed + Raffle ID + Draw Parameters → SHA-256 → Commitment Hash. Stage 2: SNAPSHOT — Sales Closed → Eligible Tickets → Immutable Draw Snapshot. Stage 3: REVEAL — Secret Seed Revealed → SHA-256 deterministic calculation → Winner Selection. Stage 4: VERIFY — Public Verifier takes Commitment + Revealed Seed + Draw Snapshot + Algorithm → Recalculates Result → Confirms Winner. Four connected rounded cards, cryptographic visual language.
+        </div>
+
+        <h2 class="section-h2">5.9 Agent POS and Kiosk</h2>
+        <pre><code>Agent Login ──► Select Customer ──► Select Raffle ──► Select Ticket ──► Cash Payment ──► Ticket Allocation ──► Commission ──► Float Update ──► Receipt</code></pre>
+
+        <h2 class="section-h2">5.10 USSD Service (*157#)</h2>
+        <pre><code>*157# ──► Main Menu ──► 1. Buy Ticket ──► Select Raffle ──► Select Quantity ──► Confirm & Pay ──► SMS Ticket Receipt</code></pre>
+
+        <div class="figma-callout">
+          <strong>Figma USSD Flow Diagram Prompt:</strong>
+          Create a mobile-phone USSD flow diagram for LuckyEthio titled "*157# USSD Ticket Purchase". Use realistic feature-phone screen cards connected vertically. Screen 1: Dial *157#. Screen 2: Main Menu with 1 Buy Ticket, 2 My Tickets, 3 Results, 4 Help. Screen 3: Select Raffle. Screen 4: Select Ticket. Screen 5: Confirm Purchase. Screen 6: Payment. Screen 7: Ticket Successfully Purchased with ticket number and reference. Green and navy interface accents.
+        </div>
+
+        <h2 class="section-h2">5.11 Financial Ledger (Double-Entry Bookkeeping)</h2>
+        <pre><code>Customer Payment (100 ETB) ──► Debit: 1010-CASH-TRANSIT (100 ETB)
+                                 ├── Credit: 2020-VAT-PAYABLE (15 ETB • 15% Statutory MoR Tax)
+                                 ├── Credit: 2010-PRIZE-ESCROW (77 ETB • Seller Net Escrow)
+                                 └── Credit: 4010-PLATFORM-REVENUE (8 ETB • Platform Fee)
+                                 Total Debits (100 ETB) === Total Credits (100 ETB) [Δ = 0.00]</code></pre>
+
+        <h2 class="section-h2">5.12 Administrative Draw Console (Two-Person Rule)</h2>
+        <pre><code>Draw Operator ──► Initiate Draw ──► Snapshot Frozen ──► Super Admin ──► Approve &amp; Sign ──► Execute Draw ──► Winner Selected ──► Immutable Audit Record</code></pre>
+
+        <h2 class="section-h2">5.13 Security Engineering</h2>
+        <ul>
+          <li><strong>Authentication:</strong> Secure session cookies with role validation.</li>
+          <li><strong>Authorization:</strong> Granular RBAC permissions for all administrative actions.</li>
+          <li><strong>Idempotency:</strong> Unique request keys preventing duplicate payment processing.</li>
+          <li><strong>Audit Logs:</strong> Append-only records capturing actor IP, timestamp, and state diffs.</li>
+          <li><strong>Payment Verification:</strong> Server-side HMAC-SHA256 signature verification.</li>
+          <li><strong>Two-Person Approval:</strong> Separation of duties for live draws and high-value cashouts.</li>
+        </ul>
+
+        <h2 class="section-h2">5.14 Privacy Portal (PDPP Proclamation No. 1321/2024)</h2>
+        <pre><code>User ──► Submit Privacy Request (Export / Correction / Deletion) ──► Privacy API ──► Compliance Admin Review ──► Execution &amp; Audit Log</code></pre>
       </section>
 
       <!-- Interactive Fair RNG Simulator Widget -->
@@ -647,60 +824,158 @@ Atomic DB Transaction ──► Allocate Tickets (TKT-XXXX) ──► Double-Ent
         </div>
       </section>
 
+      <!-- 6. Technical Skills -->
+      <section id="technical-skills">
+        <h1 class="section-h1">6. Technical Skills and Knowledge Utilized</h1>
+        <h2 class="section-h2">6.1 Programming Languages</h2>
+        <p><strong>TypeScript:</strong> 100% strict type safety, domain interfaces, generics. | <strong>JavaScript:</strong> Modern ESNext, React hooks. | <strong>SQL:</strong> Relational schema queries, transaction isolation.</p>
+
+        <h2 class="section-h2">6.2 Frameworks &amp; Libraries</h2>
+        <p><strong>React 18:</strong> Component architecture, state management, client components. | <strong>Next.js 14:</strong> App Router, Server Components, Route Handlers. | <strong>Node.js:</strong> Runtime cryptographic operations, streams.</p>
+
+        <h2 class="section-h2">6.3 Database Technologies</h2>
+        <p><strong>PostgreSQL / SQLite:</strong> Relational data persistence, foreign key constraints. | <strong>Prisma ORM:</strong> Schema modeling, automated migrations, type-safe client.</p>
+
+        <h2 class="section-h2">6.4 Development Tools</h2>
+        <p>VS Code, Git &amp; GitHub, npm workspaces, Turborepo pipeline orchestration, Tailwind CSS.</p>
+
+        <h2 class="section-h2">6.5 Technical Concepts</h2>
+        <p>REST APIs, Database transactions, Concurrency management, Cryptographic hashing (SHA-256, HMAC), Authentication &amp; RBAC, Payment webhooks &amp; Idempotency, Double-entry ledgers, Software testing, Telemetry debugging.</p>
+      </section>
+
+      <!-- 7. Collaboration -->
+      <section id="collaboration">
+        <h1 class="section-h1">7. Collaboration and Teamwork</h1>
+        <pre><code>Requirement ──► Planning ──► Development ──► Testing ──► Code Review ──► Fixes ──► Integration ──► Feedback</code></pre>
+        <p>
+          Working within SORARDI PLC's Agile Scrum framework, I actively engaged in task discussions, code reviews, problem solving, system debugging, end-to-end integration testing, technical documentation, and professional engineering communication.
+        </p>
+      </section>
+
+      <!-- 8. Achievements -->
+      <section id="contributions">
+        <h1 class="section-h1">8. Achievements and Contributions</h1>
+        <ul>
+          <li><strong>8.1 Ticket Concurrency Testing:</strong> Tested ticket allocation behavior under concurrent requests to ensure zero duplicates and zero overselling.</li>
+          <li><strong>8.2 Payment Workflow Testing:</strong> Participated in testing payment initiation, webhook callback verification, and ticket issuance.</li>
+          <li><strong>8.3 Agent POS:</strong> Worked with agent sales workflows involving customer data intake, float deduction, and receipt generation.</li>
+          <li><strong>8.4 Public Draw Verification:</strong> Implemented public verification tools to independently validate cryptographic commit-reveal draws.</li>
+          <li><strong>8.5 Admin Draw Console:</strong> Debugged and refined functionality for administrative two-person draw consensus.</li>
+          <li><strong>8.6 Documentation:</strong> Contributed comprehensive system manuals, architecture guides, and user documentation.</li>
+        </ul>
+      </section>
+
+      <!-- 9. Highlights -->
+      <section id="highlights">
+        <h1 class="section-h1">9. Project Highlights</h1>
+        <h2 class="section-h2">9.1 Highlight One &mdash; Anti-Overselling &amp; Concurrency Control</h2>
+        <p>
+          <strong>Problem:</strong> Multiple buyers requesting the last remaining ticket simultaneously.<br>
+          <strong>Solution:</strong> Database transactions (<code>tx.</code>), availability locks, and composite unique constraints (<code>UNIQUE(raffleId, ticketNumber)</code>).<br>
+          <strong>Result:</strong> Zero overselling and guaranteed contiguous ticket allocation.
+        </p>
+
+        <h2 class="section-h2">9.2 Highlight Two &mdash; Provably Fair Draw</h2>
+        <p>
+          <strong>Problem:</strong> Digital lotteries require absolute transparency and fraud resistance.<br>
+          <strong>Solution:</strong> Four-stage SHA-256 commit-reveal mechanism with immutable snapshot locks.<br>
+          <strong>Benefit:</strong> Any citizen or auditor can independently verify the winning ticket using the public formula.
+        </p>
+      </section>
+
+      <!-- 10. Learning and Growth -->
+      <section id="growth">
+        <h1 class="section-h1">10. Learning and Growth</h1>
+        <p>
+          <strong>Technical Growth:</strong> Mastered full-stack Next.js 14, API integration, Prisma ORM, PostgreSQL schema design, concurrency locking, Ethiopian payment gateways, cryptography, and automated testing.<br>
+          <strong>Professional Growth:</strong> Strengthened teamwork, communication, systematic debugging, technical documentation, code review etiquette, and time management.
+        </p>
+      </section>
+
       <!-- 11. Challenges -->
       <section id="challenges">
-        <h1 class="section-h1">11. Challenges Encountered &amp; Engineering Solutions</h1>
+        <h1 class="section-h1">11. Challenges Faced and Engineering Solutions</h1>
         <table class="data-table">
           <thead>
-            <tr><th>Challenge Encountered</th><th>Root Cause</th><th>Engineering Solution Implemented</th></tr>
+            <tr><th>Challenge Encountered</th><th>Engineering Solution Implemented</th></tr>
           </thead>
           <tbody>
-            <tr><td><strong>Inventory Race Conditions</strong></td><td>Concurrent requests reading stale counts.</td><td>Atomic database transactions with <code>UNIQUE(raffleId, ticketNumber)</code>.</td></tr>
-            <tr><td><strong>Duplicate Webhooks</strong></td><td>Gateway retries sending duplicate HTTP posts.</td><td>Enforced strict <code>idempotencyKey</code> tracking.</td></tr>
-            <tr><td><strong>Ledger Drift</strong></td><td>Rounding discrepancies across VAT and escrow.</td><td>Strict double-entry journal ensuring Total Debits === Total Credits.</td></tr>
+            <tr><td><strong>Concurrent Ticket Requests</strong></td><td>Transaction-based allocation and composite unique constraints</td></tr>
+            <tr><td><strong>Duplicate Payment Callbacks</strong></td><td>Strict idempotencyKey tracking and status guards</td></tr>
+            <tr><td><strong>Payment Verification</strong></td><td>Server-side HMAC-SHA256 signature verification</td></tr>
+            <tr><td><strong>Draw Transparency</strong></td><td>Commit-reveal cryptographic mechanism with pre-draw hashes</td></tr>
+            <tr><td><strong>Feature-Phone Accessibility</strong></td><td>GSM USSD (*157#) state machine gateway</td></tr>
+            <tr><td><strong>Financial Tracking</strong></td><td>Double-entry general ledger with balanced trial balances</td></tr>
+            <tr><td><strong>Sensitive Administration</strong></td><td>Two-Person Rule consensus authorization</td></tr>
+            <tr><td><strong>Debugging Integration Issues</strong></td><td>Immutable audit telemetry and structured server logging</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- 12. Contribution -->
-      <section id="contribution">
-        <h1 class="section-h1">12. Organizational Contributions</h1>
-        <p>
-          I delivered 57 fully compiled Next.js routes (34 web pages, 23 admin pages) with <strong>zero TypeScript errors</strong>, configured Turborepo caching for lightning-fast builds, and authored complete regulatory and user documentation for SORARDI PLC.
-        </p>
+      <!-- 12. Organizational Contribution -->
+      <section id="org-contribution">
+        <h1 class="section-h1">12. Contribution to the Organization (SORARDI PLC)</h1>
+        <ul>
+          <li><strong>Operational Benefits:</strong> Centralized multi-vendor raffle management, automated payments, agent POS kiosks, double-entry financial tracking.</li>
+          <li><strong>Technical Benefits:</strong> Modular Turborepo architecture, reusable shared domain libraries, type-safe Prisma client, zero build errors across 57 routes.</li>
+          <li><strong>Customer Benefits:</strong> High-speed online purchasing, USSD (*157#) feature phone access, dynamic QR claim tokens, 1-click public verification.</li>
+        </ul>
       </section>
 
       <!-- 13. Conclusion -->
       <section id="conclusion">
-        <h1 class="section-h1">13. Conclusion &amp; Recommendations</h1>
+        <h1 class="section-h1">13. Conclusion and Recommendations</h1>
+        <h2 class="section-h2">13.1 Conclusion</h2>
         <p>
-          This internship at SORARDI PLC successfully bridged software engineering theory with the rigorous demands of production fintech and digital gaming platforms.
+          The software engineering internship provided an invaluable opportunity to apply university academic knowledge to a production-grade commercial software project at <strong>SORARDI PLC</strong>. Working on the <strong>LuckyEthio (Idil)</strong> platform provided hands-on mastery in frontend engineering, backend API integration, database modeling, payment gateways, concurrency control, cryptography, security, and technical documentation.
         </p>
-        <ul>
-          <li><strong>For SORARDI PLC:</strong> Implement hardware security modules (HSM) for automated secret seed rotation and integrate telecom SMPP gateways.</li>
-          <li><strong>For Dire Dawa University:</strong> Incorporate enterprise monorepo tooling (Turborepo) and financial ledger design into advanced programming labs.</li>
-        </ul>
+
+        <h2 class="section-h2">13.2 Recommendations</h2>
+        <ol>
+          <li>Increasing automated test coverage across edge cases.</li>
+          <li>Performing comprehensive load and stress testing.</li>
+          <li>Conducting independent third-party security audits.</li>
+          <li>Improving production cloud monitoring and APM telemetry.</li>
+          <li>Expanding payment provider integrations (e.g. CBE direct host-to-host).</li>
+          <li>Continuing enhancement of USSD (*157#) offline features.</li>
+          <li>Improving English and Amharic localization dictionaries.</li>
+          <li>Strengthening automated financial ledger reconciliation bots.</li>
+          <li>Improving documentation and developer onboarding manuals.</li>
+          <li>Establishing production incident-response runbooks.</li>
+        </ol>
       </section>
 
       <!-- 14. References -->
       <section id="references">
         <h1 class="section-h1">14. References</h1>
         <ol>
+          <li>Vercel Core Team, <em>Next.js 14 App Router Documentation</em>, 2024.</li>
+          <li>Facebook Open Source, <em>React 18 Documentation &amp; Server Components</em>, 2024.</li>
+          <li>Microsoft Corporation, <em>TypeScript Language Specification v5.7</em>, 2024.</li>
+          <li>Prisma Data Inc., <em>Prisma ORM Client &amp; Concurrency Documentation</em>, 2024.</li>
+          <li>PostgreSQL Global Development Group, <em>PostgreSQL 16 Manual</em>, 2024.</li>
+          <li>Vercel, <em>Turborepo Monorepo Architecture Handbook</em>, 2024.</li>
           <li>National Lottery Administration (NLA) of Ethiopia, <em>Proclamation No. 535/2007</em>.</li>
           <li>Ethiopian Communications Authority (ECA), <em>Personal Data Protection Proclamation No. 1321/2024</em>.</li>
           <li>Ministry of Revenues (MoR), <em>Value Added Tax (VAT) Proclamation No. 285/2002</em>.</li>
-          <li>Vercel &amp; Next.js Core Team, <em>Next.js 14 App Router Documentation</em>, 2024.</li>
-          <li>Prisma ORM Team, <em>Prisma Client &amp; Concurrency Documentation</em>, 2024.</li>
+          <li>SORARDI PLC, <em>LuckyEthio Technical Architecture Specification</em>, 2026.</li>
         </ol>
       </section>
 
       <!-- 15. Appendices -->
       <section id="appendices">
         <h1 class="section-h1">15. Technical Appendices</h1>
-        <h2 class="section-h2">Appendix A: Database Schema Summary (18 Models)</h2>
-        <p>
-          Models: <code>Role</code>, <code>Permission</code>, <code>RolePermission</code>, <code>User</code>, <code>Seller</code>, <code>Agent</code>, <code>AgentLedger</code>, <code>AgentAccessLog</code>, <code>Raffle</code>, <code>PurchaseOrder</code>, <code>PaymentAttempt</code>, <code>Ticket</code>, <code>Transaction</code>, <code>LedgerAccount</code>, <code>LedgerTransaction</code>, <code>LedgerEntry</code>, <code>TaxLedger</code>, <code>CashoutRequest</code>, <code>DrawSnapshot</code>, <code>DrawAudit</code>, <code>TwoPersonApproval</code>, <code>AuditLog</code>, <code>RiskEvent</code>, <code>DataSubjectRequest</code>.
-        </p>
+        <h2 class="section-h2">Appendix A &mdash; Monorepo Project Architecture</h2>
+        <p>Three-layer architecture separating customer/admin frontends, REST API route handlers, and shared domain libraries over Prisma ORM.</p>
+
+        <h2 class="section-h2">Appendix B &mdash; Database Entity Relationship (ER) Diagram</h2>
+        <p>18 relational models: <code>Role</code>, <code>Permission</code>, <code>RolePermission</code>, <code>User</code>, <code>Seller</code>, <code>Agent</code>, <code>AgentLedger</code>, <code>AgentAccessLog</code>, <code>Raffle</code>, <code>PurchaseOrder</code>, <code>PaymentAttempt</code>, <code>Ticket</code>, <code>Transaction</code>, <code>LedgerAccount</code>, <code>LedgerTransaction</code>, <code>LedgerEntry</code>, <code>TaxLedger</code>, <code>CashoutRequest</code>, <code>DrawSnapshot</code>, <code>DrawAudit</code>, <code>TwoPersonApproval</code>, <code>AuditLog</code>, <code>RiskEvent</code>, <code>DataSubjectRequest</code>.</p>
+
+        <h2 class="section-h2">Appendix C &mdash; Customer Purchase &amp; Payment Sequence</h2>
+        <pre><code>Customer ──► Browse Raffle ──► Select Ticket ──► Create Order ──► Payment (Telebirr/Chapa) ──► Webhook Verification ──► Atomic Ticket Allocation ──► Issue Ticket</code></pre>
+
+        <h2 class="section-h2">Appendix D &mdash; Provably Fair Draw Sequence</h2>
+        <pre><code>Generate Secret ──► Publish Commitment ──► Sell Tickets ──► Close Raffle ──► Freeze Snapshot ──► Reveal Secret ──► Calculate Winner ──► Publish Result ──► Public Verification</code></pre>
       </section>
 
     </main>
