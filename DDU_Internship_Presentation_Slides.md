@@ -10,7 +10,7 @@
 
 # SOFTWARE ENGINEERING INTERNSHIP PRESENTATION SLIDES
 ## Project: LuckyEthio — Enterprise Digital Raffle & Double-Entry Financial Marketplace Platform
-### Host Organization: SORARDI PLC
+### Host Organization: SORARDI PLC 
 
 **Student Name:** [Student Full Name] | **Student ID:** [DDU/UGR/XXXX/XX]  
 **Academic Advisor:** [Advisor Name, MSc/PhD] | **Industry Supervisor:** [Supervisor Name]  
@@ -152,3 +152,4 @@ Traditional paper lotteries and promotional raffles in Ethiopia face 4 critical 
 5. **Flow 5: Data Privacy Governance** $\rightarrow$ PDPP Proclamation No. 1321/2024 compliance portal.
 
 > **Speaker Note:** "Thank you for your time and attention. I will now proceed to the live demonstration of the LuckyEthio system."
+

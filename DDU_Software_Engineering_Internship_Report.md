@@ -176,3 +176,4 @@ $$\text{Provably Fair Formula: Winner} = (\text{BigInt}(\text{SHA256}(\text{v2.0
 ## 15. Appendices
 ### Appendix A: Database Schema Summary
 18 relational models: `Role`, `Permission`, `RolePermission`, `User`, `Seller`, `Agent`, `AgentLedger`, `AgentAccessLog`, `Raffle`, `PurchaseOrder`, `PaymentAttempt`, `Ticket`, `Transaction`, `LedgerAccount`, `LedgerTransaction`, `LedgerEntry`, `TaxLedger`, `CashoutRequest`, `DrawSnapshot`, `DrawAudit`, `TwoPersonApproval`, `AuditLog`, `RiskEvent`, `DataSubjectRequest`.
+
