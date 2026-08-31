@@ -64,6 +64,7 @@ export default function AdminShell({ children }: AdminShellProps) {
     { href: "/privacy", label: "Data Privacy (PDPP)", icon: ShieldCheck },
     { href: "/monitoring", label: "System Health", icon: Activity },
     { href: "/audits", label: t.admin.securityAudits, icon: ShieldCheck },
+    { href: "/team", label: "Team & Roles (RBAC)", icon: Users },
     { href: "/settings", label: t.admin.systemSettings, icon: Settings },
   ];
 
