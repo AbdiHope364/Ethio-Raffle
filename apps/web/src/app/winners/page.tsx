@@ -13,6 +13,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
+import { maskFullName, maskPhoneNumber } from "@raffle/shared";
+
 
 export default function WinnersPage() {
   const { t, language } = useI18n();
@@ -122,10 +124,10 @@ export default function WinnersPage() {
                         Lucky Winner
                       </span>
                       <span className="text-xs font-bold text-white block">
-                        {raffle.winnerUser?.fullName || "Helen Tesfaye"}
+                        {maskFullName(raffle.winnerUser?.fullName || "Helen Tesfaye")}
                       </span>
                       <span className="text-[10px] text-purple-300 font-mono">
-                        {raffle.winnerUser?.phone || "+251933445566"}
+                        {maskPhoneNumber(raffle.winnerUser?.phone || "+251933445566")}
                       </span>
                     </div>
                   </div>
