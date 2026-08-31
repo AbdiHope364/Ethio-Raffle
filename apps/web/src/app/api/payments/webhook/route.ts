@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
       purchaseMethod: "ONLINE",
     });
 
-    // 5. Update Order and Payment Attempt to PAID
+    // 6. Update Order, Payment Attempt, and PaymentEvent to PAID & PROCESSED
     await prisma.$transaction([
       prisma.paymentAttempt.update({
         where: { id: paymentAttempt.id },
@@ -158,6 +158,18 @@ export async function POST(req: NextRequest) {
       prisma.purchaseOrder.update({
         where: { id: order.id },
         data: { status: "PAID" },
+      }),
+      prisma.paymentEvent.upsert({
+        where: { providerEventId: providerRef },
+        update: { status: "PROCESSED", processedAt: new Date() },
+        create: {
+          provider: payload.provider || "CHAPA",
+          providerEventId: providerRef,
+          providerRef,
+          status: "PROCESSED",
+          payload: rawBody,
+          processedAt: new Date(),
+        },
       }),
     ]);
 

@@ -284,6 +284,19 @@ model PaymentAttempt {
   updatedAt            DateTime      @updatedAt
 }
 
+model PaymentEvent {
+  id              String    @id @default(uuid())
+  provider        String    // CHAPA, TELEBIRR, CBE_BIRR, SANTIMPAY
+  providerEventId String    @unique // Unique event reference / tx_ref from webhook
+  providerRef     String?
+  amount          Float?
+  currency        String?   @default("ETB")
+  status          String    @default("RECEIVED") // RECEIVED, PROCESSED, DUPLICATE_IGNORED, FAILED
+  payload         String    // Raw JSON payload
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+}
+
 model Ticket {
   id                 String         @id @default(uuid())
   raffleId           String
