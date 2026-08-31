@@ -101,7 +101,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Order not found for reference" }, { status: 404 });
     }
 
-    // 3. Idempotency Guard on Payment Attempt
+    // 3. Direct Server-to-Server Verification Lookup with Provider
+    const directVerification = await adapter.verifyPayment(providerRef);
+    if (!directVerification.success) {
+      await prisma.paymentAttempt.update({
+        where: { id: paymentAttempt.id },
+        data: { status: "FAILED", rawWebhookPayload: rawBody },
+      });
+      return NextResponse.json({ error: "Direct provider verification lookup failed" }, { status: 400 });
+    }
+
+    // 4. Idempotency Guard on Payment Attempt
     if (paymentAttempt.status === "SUCCESS") {
       return NextResponse.json({
         success: true,
@@ -121,7 +131,14 @@ export async function POST(req: NextRequest) {
     const order = paymentAttempt.purchaseOrder;
     const raffle = order.raffle;
 
-    // 4. Atomic Ticket Allocation inside DB Transaction
+    // Validate Amount & Currency
+    if (directVerification.amount > 0 && Math.abs(directVerification.amount - order.totalAmount) > 0.01) {
+      return NextResponse.json({
+        error: `Security Violation: Amount mismatch. Expected ${order.totalAmount} ETB, got ${directVerification.amount} ETB`
+      }, { status: 400 });
+    }
+
+    // 5. Atomic Ticket Allocation inside DB Transaction
     const allocation = await allocateTicketsAtomically(prisma, {
       raffleId: raffle.id,
       purchaseOrderId: order.id,
