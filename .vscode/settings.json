@@ -1,5 +1,6 @@
 {
     "prisma.pinToPrisma6": true,
+    "yaml.schemaStore.enable": false,
     "css.lint.unknownAtRules": "ignore",
     "scss.lint.unknownAtRules": "ignore",
     "less.lint.unknownAtRules": "ignore",
