@@ -11,10 +11,15 @@
     "dev:web": "turbo run dev --filter=@raffle/web",
     "dev:admin": "turbo run dev --filter=@raffle/admin",
     "build": "turbo run build",
+    "start": "turbo run start --parallel",
+    "start:web": "turbo run start --filter=@raffle/web",
+    "start:admin": "turbo run start --filter=@raffle/admin",
     "lint": "turbo run lint",
     "db:generate": "turbo run db:generate",
     "db:push": "turbo run db:push",
-    "db:seed": "turbo run db:seed"
+    "db:seed": "turbo run db:seed",
+    "db:switch:pg": "node scripts/switch-db.js postgresql",
+    "db:switch:sqlite": "node scripts/switch-db.js sqlite"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
