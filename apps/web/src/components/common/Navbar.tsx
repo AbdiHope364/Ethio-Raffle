@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n, useTheme, LuckyTicketIcon } from "@raffle/shared";
-import AdminStealthAuthModal from "@/components/auth/AdminStealthAuthModal";
+
 import {
   Ticket,
   Trophy,
@@ -38,19 +38,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [stealthModalOpen, setStealthModalOpen] = useState(false);
+  // Formal Admin Console Navigation URL
+  const adminConsoleUrl = process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001";
 
-  // Stealth Hotkey Listener: Ctrl + Shift + A (or Cmd + Shift + A)
-  useEffect(() => {
-    const handleHotkey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
-        e.preventDefault();
-        setStealthModalOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener("keydown", handleHotkey);
-    return () => window.removeEventListener("keydown", handleHotkey);
-  }, []);
+
 
   // Notifications state
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -114,7 +105,6 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
-      <AdminStealthAuthModal isOpen={stealthModalOpen} onClose={() => setStealthModalOpen(false)} />
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo (Far Left) */}

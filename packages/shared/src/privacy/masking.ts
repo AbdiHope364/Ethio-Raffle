@@ -55,3 +55,4 @@ export function sanitizeWinnerPublicProfile(user?: { fullName?: string | null; p
     isVerified: true,
   };
 }
+

@@ -134,3 +134,4 @@ export class RaffleDrawEngine {
     return { masterHash, winningTicketNumber };
   }
 }
+
