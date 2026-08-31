@@ -1,4 +1,9 @@
-version: "3.8"
+# ==============================================================================
+# ETHIO-RAFFLE (LUCKYETHIO) DOCKER COMPOSE TOPOLOGY (§44)
+# ==============================================================================
+# Multi-container production deployment with PostgreSQL, Redis, Customer Web,
+# and Admin Operations Console.
+# ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
@@ -23,7 +28,7 @@ services:
       retries: 5
 
   # ----------------------------------------------------------------------------
-  # 2. Redis Cache & Distributed Lock Store
+  # 2. Redis Cache, Rate Limiting & Distributed Lock Store
   # ----------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
@@ -33,9 +38,14 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   # ----------------------------------------------------------------------------
-  # 3. Customer & Agent Web Application (Port 3000)
+  # 3. Customer & Agent Web Portal (Port 3000)
   # ----------------------------------------------------------------------------
   web:
     build:
@@ -47,19 +57,45 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-luckyethio_secure_password_2026}@postgres:5432/${POSTGRES_DB:-luckyethio_db}?schema=public
+      REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-generate_secure_random_key}
       CHAPA_SECRET_KEY: ${CHAPA_SECRET_KEY}
       TELEBIRR_APP_KEY: ${TELEBIRR_APP_KEY}
       CBE_BIRR_API_KEY: ${CBE_BIRR_API_KEY}
       SANTIMPAY_PRIVATE_KEY: ${SANTIMPAY_PRIVATE_KEY}
 
+  # ----------------------------------------------------------------------------
+  # 4. Admin Operations & Governance Console (Port 3001)
+  # ----------------------------------------------------------------------------
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner-admin
+    container_name: luckyethio_admin
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-luckyethio_secure_password_2026}@postgres:5432/${POSTGRES_DB:-luckyethio_db}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-generate_secure_random_key}
+
 volumes:
   postgres_data:
   redis_data:
-
