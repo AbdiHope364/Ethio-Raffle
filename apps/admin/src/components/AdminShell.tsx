@@ -23,6 +23,7 @@ import {
   Shield,
   ShieldAlert,
   Award,
+  Activity,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -61,6 +62,7 @@ export default function AdminShell({ children }: AdminShellProps) {
     { href: "/financials", label: t.admin.financialLedger, icon: Wallet },
     { href: "/risk", label: "Fraud & Risk Engine", icon: ShieldAlert },
     { href: "/privacy", label: "Data Privacy (PDPP)", icon: ShieldCheck },
+    { href: "/monitoring", label: "System Health", icon: Activity },
     { href: "/audits", label: t.admin.securityAudits, icon: ShieldCheck },
     { href: "/settings", label: t.admin.systemSettings, icon: Settings },
   ];
