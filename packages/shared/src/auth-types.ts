@@ -1,4 +1,14 @@
-export type UserRole = "CUSTOMER" | "AGENT" | "ADMIN" | "SUPER_ADMIN";
+export type UserRole =
+  | "CUSTOMER"
+  | "AGENT"
+  | "SELLER"
+  | "ADMIN"
+  | "SUPER_ADMIN"
+  | "FINANCE_ADMIN"
+  | "COMPLIANCE_ADMIN"
+  | "DRAW_OPERATOR"
+  | "AUDITOR";
+
 
 export interface AuthSession {
   userId: string;

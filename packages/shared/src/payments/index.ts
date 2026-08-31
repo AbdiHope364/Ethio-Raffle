@@ -176,9 +176,15 @@ export class SantimPayAdapter implements PaymentProviderAdapter {
 }
 
 // ----------------------------------------------------
-// ADAPTER FACTORY
+// ADAPTER FACTORY WITH COMPLIANCE GATE
 // ----------------------------------------------------
-export function getPaymentAdapter(provider: string): PaymentProviderAdapter {
+import { ComplianceGate } from "../compliance";
+
+export function getPaymentAdapter(provider: string, enforceCompliance = false): PaymentProviderAdapter {
+  if (enforceCompliance) {
+    ComplianceGate.assertRealMoneyAllowed();
+  }
+
   switch (provider.toUpperCase()) {
     case "CHAPA":
       return new ChapaAdapter();
@@ -194,4 +200,5 @@ export function getPaymentAdapter(provider: string): PaymentProviderAdapter {
       return new ChapaAdapter();
   }
 }
+
 

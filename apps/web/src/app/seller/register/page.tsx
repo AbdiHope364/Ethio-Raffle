@@ -268,6 +268,70 @@ export default function SellerRegisterPage() {
               </div>
             </div>
 
+            {/* Private KYC Document Upload Pipeline (§05 - §08) */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  Encrypted KYC Document Vault (Private Storage)
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
+                  HMAC Signed URLs Only
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Upload your Fayda ID card and Trade License (PDF, PNG, JPEG &lt; 10MB). Stored in private encrypted vault, accessible strictly by authorized Compliance Admins via time-limited signed links.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-1">Fayda National ID Scan (Private)</span>
+                  <input
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const body = new FormData();
+                      body.append("file", file);
+                      body.append("folder", "identity-documents");
+                      body.append("visibility", "private");
+                      try {
+                        const res = await fetch("/api/storage/upload", { method: "POST", body });
+                        const d = await res.json();
+                        if (!d.success) alert(d.error || "Upload failed");
+                      } catch (err: any) {
+                        alert(err.message || "Network error");
+                      }
+                    }}
+                    className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
+                  />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-1">Trade License Document (Private)</span>
+                  <input
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const body = new FormData();
+                      body.append("file", file);
+                      body.append("folder", "licenses");
+                      body.append("visibility", "private");
+                      try {
+                        const res = await fetch("/api/storage/upload", { method: "POST", body });
+                        const d = await res.json();
+                        if (!d.success) alert(d.error || "Upload failed");
+                      } catch (err: any) {
+                        alert(err.message || "Network error");
+                      }
+                    }}
+                    className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
+                  />
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={loading}

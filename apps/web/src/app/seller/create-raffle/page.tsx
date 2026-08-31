@@ -267,43 +267,94 @@ export default function CreateRafflePage() {
             );
           })()}
 
-          {/* Module 2: Exactly 3 Distinct Product Photos */}
+          {/* Module 2: Exactly 3 Distinct Product Photos with Secure Upload Pipeline */}
           <div className="space-y-3 pt-1">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-              3 Distinct Real Product Photos (Mandatory) *
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                3 Distinct Real Product Photos (Mandatory) *
+              </label>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                ✓ Magic-byte verified (JPEG, PNG, WebP &lt; 5MB)
+              </span>
+            </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 1 (Front/Main)</span>
                 <input
-                  type="url"
-                  required
-                  value={formData.prizeImage}
-                  onChange={(e) => setFormData({ ...formData, prizeImage: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const body = new FormData();
+                    body.append("file", file);
+                    body.append("folder", "prizes");
+                    body.append("visibility", "public");
+                    try {
+                      const res = await fetch("/api/storage/upload", { method: "POST", body });
+                      const d = await res.json();
+                      if (d.success && d.publicUrl) {
+                        setFormData((prev) => ({ ...prev, prizeImage: d.publicUrl }));
+                      } else {
+                        alert(d.error || "Image upload failed");
+                      }
+                    } catch (err: any) {
+                      alert(err.message || "Upload network error");
+                    }
+                  }}
+                  className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
                 />
+                {formData.prizeImage && (
+                  <img src={formData.prizeImage} alt="Preview 1" className="mt-2 w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
+                )}
               </div>
 
               <div>
                 <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 2 (Interior / Detail)</span>
                 <input
-                  type="url"
-                  value={formData.prizeImage}
-                  onChange={() => {}}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const body = new FormData();
+                    body.append("file", file);
+                    body.append("folder", "prizes");
+                    body.append("visibility", "public");
+                    try {
+                      const res = await fetch("/api/storage/upload", { method: "POST", body });
+                      const d = await res.json();
+                      if (!d.success) alert(d.error || "Image upload failed");
+                    } catch (err: any) {
+                      alert(err.message || "Upload network error");
+                    }
+                  }}
+                  className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
                 />
               </div>
 
               <div>
                 <span className="text-[10px] font-mono text-slate-400 block mb-1">Photo 3 (Side / Back)</span>
                 <input
-                  type="url"
-                  value={formData.prizeImage}
-                  onChange={() => {}}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const body = new FormData();
+                    body.append("file", file);
+                    body.append("folder", "prizes");
+                    body.append("visibility", "public");
+                    try {
+                      const res = await fetch("/api/storage/upload", { method: "POST", body });
+                      const d = await res.json();
+                      if (!d.success) alert(d.error || "Image upload failed");
+                    } catch (err: any) {
+                      alert(err.message || "Upload network error");
+                    }
+                  }}
+                  className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
                 />
               </div>
             </div>
