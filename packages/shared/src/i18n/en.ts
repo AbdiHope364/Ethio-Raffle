@@ -9,7 +9,7 @@ export const en = {
     verifier: "Provably Fair Verifier",
     agentPortal: "Agent POS",
     adminDashboard: "Admin Console",
-    ussdSimulator: "USSD (*804#)",
+    ussdSimulator: "USSD (*157#)",
     login: "Sign In",
     logout: "Sign Out",
     role: "Role",

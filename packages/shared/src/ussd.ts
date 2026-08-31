@@ -301,7 +301,7 @@ export async function handleUSSD(req: USSDRequest): Promise<USSDResponse> {
   }
 
   return {
-    message: "Invalid choice. Please redial *804#.",
+    message: "Invalid choice. Please redial *157#.",
     continueSession: false,
   };
 }

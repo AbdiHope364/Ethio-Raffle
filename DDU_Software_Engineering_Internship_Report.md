@@ -73,7 +73,7 @@ I am deeply indebted to **SORARDI PLC**, my **Industry Supervisor**, and the ent
 | **RBAC** | Role-Based Access Control |
 | **RNG** | Random Number Generator |
 | **SHA** | Secure Hash Algorithm (e.g. SHA-256) |
-| **USSD** | Unstructured Supplementary Service Data (e.g. `*804#`) |
+| **USSD** | Unstructured Supplementary Service Data (e.g. `*157#`) |
 | **VAT** | Value Added Tax (Statutory 15% Rate) |
 
 ---
@@ -98,7 +98,7 @@ The internship program directly aligns with key courses in the Software Engineer
 * **Core Products & Services:**
   1. *Customer Web & Mobile Portals:* High-speed ticketing and interactive claim interfaces.
   2. *Merchant Systems:* Multi-vendor inventory management, KYC compliance, and delivery verification.
-  3. *Agent POS & USSD Gateways (`*804#`):* Field kiosk software and feature phone accessibility.
+  3. *Agent POS & USSD Gateways (`*157#`):* Field kiosk software and feature phone accessibility.
   4. *Enterprise Financial & Governance Consoles:* Double-entry bookkeeping, audit telemetry, and automated tax withholding.
 
 ---

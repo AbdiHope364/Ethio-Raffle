@@ -17,9 +17,9 @@ export default function USSDSimulatorPage() {
   const { t, language } = useI18n();
 
   const [phoneNumber, setPhoneNumber] = useState("+251912345678"); // Default to active agent
-  const [dialText, setDialText] = useState("*804#");
+  const [dialText, setDialText] = useState("*157#");
   const [screenText, setScreenText] = useState(
-    "USSD Offline Gateway\nDial *804# and press SEND to begin session."
+    "USSD Offline Gateway\nDial *157# and press SEND to begin session."
   );
   const [inputBuffer, setInputBuffer] = useState("");
   const [sessionActive, setSessionActive] = useState(false);
@@ -100,8 +100,8 @@ export default function USSDSimulatorPage() {
     setSessionActive(false);
     setHistoryChain([]);
     setInputBuffer("");
-    setDialText("*804#");
-    setScreenText("USSD Offline Gateway\nDial *804# and press SEND to begin session.");
+    setDialText("*157#");
+    setScreenText("USSD Offline Gateway\nDial *157# and press SEND to begin session.");
   };
 
   return (
@@ -113,7 +113,7 @@ export default function USSDSimulatorPage() {
           <span>Feature Phone & Offline Kiosk Terminal</span>
         </div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-          USSD Service Emulator (*804#)
+          USSD Service Emulator (*157#)
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
           Simulate how offline customers and kiosk agents without smartphones access the LuckyEthio raffle system over GSM USSD protocol.

@@ -96,7 +96,7 @@ export default function Footer() {
                 <li className="flex items-center gap-1.5">
                   <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <Link href="/agent/ussd-simulator" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                    USSD <strong className="text-slate-900 dark:text-white">*804#</strong>
+                    USSD <strong className="text-slate-900 dark:text-white">*157#</strong>
                   </Link>
                 </li>
                 <li>

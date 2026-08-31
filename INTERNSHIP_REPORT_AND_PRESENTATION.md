@@ -84,7 +84,7 @@ Finally, I express my gratitude to my family and fellow software engineering cla
 * **SMS:** Short Message Service
 * **SQL:** Structured Query Language
 * **UI/UX:** User Interface / User Experience
-* **USSD:** Unstructured Supplementary Service Data (e.g., `*804#`)
+* **USSD:** Unstructured Supplementary Service Data (e.g., `*157#`)
 * **VAT:** Value Added Tax (Statutory 15%)
 
 ---
@@ -165,7 +165,7 @@ The Ethiopian digital economy is experiencing rapid modernization, propelled by 
 * **Core Products & Services:**
   1. *Customer Web & Mobile Portals:* High-speed ticketing and interactive claim interfaces.
   2. *Merchant Systems:* Multi-vendor inventory management, KYC compliance, and delivery verification.
-  3. *Agent POS & USSD Gateways (`*804#`):* Field kiosk software and feature phone accessibility.
+  3. *Agent POS & USSD Gateways (`*157#`):* Field kiosk software and feature phone accessibility.
   4. *Enterprise Financial & Governance Consoles:* Double-entry bookkeeping, audit telemetry, and automated tax withholding.
 
 ### 6.3 Organizational Structure & Team Placement
@@ -404,7 +404,7 @@ Traditional paper lotteries and promotional raffles in Ethiopia face severe oper
 * **In Scope:**
   * Customer portal (ticketing, purchase order tracking, winner claim QR code).
   * Merchant seller portal (listing appraisal, 3-angle photo upload, delivery QR scanning).
-  * Field Agent POS kiosk and USSD (`*804#`) feature phone simulator.
+  * Field Agent POS kiosk and USSD (`*157#`) feature phone simulator.
   * Admin Operations Console (General Ledger, Draw Room, Fraud Engine, PDPP Manager).
   * Bilingual English & Amharic (አማርኛ) user experience.
 * **Limitations:**
@@ -425,7 +425,7 @@ Traditional paper lotteries and promotional raffles in Ethiopia face severe oper
 
 ### SLIDE 8: Project Feasibility
 * **Technical Feasibility:** Built on mature, scalable technologies (Next.js 14, TypeScript, Prisma ORM, Node.js Crypto) with zero third-party lock-in.
-* **Operational Feasibility:** Accessible across smartphones (Web), field kiosks (Agent POS), and basic 2G feature phones (USSD `*804#`).
+* **Operational Feasibility:** Accessible across smartphones (Web), field kiosks (Agent POS), and basic 2G feature phones (USSD `*157#`).
 * **Economic Feasibility:** Automated 8% platform monetization and 15% source-deducted statutory VAT escrow.
 * **Legal & Regulatory Feasibility:** Fully aligned with NLA directives and PDPP Proclamation No. 1321/2024.
 

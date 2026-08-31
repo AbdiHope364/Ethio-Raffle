@@ -9,7 +9,7 @@ export const am = {
     verifier: "የዕጣ ትክክለኛነት ማረጋገጫ",
     agentPortal: "የወኪል መሸጫ (POS)",
     adminDashboard: "አስተዳዳሪ",
-    ussdSimulator: "USSD (*804#)",
+    ussdSimulator: "USSD (*157#)",
     login: "ግባ",
     logout: "ውጣ",
     role: "ሚና",

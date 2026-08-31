@@ -83,7 +83,7 @@ Traditional paper lotteries and promotional raffles in Ethiopia face 4 critical 
 ## 📑 SLIDE 6: System Specifications & Multi-Channel Scope
 * **Customer Web & Mobile Portal:** Self-service raffle browsing, decoupled 3-step checkout, and dynamic QR claim tokens.
 * **Merchant Seller Portal:** Multi-vendor listing creation, 3-angle photo upload, Fayda ID verification, and delivery QR scanner.
-* **Field Agent POS Kiosk & USSD (`*804#`):** Physical kiosk ticketing and offline feature phone accessibility.
+* **Field Agent POS Kiosk & USSD (`*157#`):** Physical kiosk ticketing and offline feature phone accessibility.
 * **Admin Governance Console:** Double-entry ledger, trial balance validation, live draw room, and PDPP data privacy manager.
 
 > **Speaker Note:** "We ensured universal accessibility across modern smartphones, field agent kiosks, and basic 2G feature phones via USSD."
@@ -103,7 +103,7 @@ Traditional paper lotteries and promotional raffles in Ethiopia face 4 critical 
 ## 📑 SLIDE 8: Software Methodology & Monorepo Architecture
 * **Agile Scrum Methodology:** 2-week sprint cycles, daily standups, and pull request code reviews.
 * **Turborepo Monorepo Structure:**
-  * `apps/web`: Customer Portal, POS Kiosk, USSD (`*804#`) Simulator, Public Verifier (Port 3000).
+  * `apps/web`: Customer Portal, POS Kiosk, USSD (`*157#`) Simulator, Public Verifier (Port 3000).
   * `apps/admin`: Admin Operations, Financial Ledger, Live Draw Console (Port 3001).
   * `packages/database`: Prisma schema (18 models), migrations, seed scripts.
   * `packages/shared`: Payments, Ledger, Fair-RNG, Risk, Two-Person, i18n.

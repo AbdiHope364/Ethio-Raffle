@@ -9,7 +9,7 @@ An enterprise-grade, high-concurrency multi-vendor digital raffle platform and d
 ```
 luckyethio/
 ├── apps/
-│   ├── web/            # Customer Portal, POS Kiosk, USSD Simulator (*804#), Public Verifier (Port 3000)
+│   ├── web/            # Customer Portal, POS Kiosk, USSD Simulator (*157#), Public Verifier (Port 3000)
 │   └── admin/          # Admin Operations, Double-Entry Finance, Live Draw & Two-Person Console (Port 3001)
 ├── packages/
 │   ├── database/       # Prisma ORM Schema, Double-Entry Chart of Accounts & Seed Dataset
@@ -21,7 +21,7 @@ luckyethio/
 │       ├── audit/      # Append-only immutable audit event stream
 │       ├── two-person/ # Two-Person Rule authorization engine
 │       ├── i18n/       # First-class bilingual English & Amharic (አማርኛ) dictionaries
-│       └── ussd/       # Formal USSD (*804#) session state machine
+│       └── ussd/       # Formal USSD (*157#) session state machine
 └── turbo.json          # Monorepo build and development pipelines
 ```
 

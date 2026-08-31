@@ -122,7 +122,7 @@ export default function HomePage() {
                 className="px-4 py-3.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5"
               >
                 <Smartphone className="w-4 h-4 text-amber-400" />
-                <span>USSD Dial *804#</span>
+                <span>USSD Dial *157#</span>
               </Link>
             </div>
           </div>
@@ -201,12 +201,12 @@ export default function HomePage() {
           </div>
           <div>
             <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">
-              {language === "AM" ? "በወኪል እና በ USSD (*804#)" : "Agent Kiosks & USSD"}
+              {language === "AM" ? "በወኪል እና በ USSD (*157#)" : "Agent Kiosks & USSD"}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {language === "AM"
-                ? "ኢንተርኔት በሌለበት ሰዓት በባለ ኪቦርድ ስልክ *804# በመደወል ወይም በወኪሎች በኩል በጥሬ ገንዘብ መቁረጥ ይቻላል።"
-                : "No smartphone or internet required. Dial *804# on feature phones or visit certified kiosk agents."}
+                ? "ኢንተርኔት በሌለበት ሰዓት በባለ ኪቦርድ ስልክ *157# በመደወል ወይም በወኪሎች በኩል በጥሬ ገንዘብ መቁረጥ ይቻላል።"
+                : "No smartphone or internet required. Dial *157# on feature phones or visit certified kiosk agents."}
             </p>
           </div>
         </div>

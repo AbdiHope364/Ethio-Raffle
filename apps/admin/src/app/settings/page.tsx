@@ -21,7 +21,7 @@ export default function AdminSettingsPage() {
     nlaLicenseNumber: "NLA/ETH/2026/89",
     nlaAuditorOfficer: "Ato Tadesse Worku (Senior Inspector)",
     minimumAgeLimit: "18",
-    telebirrShortcode: "804",
+    telebirrShortcode: "157",
     telebirrAppId: "TEL-PROD-APP-9988",
     cbeBirrMerchantId: "CBE-MERCHANT-4411",
     chapaSecretKey: "CHASECK_TEST-xxxxxxxxxxxxxxxx",
@@ -153,7 +153,7 @@ export default function AdminSettingsPage() {
                 className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800"
               />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Enable Feature Phone USSD Gateway (*804#)
+                Enable Feature Phone USSD Gateway (*157#)
               </span>
             </label>
 

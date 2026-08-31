@@ -179,16 +179,16 @@ async function runPlatformTests() {
   console.log("  ✅ Test 3 Passed: Float deduction & ledger accounting verified!\n");
 
   // 4. TEST USSD PROTOCOL STATE MACHINE
-  console.log("▶ TEST 4: USSD Offline State Machine Engine (*804#)");
+  console.log("▶ TEST 4: USSD Offline State Machine Engine (*157#)");
   const testPhone = "+251988112233";
 
-  // Dial *804#
+  // Dial *157#
   const step1 = await handleUSSD({
     sessionId: "SESSION-999-1",
     phoneNumber: testPhone,
     text: "",
   });
-  console.log(`  Dial *804# Response: "${step1.message.split("\n")[0]}"`);
+  console.log(`  Dial *157# Response: "${step1.message.split("\n")[0]}"`);
 
   // Step 2: Select 1 (Browse Raffles)
   const step2 = await handleUSSD({

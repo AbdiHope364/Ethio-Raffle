@@ -9,7 +9,7 @@
 4. [Concurrency, Anti-Collision & 1-Hour Booking Hold Engine](#4-concurrency-anti-collision--1-hour-booking-hold-engine)
 5. [4-State Visual Ticket Matrix](#5-4-state-visual-ticket-matrix)
 6. [Payment Gateways & Ethiopian Integrations](#6-payment-gateways--ethiopian-integrations)
-7. [Offline GSM USSD State Machine (*804#)](#7-offline-gsm-ussd-state-machine-804)
+7. [Offline GSM USSD State Machine (*157#)](#7-offline-gsm-ussd-state-machine-804)
 8. [Authorized Agent Kiosk POS & Float Accounting](#8-authorized-agent-kiosk-pos--float-accounting)
 9. [Pre-Draw Alerts & 24-Hour Hero Winner Spotlight](#9-pre-draw-alerts--24-hour-hero-winner-spotlight)
 10. [Admin Operations Portal & NLA Audits](#10-admin-operations-portal--nla-audits)
@@ -26,7 +26,7 @@
 - **Zero-Trust Cryptographic Fairness**: Pre-committed SHA-256 RNG hashes ensure mathematical determinism and prevent insider tampering.
 - **High-Concurrency Anti-Collision**: In-memory sequential mutex queues ensure zero duplicate tickets and zero overselling even under high peak loads.
 - **1-Hour Temporary Reservation Hold**: Unpaid tickets are held exclusively for 60 minutes and automatically returned to the public pool if unpaid.
-- **Omnichannel Accessibility**: Online Web Client, Handheld Agent POS Terminals, and Offline Feature Phones via GSM USSD (`*804#`).
+- **Omnichannel Accessibility**: Online Web Client, Handheld Agent POS Terminals, and Offline Feature Phones via GSM USSD (`*157#`).
 - **Ethiopian Payment Ecosystem**: Native support for Telebirr, CBE Birr, Chapa, SantimPay, and Agent Cash.
 - **Post-Draw Visibility**: Automated pre-draw notifications to ticket buyers, a 24-hour Hero Section winner celebration spotlight, and permanent public cryptographic archives.
 
@@ -58,7 +58,7 @@ RAFFLE/
 │           ├── provably-fair.ts # SHA-256 Commit-Reveal RNG & Public Verifier Math
 │           ├── concurrency.ts   # Concurrency Queue, Atomic Minting, 1-Hour Hold Engine
 │           ├── payment.ts       # Multi-Gateway Adapters, Webhooks & Idempotency
-│           ├── ussd.ts          # GSM USSD *804# State Machine
+│           ├── ussd.ts          # GSM USSD *157# State Machine
 │           ├── auth-types.ts    # Demo Personas (Admins, Agents, Customers)
 │           └── i18n/            # Bilingual dictionaries (English & Amharic አማርኛ)
 │
@@ -154,18 +154,18 @@ graph LR
 
 ---
 
-## 7. Offline GSM USSD State Machine (`*804#`)
+## 7. Offline GSM USSD State Machine (`*157#`)
 
 For rural customers and kiosk agents operating in areas with limited smartphone or data connectivity:
 
-- **Protocol**: GSM USSD Session over `*804#`.
+- **Protocol**: GSM USSD Session over `*157#`.
 - **Bandwidth**: 0 KB mobile data usage, compatible with basic 2G feature phones (Nokia, Tecno).
 - **Session Menus**:
   - `1. Browse Active Raffles` $\rightarrow$ Select prize and view ticket price.
   - `2. Buy Ticket with Telebirr` $\rightarrow$ Instant mobile money debit.
   - `3. Check My Tickets` $\rightarrow$ Lists purchased ticket numbers and codes via USSD.
   - `4. Check Live Draw Results` $\rightarrow$ View latest winning ticket numbers.
-  - `5. Agent POS Mode` $\rightarrow$ Unlocked automatically when authorized Agent SIM dials `*804#` to sell tickets using their cash float balance.
+  - `5. Agent POS Mode` $\rightarrow$ Unlocked automatically when authorized Agent SIM dials `*157#` to sell tickets using their cash float balance.
 
 ---
 
@@ -239,7 +239,7 @@ Key Prisma models located in `packages/database/prisma/schema.prisma`:
 - `Transaction`: Multi-gateway payment records, status (`PENDING`, `SUCCESS`, `FAILED`, `EXPIRED`), and `expiresAt` timestamps.
 - `DrawAudit`: Permanent cryptographic audit record linking revealed seed, winning ticket, formula, and auditor verification.
 - `Notification`: In-app buyer alerts (`PRE_DRAW_ALERT`, `WINNER_ANNOUNCEMENT`, `TICKET_MINTED`).
-- `USSDSession`: GSM session state for offline `*804#` dialing.
+- `USSDSession`: GSM session state for offline `*157#` dialing.
 
 ---
 
