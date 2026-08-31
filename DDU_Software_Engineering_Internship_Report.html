@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dire Dawa University - Interactive Software Engineering Internship Report (SORARDI PLC)</title>
+  <title>Dire Dawa University - Interactive Internship Technical Report (SORARDI PLC)</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Ethiopic:wght@400;700;900&display=swap');
 
     :root {
       --primary: #1e3a8a;
-      --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
       --accent: #0d9488;
-      --accent-gold: #b45309;
       --bg-light: #f8fafc;
-      --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #475569;
       --border-color: #e2e8f0;
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
-      --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
@@ -30,11 +25,11 @@
       font-size: 14.5px;
     }
 
-    /* Top Navigation Toolbar */
+    /* Top Sticky Navigation Toolbar */
     .top-toolbar {
       position: sticky;
       top: 0;
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       padding: 12px 24px;
@@ -42,7 +37,7 @@
       justify-content: space-between;
       align-items: center;
       z-index: 100;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
     .toolbar-brand {
       display: flex;
@@ -61,7 +56,7 @@
       background: #f1f5f9;
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 7px 16px;
+      padding: 8px 16px;
       border-radius: 8px;
       font-size: 12.5px;
       font-weight: 700;
@@ -82,10 +77,10 @@
     /* Layout Wrapper */
     .app-layout {
       max-width: 1200px;
-      margin: 30px auto;
+      margin: 25px auto;
       display: grid;
       grid-template-columns: 280px 1fr;
-      gap: 30px;
+      gap: 28px;
       padding: 0 20px;
     }
 
@@ -99,10 +94,10 @@
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
     .sidebar-toc h4 {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -132,7 +127,33 @@
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 50px 60px;
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
+    }
+
+    /* Interactive Input Fields with Placeholders */
+    .interactive-field {
+      width: 100%;
+      padding: 7px 11px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 1.5px dashed #3b82f6;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .interactive-field:focus {
+      background: #ffffff;
+      border-style: solid;
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+    .interactive-field::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+      font-style: italic;
     }
 
     /* Print Specifics */
@@ -142,6 +163,18 @@
       .app-layout { display: block; max-width: 100%; margin: 0; padding: 0; }
       .report-main { border: none; box-shadow: none; padding: 0; border-radius: 0; }
       .page-break { page-break-before: always; }
+      .interactive-field {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+      }
+      .interactive-field::placeholder {
+        color: #334155 !important;
+        font-style: normal !important;
+      }
       @page { margin: 18mm 15mm; }
     }
 
@@ -221,17 +254,17 @@
       margin-bottom: 20px;
     }
     .report-main-title {
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 900;
       color: #0f172a;
       line-height: 1.35;
       margin-bottom: 12px;
     }
     .project-name {
-      font-size: 18px;
+      font-size: 17.5px;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 30px;
+      margin-bottom: 28px;
     }
     .student-meta-grid {
       display: grid;
@@ -244,10 +277,9 @@
       padding: 24px 28px;
       border-radius: 12px;
       border: 1px solid #e2e8f0;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
-    .meta-item strong { display: block; font-size: 10.5px; text-transform: uppercase; color: #64748b; margin-bottom: 3px; font-weight: 700; }
-    .meta-item span { font-weight: 600; font-size: 13.5px; color: #0f172a; }
+    .meta-item strong { display: block; font-size: 10.5px; text-transform: uppercase; color: #64748b; margin-bottom: 4px; font-weight: 700; }
 
     /* Headings */
     h1.section-h1 {
@@ -260,9 +292,6 @@
       margin-bottom: 18px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
     h2.section-h2 {
       font-size: 16.5px;
@@ -377,13 +406,13 @@
 </head>
 <body>
 
-  <!-- Top Sticky Navigation Toolbar (Interactive) -->
+  <!-- Top Sticky Navigation Toolbar (Interactive in Default Browser) -->
   <div class="top-toolbar no-print">
     <div class="toolbar-brand">
       <span>🎓 Dire Dawa University &bull; Software Engineering Internship</span>
     </div>
     <div class="toolbar-actions">
-      <button class="btn-tool" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">⬆️ Top</button>
+      <button class="btn-tool" onclick="resetInputs()">🔄 Clear Form</button>
       <button class="btn-tool btn-primary-tool" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
   </div>
@@ -437,27 +466,27 @@
         <div class="student-meta-grid">
           <div class="meta-item">
             <strong>Student Name</strong>
-            <span>[Student Full Name]</span>
+            <input type="text" class="interactive-field" id="inpStudentName" placeholder="Enter Student Full Name" oninput="saveField('studentName', this.value)" />
           </div>
           <div class="meta-item">
             <strong>Student ID</strong>
-            <span>[DDU/UGR/XXXX/XX]</span>
+            <input type="text" class="interactive-field" id="inpStudentID" placeholder="DDU/UGR/XXXX/XX" oninput="saveField('studentID', this.value)" />
           </div>
           <div class="meta-item">
             <strong>Host Organization</strong>
-            <span>SORARDI PLC (Technology &amp; Software Solutions)</span>
+            <input type="text" class="interactive-field" id="inpHostOrg" value="SORARDI PLC (Technology & Software Solutions)" oninput="saveField('hostOrg', this.value)" />
           </div>
           <div class="meta-item">
             <strong>Internship Period</strong>
-            <span>Sene 01, 2017 E.C. &ndash; Meskerem 05, 2018 E.C. (4 Months)</span>
+            <input type="text" class="interactive-field" id="inpPeriod" value="Sene 01, 2017 E.C. – Meskerem 05, 2018 E.C. (4 Months)" oninput="saveField('period', this.value)" />
           </div>
           <div class="meta-item">
             <strong>Academic Advisor</strong>
-            <span>[Advisor Name, MSc/PhD]</span>
+            <input type="text" class="interactive-field" id="inpAdvisor" placeholder="Advisor Name, MSc/PhD" oninput="saveField('advisor', this.value)" />
           </div>
           <div class="meta-item">
             <strong>Date of Submission</strong>
-            <span>10/01/2018 E.C.</span>
+            <input type="text" class="interactive-field" id="inpSubDate" value="10/01/2018 E.C." oninput="saveField('subDate', this.value)" />
           </div>
         </div>
       </section>
@@ -678,6 +707,30 @@ Atomic DB Transaction ──► Allocate Tickets (TKT-XXXX) ──► Double-Ent
   </div>
 
   <script>
+    function saveField(key, val) {
+      localStorage.setItem('ddu_report_' + key, val);
+    }
+
+    function loadSavedFields() {
+      const keys = ['studentName', 'studentID', 'hostOrg', 'period', 'advisor', 'subDate'];
+      keys.forEach(k => {
+        const val = localStorage.getItem('ddu_report_' + k);
+        if (val) {
+          const el = document.getElementById('inp' + k.charAt(0).toUpperCase() + k.slice(1));
+          if (el) el.value = val;
+        }
+      });
+    }
+
+    function resetInputs() {
+      if (confirm('Clear saved placeholder inputs?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadSavedFields);
+
     async function sha256(message) {
       const msgBuffer = new TextEncoder().encode(message);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
