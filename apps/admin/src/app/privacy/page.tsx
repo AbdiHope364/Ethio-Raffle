@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import AdminShell from "@/components/AdminShell";
 import {
   ShieldCheck,
   FileText,
@@ -122,9 +121,8 @@ export default function PrivacyAdminPage() {
   };
 
   return (
-    <AdminShell>
-      <div className="space-y-6">
-        {/* Page Header */}
+    <div className="space-y-6">
+      {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -336,8 +334,8 @@ export default function PrivacyAdminPage() {
             </div>
           </div>
         )}
-      </div>
-    </AdminShell>
+    </div>
   );
 }
+
 

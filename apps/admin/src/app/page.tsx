@@ -108,6 +108,14 @@ export default function AdminDashboardPage() {
 
         <div className="flex flex-wrap items-center gap-3">
           <Link
+            href="/privacy"
+            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-purple-300 font-extrabold text-xs rounded-xl border border-purple-500/30 transition shadow-md flex items-center gap-1.5"
+          >
+            <ShieldCheck className="w-4 h-4 text-purple-400" />
+            <span>Data Privacy (PDPP)</span>
+          </Link>
+
+          <Link
             href="/raffles"
             className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center gap-1.5"
           >
